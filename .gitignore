@@ -1,0 +1,28 @@
+# Java compiled files
+*.class
+*.jar
+*.war
+*.ear
+
+# IDE and editor settings
+.vscode/
+.idea/
+*.iml
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Logs and temporary files
+*.log
+*.tmp
+*.bak
+
+# Generated files
+bin/
+out/
+target/
+build/
+
+# JavaFX cache (if used)
+*.fxml~
