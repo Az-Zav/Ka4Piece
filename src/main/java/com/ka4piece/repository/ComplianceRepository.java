@@ -1,7 +1,6 @@
 package com.ka4piece.repository;
 
 import com.ka4piece.model.ComplianceRecord;
-import com.ka4piece.model.Household;
 import com.ka4piece.model.GrantBreakdown;
 import java.util.ArrayList;
 import java.util.Arrays;
