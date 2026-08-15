@@ -1,18 +1,18 @@
 package com.ka4piece.model;
 
 public class BarangayOfficial {
-    private String officialID, name, username, password;
+    private String officialId, name, username, password;
 
-    public BarangayOfficial(String officialID, String name, String username, String password) {
-        this.officialID = officialID;
+    public BarangayOfficial(String officialId, String name, String username, String password) {
+        this.officialId = officialId;
         this.name = name;
         this.username = username;
         this.password = password;
     }
 
     // Getters and setters
-    public String getOfficialID() {return officialID;}
-    public void setOfficialID(String officialID) {this.officialID = officialID;}
+    public String getOfficialId() {return officialId;}
+    public void setOfficialId(String officialId) {this.officialId = officialId;}
 
     public String getName() {return name;}
     public void setName(String name) {this.name = name;}

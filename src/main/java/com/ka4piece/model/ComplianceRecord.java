@@ -1,16 +1,16 @@
 package com.ka4piece.model;
 
 public class ComplianceRecord {
-    private String householdID, monthYear;
+    private String householdId, monthYear;
     boolean pregnancyCareStatus, child0to5HealthStatus, dewormingStatus,
             daycareAttendanceStatus, schoolAttendanceStatus, fdsAttendanceStatus;
     int childrenMeetingAttendance;
 
-    public ComplianceRecord(String householdID, String monthYear, boolean pregnancyCareStatus,
+    public ComplianceRecord(String householdId, String monthYear, boolean pregnancyCareStatus,
                             boolean child0to5HealthStatus, boolean dewormingStatus,
                             boolean daycareAttendanceStatus, boolean schoolAttendanceStatus,
                             boolean fdsAttendanceStatus, int childrenMeetingAttendance) {
-        this.householdID = householdID;
+        this.householdId = householdId;
         this.monthYear = monthYear;
         this.pregnancyCareStatus = pregnancyCareStatus;
         this.child0to5HealthStatus = child0to5HealthStatus;
@@ -22,8 +22,8 @@ public class ComplianceRecord {
     }
 
     //Getters and setters
-    public String getHouseholdID() {return householdID;}
-    public void setHouseholdID(String houseHoldID) {this.householdID = houseHoldID;}
+    public String getHouseholdId() {return householdId;}
+    public void setHouseholdId(String houseHoldID) {this.householdId = houseHoldID;}
 
     public String getMonthYear() {return monthYear;}
     public void setMonthYear(String monthYear) {this.monthYear = monthYear;}
