@@ -11,7 +11,6 @@ public class BarangayOfficial {
     }
 
     // Getters and setters
-
     public String getOfficialID() {return officialID;}
     public void setOfficialID(String officialID) {this.officialID = officialID;}
 
