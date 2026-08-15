@@ -30,3 +30,4 @@ build/
 *.dll
 *.so
 *.dylib
+native/
