@@ -1,0 +1,121 @@
+/* Root & Background Settings */
+.root-bg {
+    -fx-background-color: #f4f4f4;
+    -fx-font-family: "System", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Centered Card Layout (Paldo Style) */
+.login-card {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 20px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.08), 20, 0, 0, 10);
+    -fx-padding: 30 40 40 40;
+}
+
+/* Typography & Headers */
+.brand-heading {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e3a8a; /* Accent blue for KaAyuda */
+    -fx-alignment: center;
+}
+
+.brand-subtitle {
+    -fx-font-size: 11px;
+    -fx-text-fill: #7c8ba1;
+    -fx-alignment: center;
+}
+
+.field-label {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #666666;
+}
+
+/* Input Controls (Paldo Underlined Minimalist Style) */
+.underlined-field {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent #e0e0e0 transparent;
+    -fx-border-width: 0 0 1.5px 0;
+    -fx-padding: 6 0 6 0;
+    -fx-font-size: 13px;
+    -fx-text-fill: #333333;
+    -fx-prompt-text-fill: #aaaaaa;
+}
+
+.underlined-field:focused {
+    -fx-border-color: transparent transparent #2563eb transparent; /* Blue focus line */
+    -fx-border-width: 0 0 2px 0;
+}
+
+/* Toggle Buttons (Official / Beneficiary Selection) */
+.user-type-toggle {
+    -fx-background-color: #f1f5f9;
+    -fx-text-fill: #64748b;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6px;
+    -fx-border-radius: 6px;
+    -fx-padding: 8 12;
+    -fx-cursor: hand;
+}
+
+.user-type-toggle:hover {
+    -fx-background-color: #e2e8f0;
+}
+
+.user-type-toggle:selected {
+    -fx-background-color: #2563eb;
+    -fx-text-fill: #ffffff;
+}
+
+/* Buttons & Status */
+.login-button {
+    -fx-background-color: linear-gradient(to right, #2563eb, #1d4ed8);
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-background-radius: 22px; /* Smooth pill button look like Paldo */
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(37, 99, 235, 0.25), 8, 0, 0, 4);
+}
+
+.login-button:hover {
+    -fx-background-color: linear-gradient(to right, #1d4ed8, #1e40af);
+}
+
+.login-button:pressed {
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+}
+
+.error-label {
+    -fx-font-size: 11px;
+    -fx-text-fill: #dc2626;
+}
+
+/* Eye Button & Forgot Password Link */
+.eye-button {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+    -fx-text-fill: #7c8ba1;
+    -fx-font-size: 13px;
+    -fx-padding: 0 5 0 0;
+}
+
+.eye-button:hover {
+    -fx-text-fill: #1e3a8a;
+}
+
+.forgot-password-link {
+    -fx-text-fill: #797979;
+    -fx-font-size: 11px;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+    -fx-underline: false;
+}
+
+.forgot-password-link:hover {
+    -fx-text-fill: #2563eb;
+    -fx-underline: true;
+}

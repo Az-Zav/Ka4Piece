@@ -1,4 +1,4 @@
-package main.java.com.ka4piece.repository;
+package com.ka4piece.repository;
 
 public class ComplianceRepository {
     

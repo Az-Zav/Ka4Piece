@@ -1,6 +1,5 @@
 # Java compiled files
 *.class
-*.jar
 *.war
 *.ear
 
@@ -26,3 +25,8 @@ build/
 
 # JavaFX cache (if used)
 *.fxml~
+
+# Ignore OS native binaries
+*.dll
+*.so
+*.dylib

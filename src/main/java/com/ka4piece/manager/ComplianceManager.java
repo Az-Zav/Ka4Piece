@@ -1,4 +1,4 @@
-package main.java.com.ka4piece.manager;
+package com.ka4piece.manager;
 
 public class ComplianceManager {
     

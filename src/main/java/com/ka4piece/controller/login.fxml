@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<StackPane fx:id="rootPane" prefHeight="720.0" prefWidth="1280.0" styleClass="root-bg" stylesheets="@login.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ka4piece.controller.LoginController">
+    <children>
+        <!-- Main Login Card -->
+        <VBox alignment="CENTER" fillWidth="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="650.0" prefWidth="400.0" styleClass="login-card">
+            <children>
+
+                <!-- Logo & Brand Header -->
+                <ImageView fx:id="logoImageView" fitHeight="77.0" fitWidth="169.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@images/logo.png" />
+                    </image>
+                </ImageView>
+
+                <Label styleClass="brand-heading" text="Ka4Piece">
+                    <font>
+                        <Font name="System Bold" size="32.0" />
+                    </font>
+                </Label>
+
+                <Label style="-fx-padding: 5 0 10 0;" styleClass="brand-subtitle" text="Barangay-Level 4Ps Compliance &amp; Job-Matching System" textAlignment="CENTER" wrapText="true" />
+
+                <!-- Form Controls Container -->
+                <VBox fillWidth="true" prefWidth="300.0" spacing="12.0">
+                    <children>
+
+                        <!-- User Type Selection -->
+                        <VBox spacing="5.0">
+                            <Label styleClass="field-label" text="Log in as" textFill="#666666" />
+                            <HBox spacing="10.0">
+                                <fx:define>
+                                    <ToggleGroup fx:id="userTypeGroup" />
+                                </fx:define>
+                                <ToggleButton fx:id="officialToggle" maxWidth="Infinity" mnemonicParsing="false" styleClass="user-type-toggle" text="OFFICIAL" HBox.hgrow="ALWAYS">
+                           <toggleGroup>
+                              <ToggleGroup fx:id="userTypeGroup" />
+                           </toggleGroup></ToggleButton>
+                                <ToggleButton fx:id="beneficiaryToggle" maxWidth="Infinity" mnemonicParsing="false" styleClass="user-type-toggle" text="BENEFICIARY" toggleGroup="$userTypeGroup" HBox.hgrow="ALWAYS" />
+                            </HBox>
+                        </VBox>
+
+                        <!-- Username Field -->
+                        <VBox spacing="5.0">
+                            <Label styleClass="field-label" text="Username" textFill="#666666" />
+                            <TextField fx:id="usernameField" prefWidth="300.0" promptText="Enter your username" styleClass="underlined-field" />
+                        </VBox>
+
+                        <!-- Password Field with View/Hide Eye Button -->
+                        <VBox spacing="5.0">
+                            <Label styleClass="field-label" text="Password" textFill="#666666" />
+                            <StackPane alignment="CENTER_RIGHT">
+                                <children>
+                                    <PasswordField fx:id="passwordHidden" prefWidth="300.0" promptText="Enter your password" styleClass="underlined-field" />
+                                    <TextField fx:id="passwordVisible" managed="false" prefWidth="300.0" promptText="Enter your password" styleClass="underlined-field" visible="false" />
+                                    <Button fx:id="eyeBtn" onAction="#togglePassword" styleClass="eye-button" text="👁" />
+                                </children>
+                            </StackPane>
+                        </VBox>
+
+                        <!-- Forgot Password Link -->
+                        <HBox alignment="CENTER_RIGHT">
+                            <children>
+                                <Hyperlink fx:id="forgotPasswordLink" onAction="#handleForgotPassword" styleClass="forgot-password-link" text="Forgot password?" />
+                            </children>
+                        </HBox>
+
+                        <!-- Error Message Label -->
+                        <Label fx:id="errorLabel" managed="false" styleClass="error-label" text="* This field is required" textFill="RED" visible="false" wrapText="true">
+                            <font>
+                                <Font size="10.0" />
+                            </font>
+                        </Label>
+
+                        <!-- Submit Button -->
+                        <Button fx:id="loginButton" mnemonicParsing="false" onAction="#handleLogin" prefHeight="45.0" prefWidth="300.0" styleClass="login-button" text="LOGIN">
+                            <VBox.margin>
+                                <Insets top="10.0" />
+                            </VBox.margin>
+                        </Button>
+
+                    </children>
+                </VBox>
+
+            </children>
+        </VBox>
+    </children>
+</StackPane>

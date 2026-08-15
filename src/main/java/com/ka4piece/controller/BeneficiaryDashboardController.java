@@ -1,4 +1,4 @@
-package main.java.com.ka4piece.controller;
+package com.ka4piece.controller;
 
 public class BeneficiaryDashboardController {
     
