@@ -31,3 +31,6 @@ build/
 *.so
 *.dylib
 native/
+
+# Credentials and configs
+*.properties
