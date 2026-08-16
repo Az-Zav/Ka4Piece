@@ -22,7 +22,7 @@ public class JobMatchRepository extends MySqlStore {
 
         String sql = "INSERT INTO jobseekers (jobseekerId, householdId, memberName, education, skills, experienceYears, location, appliedVacancies) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?) " +
-                     "ON DUPLICATE KEY UPDATE " +
+                     "ON DUPLICATE KEY UPDATE " + // if the same jobseekerId already exists, update the record instead of inserting a new one
                      "householdId = VALUES(householdId), " +
                      "memberName = VALUES(memberName), " +
                      "education = VALUES(education), " +
