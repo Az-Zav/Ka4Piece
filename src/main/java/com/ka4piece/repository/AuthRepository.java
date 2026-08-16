@@ -42,6 +42,32 @@ public class AuthRepository extends MySqlStore {
         );
     }
 
+    public void updateHouseholdProfile(String householdId, String headName, String address, String barangay, String email) {
+        Household h = findHouseholdById(householdId);
+        if (h == null) throw new IllegalArgumentException("Household not found: " + householdId);
+        h.setHeadName(headName);
+        h.setAddress(address);
+        h.setBarangay(barangay);
+        h.setEmail(email);
+        saveHousehold(h);
+    }
+
+    public void updateHouseholdPassword(String householdId, String newPassword) {
+        Household h = findHouseholdById(householdId);
+        if (h == null) throw new IllegalArgumentException("Household not found: " + householdId);
+        h.setPassword(newPassword);
+        saveHousehold(h);
+    }
+
+    public void updateHouseholdExitStatus(String householdId, String status, String exitReason, LocalDate exitDate) {
+        Household h = findHouseholdById(householdId);
+        if (h == null) throw new IllegalArgumentException("Household not found: " + householdId);
+        h.setStatus(status);
+        h.setExitReason(exitReason);
+        h.setExitDate(exitDate);
+        saveHousehold(h);
+    }
+
     public Household findHouseholdById(String householdId) {
         String sql = "SELECT * FROM households WHERE householdId = ?";
         List<Map<String, Object>> rows = executeQuery(sql, householdId); //returns a list of rows, each row is a map of column names to values
@@ -85,6 +111,28 @@ public class AuthRepository extends MySqlStore {
             o.getPassword(),
             o.isAdmin()
         );
+    }
+
+    public void updateOfficialProfile(String officialId, String name, String email) {
+        BarangayOfficial o = findOfficialById(officialId);
+        if (o == null) throw new IllegalArgumentException("Official not found: " + officialId);
+        o.setName(name);
+        o.setEmail(email);
+        saveOfficial(o);
+    }
+
+    public void updateOfficialPassword(String officialId, String newPassword) {
+        BarangayOfficial o = findOfficialById(officialId);
+        if (o == null) throw new IllegalArgumentException("Official not found: " + officialId);
+        o.setPassword(newPassword);
+        saveOfficial(o);
+    }
+
+    public void updateOfficialAdminStatus(String officialId, boolean isAdmin) {
+        BarangayOfficial o = findOfficialById(officialId);
+        if (o == null) throw new IllegalArgumentException("Official not found: " + officialId);
+        o.setAdmin(isAdmin);
+        saveOfficial(o);
     }
 
     public BarangayOfficial findOfficialById(String officialId) {

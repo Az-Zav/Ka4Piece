@@ -43,6 +43,17 @@ public class JobMatchRepository extends MySqlStore {
         );
     }
 
+    public void updateJobseekerProfile(String jobseekerId, String memberName, String education, List<String> skills, int experienceYears, String location) {
+        JobseekerProfile p = findJobseekerById(jobseekerId);
+        if (p == null) throw new IllegalArgumentException("Jobseeker profile not found: " + jobseekerId);
+        p.setMemberName(memberName);
+        p.setEducation(education);
+        p.setSkills(skills);
+        p.setExperienceYears(experienceYears);
+        p.setLocation(location);
+        saveJobseeker(p);
+    }
+
     public JobseekerProfile findJobseekerById(String jobseekerId) {
         String sql = "SELECT * FROM jobseekers WHERE jobseekerId = ?";
         List<Map<String, Object>> rows = executeQuery(sql, jobseekerId);
@@ -76,7 +87,19 @@ public class JobMatchRepository extends MySqlStore {
 
         String sql = "INSERT INTO vacancies (vacancyId, title, educationRequirement, skillRequirements, " +
                      "experienceYearsRequired, location, compensation, type, enteredByOfficialId, status, archiveReason, hiredJobseekerId) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
+                     "ON DUPLICATE KEY UPDATE " +
+                     "title = VALUES(title), " +
+                     "educationRequirement = VALUES(educationRequirement), " +
+                     "skillRequirements = VALUES(skillRequirements), " +
+                     "experienceYearsRequired = VALUES(experienceYearsRequired), " +
+                     "location = VALUES(location), " +
+                     "compensation = VALUES(compensation), " +
+                     "type = VALUES(type), " +
+                     "enteredByOfficialId = VALUES(enteredByOfficialId), " +
+                     "status = VALUES(status), " +
+                     "archiveReason = VALUES(archiveReason), " +
+                     "hiredJobseekerId = VALUES(hiredJobseekerId)";
 
         executeUpdate(sql,
             v.getVacancyId(),
@@ -94,9 +117,30 @@ public class JobMatchRepository extends MySqlStore {
         );
     }
 
+    public void updateVacancyDetails(String vacancyId, String title, String educationRequirement, List<String> skillRequirements, int experienceYearsRequired, String location, String compensation, String type) {
+        Vacancy v = findVacancyById(vacancyId);
+        if (v == null) throw new IllegalArgumentException("Vacancy not found: " + vacancyId);
+        v.setTitle(title);
+        v.setEducationRequirement(educationRequirement);
+        v.setSkillRequirements(skillRequirements);
+        v.setExperienceYearsRequired(experienceYearsRequired);
+        v.setLocation(location);
+        v.setCompensation(compensation);
+        v.setType(type);
+        saveVacancy(v);
+    }
+
     public void updateVacancyStatus(String vacancyId, String status, String archiveReason, String hiredJobseekerId) {
-        String sql = "UPDATE vacancies SET status = ?, archiveReason = ?, hiredJobseekerId = ? WHERE vacancyId = ?";
-        executeUpdate(sql, status, archiveReason, hiredJobseekerId, vacancyId);
+        Vacancy v = findVacancyById(vacancyId);
+        if (v != null) {
+            v.setStatus(status);
+            v.setArchiveReason(archiveReason);
+            v.setHiredJobseekerId(hiredJobseekerId);
+            saveVacancy(v);
+        } else {
+            String sql = "UPDATE vacancies SET status = ?, archiveReason = ?, hiredJobseekerId = ? WHERE vacancyId = ?";
+            executeUpdate(sql, status, archiveReason, hiredJobseekerId, vacancyId);
+        }
     }
 
     public Vacancy findVacancyById(String vacancyId) {

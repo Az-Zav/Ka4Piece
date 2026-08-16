@@ -7,10 +7,10 @@ import com.ka4piece.utilities.PasswordUtil;
 
 /**
  * Flow:
- *  1. Receive a username and a userType ("OFFICIAL" or "BENEFICIARY").
+ *  1. Receive an email and a userType ("OFFICIAL" or "BENEFICIARY").
  *  2. Look up the account in the correct table.
  *  3. Generate a temporary password using PasswordUtil.
- *  4. Hash and persist it back to the database.
+ *  4. Hash and persist it back to the database via AuthRepository.
  *  5. Return the plain-text temporary password on success, or an error message string on failure.
  */
 public class ForgotPasswordController {
@@ -22,20 +22,20 @@ public class ForgotPasswordController {
     }
 
     /**
-     * Attempts to reset the password for the given username and user type.
-     *  username the username to reset
+     * Attempts to reset the password for the given email and user type.
+     *  email the email to reset
      *  userType "OFFICIAL" or "BENEFICIARY"
      */
-    public ResetResult handleReset(String username, String userType) {
+    public ResetResult handleReset(String email, String userType) {
         // --- Input validation ---
-        if (username == null || username.isBlank()) {
-            return ResetResult.failure("Please enter your username.");
+        if (email == null || email.isBlank()) {
+            return ResetResult.failure("Please enter your email.");
         }
         if (userType == null || userType.isBlank()) {
             return ResetResult.failure("User type is required.");
         }
 
-        String trimmed = username.trim();
+        String trimmed = email.trim();
 
         try {
             if ("OFFICIAL".equalsIgnoreCase(userType)) {
@@ -61,10 +61,7 @@ public class ForgotPasswordController {
         String tempPassword = PasswordUtil.generateTemporaryPassword();
         String hashed = PasswordUtil.hashPassword(tempPassword);
 
-        int rows = authRepository.updateOfficialPassword(official.getOfficialId(), hashed);
-        if (rows == 0) {
-            return ResetResult.failure("Failed to reset password. Please try again.");
-        }
+        authRepository.updateOfficialPassword(official.getOfficialId(), hashed);
 
         return ResetResult.success(tempPassword);
     }
@@ -78,10 +75,7 @@ public class ForgotPasswordController {
         String tempPassword = PasswordUtil.generateTemporaryPassword();
         String hashed = PasswordUtil.hashPassword(tempPassword);
 
-        int rows = authRepository.updateHouseholdPassword(household.getHouseholdId(), hashed);
-        if (rows == 0) {
-            return ResetResult.failure("Failed to reset password. Please try again.");
-        }
+        authRepository.updateHouseholdPassword(household.getHouseholdId(), hashed);
 
         return ResetResult.success(tempPassword);
     }
