@@ -1,18 +1,18 @@
 package com.ka4piece.model;
 
 public class RankedCandidate {
-    private JobSeekerProfile profile;
+    private JobseekerProfile profile;
     double score;
     String status;
 
-    public RankedCandidate(JobSeekerProfile profile, double score, String status) {
+    public RankedCandidate(JobseekerProfile profile, double score, String status) {
         this.profile = profile;
         this.score = score;
         this.status = status;
     }
 
     //Getters only
-    public JobSeekerProfile getProfile() {return profile;}
+    public JobseekerProfile getProfile() {return profile;}
     public double getScore() {return score;}
     public String getStatus() {return status;}
 }
