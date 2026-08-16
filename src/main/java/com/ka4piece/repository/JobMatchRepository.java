@@ -2,161 +2,179 @@ package com.ka4piece.repository;
 
 import com.ka4piece.model.JobseekerProfile;
 import com.ka4piece.model.Vacancy;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
-public class JobMatchRepository extends CSVStore {
-    private String jobseekerFilePath, vacancyFilePath;
+public class JobMatchRepository extends MySqlStore {
 
-    public JobMatchRepository(String jobseekerFilePath, String vacancyFilePath) {
-        this.jobseekerFilePath = jobseekerFilePath;
-        this.vacancyFilePath = vacancyFilePath;
+    public JobMatchRepository(String jdbcUrl, String dbUser, String dbPassword) {
+        super(jdbcUrl, dbUser, dbPassword);
     }
 
     //-----Jobseeker methods-----
-
     public void saveJobseeker(JobseekerProfile p) {
-        List<String> lines = readLines(jobseekerFilePath);
-        boolean replaced = false;
+        String skillsStr = (p.getSkills() == null || p.getSkills().isEmpty()) 
+                           ? "" 
+                           : String.join(";", p.getSkills());
 
-        // keyed on jobseekerId alone -- this is what makes recordApplication/updateApplicationStatus
-        // work, since the whole row (including appliedVacancies) gets overwritten on every save
-        for (int i = 0; i < lines.size(); i++) {
-            JobseekerProfile existing = parseJobseeker(lines.get(i));
-            if (existing.getJobseekerId().equals(p.getJobseekerId())) {
-                lines.set(i, serializeJobseeker(p));
-                replaced = true;
-                break;
-            }
-        }
+        String appliedStr = serializeAppliedVacancies(p.getAppliedVacancies());
 
-        if (replaced) writeLines(jobseekerFilePath, lines);
-        else appendLine(jobseekerFilePath, serializeJobseeker(p));
+        String sql = "INSERT INTO jobseekers (jobseekerId, householdId, memberName, education, skills, experienceYears, location, appliedVacancies) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?) " +
+                     "ON DUPLICATE KEY UPDATE " +
+                     "householdId = VALUES(householdId), " +
+                     "memberName = VALUES(memberName), " +
+                     "education = VALUES(education), " +
+                     "skills = VALUES(skills), " +
+                     "experienceYears = VALUES(experienceYears), " +
+                     "location = VALUES(location), " +
+                     "appliedVacancies = VALUES(appliedVacancies)";
+
+        executeUpdate(sql,
+            p.getJobseekerId(),
+            p.getHouseholdId(),
+            p.getMemberName(),
+            p.getEducation(),
+            skillsStr,
+            p.getExperienceYears(),
+            p.getLocation(),
+            appliedStr
+        );
     }
 
     public JobseekerProfile findJobseekerById(String jobseekerId) {
-        for (String line : readLines(jobseekerFilePath)) {
-            JobseekerProfile p = parseJobseeker(line);
-            if (p.getJobseekerId().equals(jobseekerId)) return p;
+        String sql = "SELECT * FROM jobseekers WHERE jobseekerId = ?";
+        List<Map<String, Object>> rows = executeQuery(sql, jobseekerId);
+        if (rows.isEmpty()) {
+            return null;
         }
-        return null; //not found
+        return mapRowToJobseeker(rows.get(0));
     }
 
     public List<JobseekerProfile> findJobseekersByHousehold(String householdId) {
-        List<JobseekerProfile> profiles = new ArrayList<>();
-        for (String line : readLines(jobseekerFilePath)) {
-            JobseekerProfile p = parseJobseeker(line);
-            if (p.getHouseholdId().equals(householdId)) profiles.add(p);
-        }
-        return profiles;
+        String sql = "SELECT * FROM jobseekers WHERE householdId = ?";
+        List<Map<String, Object>> rows = executeQuery(sql, householdId);
+        return rows.stream()
+                   .map(this::mapRowToJobseeker)
+                   .collect(Collectors.toList());
     }
 
     public List<JobseekerProfile> findAllJobseekers() {
-        List<JobseekerProfile> profiles = new ArrayList<>();
-        for (String line : readLines(jobseekerFilePath)) {
-            profiles.add(parseJobseeker(line));
-        }
-        return profiles;
+        String sql = "SELECT * FROM jobseekers";
+        List<Map<String, Object>> rows = executeQuery(sql);
+        return rows.stream()
+                   .map(this::mapRowToJobseeker)
+                   .collect(Collectors.toList());
     }
 
     //-----Vacancy methods-----
-
     public void saveVacancy(Vacancy v) {
-        // vacancies are never edited post-creation in MVP scope -- always append, never overwrite
-        appendLine(vacancyFilePath, serializeVacancy(v));
+        String skillsReqStr = (v.getSkillRequirements() == null || v.getSkillRequirements().isEmpty()) 
+                              ? "" 
+                              : String.join(";", v.getSkillRequirements());
+
+        String sql = "INSERT INTO vacancies (vacancyId, title, educationRequirement, skillRequirements, " +
+                     "experienceYearsRequired, location, compensation, type, enteredByOfficialId) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        executeUpdate(sql,
+            v.getVacancyId(),
+            v.getTitle(),
+            v.getEducationRequirement(),
+            skillsReqStr,
+            v.getExperienceYearsRequired(),
+            v.getLocation(),
+            v.getCompensation(),
+            v.getType(),
+            v.getEnteredByOfficialId()
+        );
     }
 
     public Vacancy findVacancyById(String vacancyId) {
-        for (String line : readLines(vacancyFilePath)) {
-            Vacancy v = parseVacancy(line);
-            if (v.getVacancyId().equals(vacancyId)) return v;
+        String sql = "SELECT * FROM vacancies WHERE vacancyId = ?";
+        List<Map<String, Object>> rows = executeQuery(sql, vacancyId);
+        if (rows.isEmpty()) {
+            return null;
         }
-        return null; //not found
+        return mapRowToVacancy(rows.get(0));
     }
 
     public List<Vacancy> findAllVacancies() {
-        List<Vacancy> vacancies = new ArrayList<>();
-        for (String line : readLines(vacancyFilePath)) {
-            vacancies.add(parseVacancy(line));
-        }
-        return vacancies;
+        String sql = "SELECT * FROM vacancies";
+        List<Map<String, Object>> rows = executeQuery(sql);
+        return rows.stream()
+                   .map(this::mapRowToVacancy)
+                   .collect(Collectors.toList());
     }
 
     //-----Helper methods-----
+    private JobseekerProfile mapRowToJobseeker(Map<String, Object> row) {
+        String skillsText = (String) row.get("skills");
+        List<String> skills = (skillsText == null || skillsText.trim().isEmpty())
+                              ? new ArrayList<>()
+                              : new ArrayList<>(Arrays.asList(skillsText.split(";")));
 
-    private JobseekerProfile parseJobseeker(String row) {
-        String[] f = row.split(",", -1);
-        // column order: jobseekerId, householdId, memberName, education, skills,
-        //               experienceYears, location, appliedVacancies
+        String appliedText = (String) row.get("appliedVacancies");
+        Map<String, String> appliedVacancies = parseAppliedVacancies(appliedText);
 
-        String jobseekerId = f[0];
-        String householdId = f[1];
-        String memberName = f[2];
-        String education = f[3];
+        return new JobseekerProfile(
+            (String) row.get("jobseekerId"),
+            (String) row.get("householdId"),
+            (String) row.get("memberName"),
+            (String) row.get("education"),
+            (String) row.get("location"),
+            skills,
+            ((Number) row.get("experienceYears")).intValue(),
+            appliedVacancies
+        );
+    }
 
-        List<String> skills = f[4].isEmpty()
-            ? new ArrayList<>()
-            : Arrays.asList(f[4].split(";"));
+    private Vacancy mapRowToVacancy(Map<String, Object> row) {
+        String skillsReqText = (String) row.get("skillRequirements");
+        List<String> skillRequirements = (skillsReqText == null || skillsReqText.trim().isEmpty())
+                                         ? new ArrayList<>()
+                                         : new ArrayList<>(Arrays.asList(skillsReqText.split(";")));
 
-        int experienceYears = Integer.parseInt(f[5]);
-        String location = f[6];
+        return new Vacancy(
+            (String) row.get("vacancyId"),
+            (String) row.get("title"),
+            (String) row.get("educationRequirement"),
+            (String) row.get("location"),
+            (String) row.get("compensation"),
+            (String) row.get("type"),
+            skillRequirements,
+            ((Number) row.get("experienceYearsRequired")).intValue(),
+            (String) row.get("enteredByOfficialId")
+        );
+    }
 
-        Map<String, String> appliedVacancies = new HashMap<>();
-        if (!f[7].isEmpty()) {
-            for (String entry : f[7].split(";")) {
-                String[] kv = entry.split(":", 2); // limit 2 in case status ever contains ":"
-                appliedVacancies.put(kv[0], kv[1]);
+    private String serializeAppliedVacancies(Map<String, String> applied) {
+        if (applied == null || applied.isEmpty()) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, String> entry : applied.entrySet()) {
+            if (sb.length() > 0) {
+                sb.append(";");
+            }
+            sb.append(entry.getKey()).append(":").append(entry.getValue());
+        }
+        return sb.toString();
+    }
+
+    private Map<String, String> parseAppliedVacancies(String text) {
+        Map<String, String> map = new LinkedHashMap<>();
+        if (text == null || text.trim().isEmpty()) {
+            return map;
+        }
+        String[] pairs = text.split(";");
+        for (String pair : pairs) {
+            String[] kv = pair.split(":", 2);
+            if (kv.length == 2) {
+                map.put(kv[0], kv[1]);
             }
         }
-
-        return new JobseekerProfile(jobseekerId, householdId, memberName, education, location,
-                skills, experienceYears, appliedVacancies);
-    }
-
-    private String serializeJobseeker(JobseekerProfile p) {
-        String skillsJoined = String.join(";", p.getSkills());
-
-        String appliedJoined = p.getAppliedVacancies().entrySet().stream()
-                .map(e -> e.getKey() + ":" + e.getValue())
-                .collect(Collectors.joining(";"));
-
-        return String.join(",", p.getJobseekerId(), p.getHouseholdId(), p.getMemberName(),
-                p.getEducation(), skillsJoined, Integer.toString(p.getExperienceYears()),
-                p.getLocation(), appliedJoined);
-    }
-
-    private Vacancy parseVacancy(String row) {
-        String[] f = row.split(",", -1);
-        // column order: vacancyId, title, educationRequirement, skillRequirements,
-        //               experienceYearsRequired, location, compensation, type, enteredByOfficialId
-
-        String vacancyId = f[0];
-        String title = f[1];
-        String educationRequirement = f[2];
-
-        List<String> skillRequirements = f[3].isEmpty()
-            ? new ArrayList<>()
-            : Arrays.asList(f[3].split(";"));
-
-        int experienceYearsRequired = Integer.parseInt(f[4]);
-        String location = f[5];
-        String compensation = f[6];
-        String type = f[7];
-        String enteredByOfficialId = f[8];
-
-        return new Vacancy(vacancyId, title, educationRequirement, location, compensation, type, skillRequirements,
-                experienceYearsRequired, enteredByOfficialId);
-    }
-
-    private String serializeVacancy(Vacancy v) {
-        String skillsJoined = String.join(";", v.getSkillRequirements());
-
-        return String.join(",", v.getVacancyId(), v.getTitle(), v.getEducationRequirement(),
-                skillsJoined, Integer.toString(v.getExperienceYearsRequired()), v.getLocation(),
-                v.getCompensation(), v.getType(), v.getEnteredByOfficialId());
+        return map;
     }
 }
