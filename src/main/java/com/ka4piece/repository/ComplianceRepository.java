@@ -2,120 +2,143 @@ package com.ka4piece.repository;
 
 import com.ka4piece.model.ComplianceRecord;
 import com.ka4piece.model.GrantBreakdown;
-import java.util.ArrayList;
+
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ComplianceRepository extends MySqlStore {
-    private String complianceFilePath, grantFilePath;
 
-    public ComplianceRepository(String complianceFilePath, String grantFilePath) {
-        this.complianceFilePath = complianceFilePath;
-        this.grantFilePath = grantFilePath;
+    public ComplianceRepository(String jdbcUrl, String dbUser, String dbPassword) {
+        super(jdbcUrl, dbUser, dbPassword);
     }
 
     //-----Compliance methods-----
-
     public void saveCompliance(ComplianceRecord r) {
-    List<String> lines = readLines(complianceFilePath);
-    boolean replaced = false;
-
-    // if a record for the same household and monthYear exists, replace it; otherwise, append
-    for (int i = 0; i < lines.size(); i++) {
-        ComplianceRecord existing = parseCompliance(lines.get(i));
-        if (existing.getHouseholdId().equals(r.getHouseholdId()) &&
-            existing.getMonthYear().equals(r.getMonthYear())) {
-            lines.set(i, serializeCompliance(r));
-            replaced = true;
-            break;
-        }
-    }
-
-    if (replaced) writeLines(complianceFilePath, lines);
-    else appendLine(complianceFilePath, serializeCompliance(r));
+        String sql = "INSERT INTO compliance (householdId, monthYear, pregnancyCareStatus, child0to5HealthStatus, " +
+                     "dewormingStatus, daycareAttendanceStatus, schoolAttendanceStatus, fdsAttendanceStatus, childrenMeetingAttendance) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) " +
+                     "ON DUPLICATE KEY UPDATE " + // if the same householdId and monthYear already exists, update the record instead of inserting a new one
+                     "pregnancyCareStatus = VALUES(pregnancyCareStatus), " +
+                     "child0to5HealthStatus = VALUES(child0to5HealthStatus), " +
+                     "dewormingStatus = VALUES(dewormingStatus), " +
+                     "daycareAttendanceStatus = VALUES(daycareAttendanceStatus), " +
+                     "schoolAttendanceStatus = VALUES(schoolAttendanceStatus), " +
+                     "fdsAttendanceStatus = VALUES(fdsAttendanceStatus), " +
+                     "childrenMeetingAttendance = VALUES(childrenMeetingAttendance)";
+        
+        executeUpdate(sql,
+            r.getHouseholdId(),
+            r.getMonthYear(),
+            r.isPregnancyCareStatus(),
+            r.isChild0to5HealthStatus(),
+            r.isDewormingStatus(),
+            r.isDaycareAttendanceStatus(),
+            r.isSchoolAttendanceStatus(),
+            r.isFdsAttendanceStatus(),
+            r.getChildrenMeetingAttendance()
+        );
     }
 
     public ComplianceRecord findComplianceByHouseholdAndMonth(String householdId, String monthYear) {
-        for (String line : readLines(complianceFilePath)) {
-            ComplianceRecord r = parseCompliance(line);
-            if (r.getHouseholdId().equals(householdId) && r.getMonthYear().equals(monthYear)) return r;
+        String sql = "SELECT * FROM compliance WHERE householdId = ? AND monthYear = ?";
+        List<Map<String, Object>> rows = executeQuery(sql, householdId, monthYear);
+        if (rows.isEmpty()) {
+            return null;
         }
-        return null; //not found
+        return mapRowToCompliance(rows.get(0));
     }
 
     public List<ComplianceRecord> findComplianceHistory(String householdId) {
-        List<ComplianceRecord> history = new ArrayList<>();
-        for (String line : readLines(complianceFilePath)) {
-            ComplianceRecord r = parseCompliance(line);
-            if (r.getHouseholdId().equals(householdId)) history.add(r);
-        }
-        return history;
+        String sql = "SELECT * FROM compliance WHERE householdId = ? ORDER BY monthYear";
+        List<Map<String, Object>> rows = executeQuery(sql, householdId);
+        return rows.stream()
+                   .map(this::mapRowToCompliance)
+                   .collect(Collectors.toList());
     }
-    
+
     //-----Grant methods-----
 
     public void saveGrant(GrantBreakdown g) {
-          appendLine(grantFilePath, serializeGrant(g));
+        String withheldStr = (g.getWithheldReasons() == null || g.getWithheldReasons().isEmpty()) 
+                             ? "" 
+                             : String.join(";", g.getWithheldReasons());
+
+        String sql = "INSERT INTO grants (householdId, monthYear, healthGrantAmount, educationGrantAmount, " +
+                     "riceSubsidyAmount, totalAmount, withheldReasons) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        
+        executeUpdate(sql,
+            g.getHouseholdId(),
+            g.getMonthYear(),
+            g.getHealthGrantAmount(),
+            g.getEducationGrantAmount(),
+            g.getRiceSubsidyAmount(),
+            g.getTotalAmount(),
+            withheldStr
+        );
     }
 
     public GrantBreakdown findGrantByHouseholdAndMonth(String householdId, String monthYear) {
-        for (String line : readLines(grantFilePath)) {
-            GrantBreakdown g = parseGrant(line);
-            if (g.getHouseholdId().equals(householdId) && g.getMonthYear().equals(monthYear)) return g;
+        String sql = "SELECT * FROM grants WHERE householdId = ? AND monthYear = ?";
+        List<Map<String, Object>> rows = executeQuery(sql, householdId, monthYear);
+        if (rows.isEmpty()) {
+            return null;
         }
-        return null; //not found
+        return mapRowToGrant(rows.get(0));
     }
 
     public List<GrantBreakdown> findGrantHistory(String householdId) {
-        List<GrantBreakdown> history = new ArrayList<>();
-        for (String line : readLines(grantFilePath)) {
-            GrantBreakdown g = parseGrant(line);
-            if (g.getHouseholdId().equals(householdId)) history.add(g);
-        }
-        return history;
+        String sql = "SELECT * FROM grants WHERE householdId = ? ORDER BY monthYear";
+        List<Map<String, Object>> rows = executeQuery(sql, householdId);
+        return rows.stream()
+                   .map(this::mapRowToGrant)
+                   .collect(Collectors.toList());
     }
 
     //-----Helper methods-----
-    private ComplianceRecord parseCompliance(String row) {
-        String[] r = row.split(",", -1);
-        return new ComplianceRecord(r[0], r[1], Boolean.parseBoolean(r[2]), Boolean.parseBoolean(r[3]),
-                Boolean.parseBoolean(r[4]), Boolean.parseBoolean(r[5]), Boolean.parseBoolean(r[6]),
-                Boolean.parseBoolean(r[7]), Integer.parseInt(r[8]));
+
+    private ComplianceRecord mapRowToCompliance(Map<String, Object> row) { //parses a row from the database into a ComplianceRecord object
+        return new ComplianceRecord(
+            (String) row.get("householdId"),
+            (String) row.get("monthYear"),
+            toBoolean(row.get("pregnancyCareStatus")),
+            toBoolean(row.get("child0to5HealthStatus")),
+            toBoolean(row.get("dewormingStatus")),
+            toBoolean(row.get("daycareAttendanceStatus")),
+            toBoolean(row.get("schoolAttendanceStatus")),
+            toBoolean(row.get("fdsAttendanceStatus")),
+            ((Number) row.get("childrenMeetingAttendance")).intValue()
+        );
     }
 
-    private String serializeCompliance(ComplianceRecord r) {
-        return String.join(",", r.getHouseholdId(), r.getMonthYear(),
-                Boolean.toString(r.isPregnancyCareStatus()), Boolean.toString(r.isChild0to5HealthStatus()),
-                Boolean.toString(r.isDewormingStatus()), Boolean.toString(r.isDaycareAttendanceStatus()),
-                Boolean.toString(r.isSchoolAttendanceStatus()), Boolean.toString(r.isFdsAttendanceStatus()),
-                Integer.toString(r.getChildrenMeetingAttendance()));
+    private GrantBreakdown mapRowToGrant(Map<String, Object> row) { //parses a row from the database into a GrantBreakdown object
+        String withheldText = (String) row.get("withheldReasons");
+        List<String> reasons = (withheldText == null || withheldText.trim().isEmpty())
+                               ? Collections.emptyList()
+                               : Arrays.asList(withheldText.split(";"));
+
+        return new GrantBreakdown(
+            (String) row.get("householdId"),
+            (String) row.get("monthYear"),
+            ((Number) row.get("healthGrantAmount")).doubleValue(),
+            ((Number) row.get("educationGrantAmount")).doubleValue(),
+            ((Number) row.get("riceSubsidyAmount")).doubleValue(),
+            ((Number) row.get("totalAmount")).doubleValue(),
+            reasons
+        );
     }
 
-    private GrantBreakdown parseGrant(String row) {
-    String[] r = row.split(",", -1);
-    // column order: householdId, monthYear, healthGrantAmount, educationGrantAmount,
-    //               riceSubsidyAmount, totalAmount, withheldReasons
-
-    String householdId = r[0];
-    String monthYear = r[1];
-    double healthGrantAmount = Double.parseDouble(r[2]);
-    double educationGrantAmount = Double.parseDouble(r[3]);
-    double riceSubsidyAmount = Double.parseDouble(r[4]);
-    double totalAmount = Double.parseDouble(r[5]);
-
-    List<String> withheldReasons = r[6].isEmpty()
-        ? new ArrayList<>()
-        : Arrays.asList(r[6].split(";"));
-
-    return new GrantBreakdown(householdId, monthYear, healthGrantAmount,
-        educationGrantAmount, riceSubsidyAmount, totalAmount, withheldReasons);
+    private boolean toBoolean(Object val) {
+        if (val instanceof Boolean) { //main routing where all values are caught as boolean from db
+            return (Boolean) val;
+        }
+        if (val instanceof Number) { // defensive fallback if boolean is stored as tiny int in db
+            return ((Number) val).intValue() != 0;
+        }
+        return Boolean.parseBoolean(String.valueOf(val));
     }
 
-    private String serializeGrant(GrantBreakdown g) {
-        String withheldReasons = String.join(";", g.getWithheldReasons());
-        return String.join(",", g.getHouseholdId(), g.getMonthYear(),
-                Double.toString(g.getHealthGrantAmount()), Double.toString(g.getEducationGrantAmount()),
-                Double.toString(g.getRiceSubsidyAmount()), Double.toString(g.getTotalAmount()),
-                withheldReasons);
-    }
+
 }
