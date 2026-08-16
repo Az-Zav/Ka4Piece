@@ -12,7 +12,7 @@ public class JobMatchRepository extends MySqlStore {
         super(jdbcUrl, dbUser, dbPassword);
     }
 
-    //-----Jobseeker methods-----
+    // ----- Jobseeker methods -----
     public void saveJobseeker(JobseekerProfile p) {
         String skillsStr = (p.getSkills() == null || p.getSkills().isEmpty()) 
                            ? "" 
@@ -22,7 +22,7 @@ public class JobMatchRepository extends MySqlStore {
 
         String sql = "INSERT INTO jobseekers (jobseekerId, householdId, memberName, education, skills, experienceYears, location, appliedVacancies) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?) " +
-                     "ON DUPLICATE KEY UPDATE " + // if the same jobseekerId already exists, update the record instead of inserting a new one
+                     "ON DUPLICATE KEY UPDATE " +
                      "householdId = VALUES(householdId), " +
                      "memberName = VALUES(memberName), " +
                      "education = VALUES(education), " +
@@ -68,15 +68,15 @@ public class JobMatchRepository extends MySqlStore {
                    .collect(Collectors.toList());
     }
 
-    //-----Vacancy methods-----
+    // ----- Vacancy methods -----
     public void saveVacancy(Vacancy v) {
         String skillsReqStr = (v.getSkillRequirements() == null || v.getSkillRequirements().isEmpty()) 
                               ? "" 
                               : String.join(";", v.getSkillRequirements());
 
         String sql = "INSERT INTO vacancies (vacancyId, title, educationRequirement, skillRequirements, " +
-                     "experienceYearsRequired, location, compensation, type, enteredByOfficialId) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                     "experienceYearsRequired, location, compensation, type, enteredByOfficialId, status, archiveReason, hiredJobseekerId) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         executeUpdate(sql,
             v.getVacancyId(),
@@ -87,8 +87,16 @@ public class JobMatchRepository extends MySqlStore {
             v.getLocation(),
             v.getCompensation(),
             v.getType(),
-            v.getEnteredByOfficialId()
+            v.getEnteredByOfficialId(),
+            v.getStatus() != null ? v.getStatus() : "ACTIVE",
+            v.getArchiveReason(),
+            v.getHiredJobseekerId()
         );
+    }
+
+    public void updateVacancyStatus(String vacancyId, String status, String archiveReason, String hiredJobseekerId) {
+        String sql = "UPDATE vacancies SET status = ?, archiveReason = ?, hiredJobseekerId = ? WHERE vacancyId = ?";
+        executeUpdate(sql, status, archiveReason, hiredJobseekerId, vacancyId);
     }
 
     public Vacancy findVacancyById(String vacancyId) {
@@ -108,7 +116,7 @@ public class JobMatchRepository extends MySqlStore {
                    .collect(Collectors.toList());
     }
 
-    //-----Helper methods-----
+    // ----- Helper methods -----
     private JobseekerProfile mapRowToJobseeker(Map<String, Object> row) {
         String skillsText = (String) row.get("skills");
         List<String> skills = (skillsText == null || skillsText.trim().isEmpty())
@@ -136,6 +144,8 @@ public class JobMatchRepository extends MySqlStore {
                                          ? new ArrayList<>()
                                          : new ArrayList<>(Arrays.asList(skillsReqText.split(";")));
 
+        String status = row.get("status") != null ? (String) row.get("status") : "ACTIVE";
+
         return new Vacancy(
             (String) row.get("vacancyId"),
             (String) row.get("title"),
@@ -145,7 +155,10 @@ public class JobMatchRepository extends MySqlStore {
             (String) row.get("type"),
             skillRequirements,
             ((Number) row.get("experienceYearsRequired")).intValue(),
-            (String) row.get("enteredByOfficialId")
+            (String) row.get("enteredByOfficialId"),
+            status,
+            (String) row.get("archiveReason"),
+            (String) row.get("hiredJobseekerId")
         );
     }
 

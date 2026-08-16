@@ -1,7 +1,8 @@
 package com.ka4piece.model;
 
 public class Session {
-    private String userId, role, displayName; //role as OFFICIAL or HOUSEHOLD
+    private String userId, role, displayName; // role as OFFICIAL or HOUSEHOLD
+    private boolean isAdmin;
 
     public Session(String userId, String role, String displayName) {
         this.userId = userId;
@@ -9,13 +10,23 @@ public class Session {
         this.displayName = displayName;
     }
 
+    public Session(String userId, String role, String displayName, boolean isAdmin) {
+        this.userId = userId;
+        this.role = role;
+        this.displayName = displayName;
+        this.isAdmin = isAdmin;
+    }
+
     // Getters and setters
-    public String getUserId() {return userId;}
-    public void setUserId(String userId) {this.userId = userId;}
+    public String getUserId() { return userId; }
+    public void setUserId(String userId) { this.userId = userId; }
 
-    public String getRole() {return role;}
-    public void setRole(String role) {this.role = role;}
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
 
-    public String getDisplayName() {return displayName;}
-    public void setDisplayName(String displayName) {this.displayName = displayName;}
+    public String getDisplayName() { return displayName; }
+    public void setDisplayName(String displayName) { this.displayName = displayName; }
+
+    public boolean isAdmin() { return isAdmin; }
+    public void setAdmin(boolean isAdmin) { this.isAdmin = isAdmin; }
 }
