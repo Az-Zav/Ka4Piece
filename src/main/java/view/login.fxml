@@ -20,21 +20,13 @@
         <!-- Main Login Card -->
         <VBox alignment="CENTER" fillWidth="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="650.0" prefWidth="400.0" styleClass="login-card">
             <children>
+            <ImageView fitHeight="65.0" fitWidth="282.0">
+               <image>
+                  <Image url="@/ka4piece_logo.png" />
+               </image>
+            </ImageView>
 
-                <!-- Logo & Brand Header -->
-                <ImageView fx:id="logoImageView" fitHeight="77.0" fitWidth="169.0" pickOnBounds="true" preserveRatio="true">
-                    <image>
-                        <Image url="@images/logo.png" />
-                    </image>
-                </ImageView>
-
-                <Label styleClass="brand-heading" text="Ka4Piece">
-                    <font>
-                        <Font name="System Bold" size="32.0" />
-                    </font>
-                </Label>
-
-                <Label style="-fx-padding: 5 0 10 0;" styleClass="brand-subtitle" text="Barangay-Level 4Ps Compliance &amp; Job-Matching System" textAlignment="CENTER" wrapText="true" />
+                <Label style="-fx-padding: 5 0 15 0;" styleClass="brand-subtitle" text="Barangay-Level 4Ps Compliance &amp; Job-Matching System" textAlignment="CENTER" wrapText="true" />
 
                 <!-- Form Controls Container -->
                 <VBox fillWidth="true" prefWidth="300.0" spacing="12.0">

@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane prefHeight="900.0" prefWidth="1280.0" stylesheets="@job_vacancies.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ka4piece.controller.OfficialDashboardController">
+
+    <!-- TOP NAVIGATION BAR -->
+    <top>
+        <VBox BorderPane.alignment="CENTER">
+            <children>
+                <HBox alignment="CENTER_LEFT" prefHeight="65.0" styleClass="navbar">
+                    <children>
+                        <Label styleClass="brand-label" />
+                        <ImageView fitHeight="24.0" fitWidth="100.0">
+                            <image>
+                                <Image url="@/ka4piece_logo.png" />
+                            </image>
+                            <HBox.margin>
+                                <Insets left="15.0" />
+                            </HBox.margin>
+                        </ImageView>
+                        <Region prefHeight="65.0" prefWidth="90.0" HBox.hgrow="ALWAYS" />
+
+                        <!-- TAB NAVIGATION -->
+                        <HBox alignment="CENTER" spacing="30.0">
+                            <children>
+                                <!-- Inactive Compliance Tab -->
+                                <VBox alignment="CENTER" prefHeight="65.0" prefWidth="120.0">
+                                    <children>
+                                        <Region VBox.vgrow="ALWAYS" />
+                                        <Label onMouseClicked="#goToCompliance" style="-fx-cursor: hand;" styleClass="nav-inactive-label" text="Compliance" />
+                                        <Region VBox.vgrow="ALWAYS" />
+                                        <Region prefHeight="3.0" />
+                                    </children>
+                                </VBox>
+
+                                <!-- Active Job Vacancies Tab -->
+                                <VBox alignment="CENTER" prefHeight="65.0" prefWidth="120.0">
+                                    <children>
+                                        <Region VBox.vgrow="ALWAYS" />
+                                        <Label styleClass="nav-active-label" text="Job Vacancies" />
+                                        <Region VBox.vgrow="ALWAYS" />
+                                        <Separator prefWidth="120.0" styleClass="nav-indicator" />
+                                    </children>
+                                </VBox>
+                            </children>
+                        </HBox>
+
+                        <Region HBox.hgrow="ALWAYS" />
+                        <HBox alignment="CENTER" spacing="15.0">
+                            <children>
+                                <Label styleClass="user-label" text="OFFICIAL J. DELA CRUZ" />
+                                <Button styleClass="btn-outline" text="↳ Logout">
+                                    <padding>
+                                        <Insets bottom="6.0" left="12.0" right="12.0" top="6.0" />
+                                    </padding>
+                                </Button>
+                            </children>
+                        </HBox>
+                    </children>
+                </HBox>
+                <Separator prefWidth="1280.0" />
+            </children>
+        </VBox>
+    </top>
+
+    <!-- MAIN CONTENT AREA -->
+    <center>
+        <ScrollPane fitToWidth="true" styleClass="main-scroll-pane" BorderPane.alignment="CENTER">
+            <content>
+                <VBox spacing="20.0">
+                    <padding>
+                        <Insets bottom="30.0" left="40.0" right="40.0" top="30.0" />
+                    </padding>
+                    <children>
+                        <VBox spacing="4.0">
+                            <children>
+                                <Label text="Job Vacancies" textFill="#1a1a1a">
+                                    <font>
+                                        <Font name="System Bold" size="28.0" />
+                                    </font>
+                                </Label>
+                                <Label text="Manage local employment opportunities and track applicant rankings for community development." textFill="#666666">
+                                    <font>
+                                        <Font size="14.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+
+                        <HBox spacing="20.0">
+                            <children>
+                                <VBox spacing="15.0" styleClass="card" HBox.hgrow="ALWAYS">
+                                    <padding>
+                                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                                    </padding>
+                                    <children>
+                                        <Label styleClass="card-title" text="CREATE / POST JOB VACANCY" />
+                                        <Separator prefWidth="200.0" />
+
+                                        <GridPane hgap="15.0" vgap="12.0">
+                                            <columnConstraints>
+                                                <ColumnConstraints percentWidth="50.0" />
+                                                <ColumnConstraints percentWidth="50.0" />
+                                            </columnConstraints>
+                                            <children>
+                                                <VBox spacing="4.0">
+                                                    <children>
+                                                        <Label styleClass="card-title" text="JOB TITLE" />
+                                                        <TextField promptText="e.g. Administrative Assistant" styleClass="search-field" />
+                                                    </children>
+                                                </VBox>
+                                                <VBox spacing="4.0" GridPane.columnIndex="1">
+                                                    <children>
+                                                        <Label styleClass="card-title" text="EDUCATION REQUIREMENT" />
+                                                        <TextField promptText="e.g. Bachelor's Degree" styleClass="search-field" />
+                                                    </children>
+                                                </VBox>
+                                                <VBox spacing="4.0" GridPane.columnSpan="2" GridPane.rowIndex="1">
+                                                    <children>
+                                                        <Label styleClass="card-title" text="SKILL REQUIREMENTS" />
+                                                        <TextField promptText="e.g. MS Office, Data Entry, Communication" styleClass="search-field" />
+                                                    </children>
+                                                </VBox>
+                                                <VBox spacing="4.0" GridPane.rowIndex="2">
+                                                    <children>
+                                                        <Label styleClass="card-title" text="EXPERIENCE (YEARS)" />
+                                                        <TextField promptText="0" styleClass="search-field" />
+                                                    </children>
+                                                </VBox>
+                                                <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                                    <children>
+                                                        <Label styleClass="card-title" text="LOCATION" />
+                                                        <TextField promptText="Barangay / District" styleClass="search-field" />
+                                                    </children>
+                                                </VBox>
+                                                <VBox spacing="4.0" GridPane.rowIndex="3">
+                                                    <children>
+                                                        <Label styleClass="card-title" text="COMPENSATION" />
+                                                        <TextField promptText="Monthly Salary Range" styleClass="search-field" />
+                                                    </children>
+                                                </VBox>
+                                                <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                                    <children>
+                                                        <Label styleClass="card-title" text="EMPLOYMENT TYPE" />
+                                                        <ComboBox maxWidth="1.7976931348623157E308" promptText="Full-time" styleClass="search-field" />
+                                                    </children>
+                                                </VBox>
+                                            </children>
+                                            <rowConstraints>
+                                                <RowConstraints />
+                                                <RowConstraints />
+                                                <RowConstraints />
+                                                <RowConstraints />
+                                            </rowConstraints>
+                                        </GridPane>
+
+                                        <Button maxWidth="1.7976931348623157E308" styleClass="btn-primary" text="ENTER VACANCY">
+                                            <padding>
+                                                <Insets bottom="12.0" top="12.0" />
+                                            </padding>
+                                            <VBox.margin>
+                                                <Insets top="10.0" />
+                                            </VBox.margin>
+                                        </Button>
+                                    </children>
+                                </VBox>
+
+                                <VBox prefWidth="380.0" styleClass="card">
+                                    <children>
+                                        <HBox styleClass="results-header">
+                                            <children>
+                                                <Label styleClass="card-title" text="POSTED VACANCIES" />
+                                            </children>
+                                        </HBox>
+                                        <VBox styleClass="list-item-active">
+                                            <children>
+                                                <HBox alignment="CENTER_LEFT">
+                                                    <children>
+                                                        <VBox spacing="2.0" HBox.hgrow="ALWAYS">
+                                                            <children>
+                                                                <Label styleClass="list-item-title-active" text="Administrative Assistant" />
+                                                                <Label styleClass="list-item-sub" text="Municipal Hall • Posted: 2 days ago" />
+                                                            </children>
+                                                        </VBox>
+                                                        <Label text="›" textFill="#4338ca">
+                                                            <font>
+                                                                <Font name="System Bold" size="18.0" />
+                                                            </font>
+                                                        </Label>
+                                                    </children>
+                                                </HBox>
+                                            </children>
+                                        </VBox>
+
+                                        <VBox styleClass="list-item">
+                                            <children>
+                                                <Label styleClass="list-item-title" text="Community Health Worker" />
+                                                <Label styleClass="list-item-sub" text="Health Center • Posted: 5 days ago" />
+                                            </children>
+                                        </VBox>
+
+                                        <VBox styleClass="list-item">
+                                            <children>
+                                                <Label styleClass="list-item-title" text="Data Encoder" />
+                                                <Label styleClass="list-item-sub" text="Social Welfare Office • Posted: 1 week ago" />
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </VBox>
+                            </children>
+                        </HBox>
+
+                        <VBox spacing="15.0" styleClass="card">
+                            <padding>
+                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                            </padding>
+                            <children>
+                                <HBox alignment="CENTER_LEFT">
+                                    <children>
+                                        <VBox spacing="4.0">
+                                            <children>
+                                                <Label text="Administrative Assistant" textFill="#0f172a">
+                                                    <font>
+                                                        <Font name="System Bold" size="20.0" />
+                                                    </font>
+                                                </Label>
+                                                <Label text="Location: Municipal Hall    Type: Full-time    Salary: ₱15,000 - ₱18,000" textFill="#64748b">
+                                                    <font>
+                                                        <Font size="13.0" />
+                                                    </font>
+                                                </Label>
+                                            </children>
+                                        </VBox>
+                                        <Region HBox.hgrow="ALWAYS" />
+                                        <Button styleClass="btn-outline" text="Edit Vacancy">
+                                            <padding>
+                                                <Insets bottom="8.0" left="16.0" right="16.0" top="8.0" />
+                                            </padding>
+                                        </Button>
+                                    </children>
+                                </HBox>
+
+                                <VBox styleClass="card">
+                                    <children>
+                                        <HBox styleClass="results-header">
+                                            <children>
+                                                <Label styleClass="card-title" text="RANKED APPLICANTS" />
+                                            </children>
+                                        </HBox>
+
+                                        <GridPane styleClass="table-header">
+                                            <columnConstraints>
+                                                <ColumnConstraints percentWidth="40.0" />
+                                                <ColumnConstraints percentWidth="30.0" />
+                                                <ColumnConstraints percentWidth="30.0" />
+                                            </columnConstraints>
+                                            <children>
+                                                <Label styleClass="table-header-text" text="Applicant Name" />
+                                                <Label styleClass="table-header-text" text="Match Score" GridPane.columnIndex="1" />
+                                                <Label styleClass="table-header-text" text="Status" GridPane.columnIndex="2" />
+                                            </children>
+                                            <rowConstraints>
+                                                <RowConstraints />
+                                            </rowConstraints>
+                                        </GridPane>
+
+                                        <GridPane styleClass="table-row">
+                                            <columnConstraints>
+                                                <ColumnConstraints percentWidth="40.0" />
+                                                <ColumnConstraints percentWidth="30.0" />
+                                                <ColumnConstraints percentWidth="30.0" />
+                                            </columnConstraints>
+                                            <children>
+                                                <Label text="Dela Cruz, Maria Clara" textFill="#1e293b">
+                                                    <font>
+                                                        <Font name="System Bold" size="13.0" />
+                                                    </font>
+                                                </Label>
+                                                <Label styleClass="badge-active" text="98%" GridPane.columnIndex="1" />
+                                                <ComboBox maxWidth="1.7976931348623157E308" promptText="For Interview" styleClass="search-field" GridPane.columnIndex="2" />
+                                            </children>
+                                            <rowConstraints>
+                                                <RowConstraints />
+                                            </rowConstraints>
+                                        </GridPane>
+
+                                        <GridPane styleClass="table-row">
+                                            <columnConstraints>
+                                                <ColumnConstraints percentWidth="40.0" />
+                                                <ColumnConstraints percentWidth="30.0" />
+                                                <ColumnConstraints percentWidth="30.0" />
+                                            </columnConstraints>
+                                            <children>
+                                                <Label text="Santos, Juan Paolo" textFill="#1e293b">
+                                                    <font>
+                                                        <Font name="System Bold" size="13.0" />
+                                                    </font>
+                                                </Label>
+                                                <Label styleClass="badge-active" text="85%" GridPane.columnIndex="1" />
+                                                <ComboBox maxWidth="1.7976931348623157E308" promptText="Applied" styleClass="search-field" GridPane.columnIndex="2" />
+                                            </children>
+                                            <rowConstraints>
+                                                <RowConstraints />
+                                            </rowConstraints>
+                                        </GridPane>
+                                    </children>
+                                </VBox>
+                            </children>
+                        </VBox>
+                    </children>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </center>
+</BorderPane>

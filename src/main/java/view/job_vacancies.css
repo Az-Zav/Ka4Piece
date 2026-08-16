@@ -1,0 +1,233 @@
+/* GLOBAL & ROOT STYLES */
+.root {
+    -fx-font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+    -fx-background-color: #F8FAFC;
+}
+
+/* ScrollPane Configuration */
+.main-scroll-pane {
+    -fx-background-color: #F8FAFC;
+    -fx-background: #F8FAFC;
+    -fx-viewport-background-color: #F8FAFC;
+    -fx-border-color: transparent;
+}
+
+.main-scroll-pane .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 8px;
+}
+
+.main-scroll-pane .scroll-bar:vertical .thumb {
+    -fx-background-color: #CBD5E1;
+    -fx-background-radius: 4px;
+}
+
+/* TOP NAVIGATION BAR */
+.navbar {
+    -fx-background-color: #FFFFFF;
+    -fx-padding: 0 40px;
+}
+
+.brand-label {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0F388A;
+}
+
+/* Inactive Nav Tab */
+.nav-inactive-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #64748B;
+    -fx-cursor: hand;
+}
+
+.nav-inactive-label:hover {
+    -fx-text-fill: #1E293B;
+}
+
+/* Active Nav Tab (Job Vacancies) */
+.nav-active-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0F388A;
+}
+
+/* Single 3px solid blue indicator matching compliance.css */
+.nav-indicator {
+    -fx-background-color: #0F388A;
+    -fx-border-color: transparent;
+    -fx-pref-height: 3px;
+    -fx-max-height: 3px;
+}
+
+.user-label {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #334155;
+}
+
+/* CARDS & CONTAINERS */
+.card {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 8px;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 8px;
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.02), 6, 0, 0, 2);
+}
+
+.card-title {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0F388A;
+}
+
+.results-header {
+    -fx-background-color: #F1F5F9;
+    -fx-padding: 12px 15px;
+    -fx-background-radius: 8px 8px 0 0;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 0 0 1px 0;
+}
+
+/* INPUT FIELDS & COMBOBOXES */
+.search-field {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 8px 12px;
+    -fx-font-size: 13px;
+    -fx-text-fill: #1E293B;
+}
+
+.search-field:focused {
+    -fx-border-color: #0F388A;
+    -fx-border-width: 1.5px;
+}
+
+.combo-box {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 2px;
+}
+
+.combo-box:focused {
+    -fx-border-color: #0F388A;
+    -fx-border-width: 1.5px;
+}
+
+.combo-box .cell {
+    -fx-text-fill: #1E293B;
+    -fx-font-size: 13px;
+}
+
+.combo-box .arrow-button {
+    -fx-background-color: transparent;
+}
+
+.combo-box .arrow {
+    -fx-background-color: #64748B;
+}
+
+/* BUTTONS & BADGES */
+.btn-primary {
+    -fx-background-color: #0F388A;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-background-radius: 6px;
+    -fx-cursor: hand;
+}
+
+.btn-primary:hover {
+    -fx-background-color: #0A2660;
+}
+
+.btn-outline {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #0F388A;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-text-fill: #0F388A;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-cursor: hand;
+}
+
+.btn-outline:hover {
+    -fx-background-color: #F0F4FF;
+}
+
+.badge-active {
+    -fx-background-color: #DCFCE7;
+    -fx-text-fill: #15803D;
+    -fx-font-weight: bold;
+    -fx-font-size: 11px;
+    -fx-padding: 4px 10px;
+    -fx-background-radius: 12px;
+}
+
+/* LIST ITEMS */
+.list-item {
+    -fx-padding: 14px 15px;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 0 0 1px 0;
+    -fx-cursor: hand;
+}
+
+.list-item:hover {
+    -fx-background-color: #F8FAFC;
+}
+
+.list-item-active {
+    -fx-padding: 14px 15px;
+    -fx-background-color: #EEF2FF;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 0 0 1px 0;
+    -fx-cursor: hand;
+}
+
+.list-item-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1E293B;
+}
+
+.list-item-title-active {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0F388A;
+}
+
+.list-item-sub {
+    -fx-font-size: 12px;
+    -fx-text-fill: #64748B;
+}
+
+/* CUSTOM GRID TABLES */
+.table-header {
+    -fx-background-color: #F8FAFC;
+    -fx-padding: 10px 15px;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.table-header-text {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #475569;
+}
+
+.table-row {
+    -fx-padding: 12px 15px;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.table-row:hover {
+    -fx-background-color: #F8FAFC;
+}

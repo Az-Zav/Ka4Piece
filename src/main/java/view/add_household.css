@@ -1,0 +1,75 @@
+/* CONTAINER & BACKGROUND */
+.modal-container {
+    -fx-background-color: #FAFAFA;
+    -fx-background-radius: 8px;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 8px;
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.15), 16, 0, 0, 4);
+}
+
+/* FORM LABELS */
+.field-label {
+    -fx-font-family: "Segoe UI", -apple-system, sans-serif;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1E293B;
+    -fx-letter-spacing: 0.5px;
+}
+
+/* INPUT FIELDS */
+.modal-text-field {
+    -fx-font-family: "Segoe UI", -apple-system, sans-serif;
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 2px;
+    -fx-background-radius: 2px;
+    -fx-padding: 10px 12px;
+    -fx-font-size: 13px;
+    -fx-text-fill: #334155;
+}
+
+.modal-text-field:focused {
+    -fx-border-color: #0F388A;
+    -fx-border-width: 1.5px;
+}
+
+.modal-text-field .text {
+    -fx-prompt-text-fill: #94A3B8;
+}
+
+/* HELPER / INFO LABEL */
+.info-label {
+    -fx-font-family: "Segoe UI", -apple-system, sans-serif;
+    -fx-font-size: 12px;
+    -fx-font-style: italic;
+    -fx-text-fill: #64748B;
+}
+
+/* REGISTER BUTTON */
+.btn-register {
+    -fx-font-family: "Segoe UI", -apple-system, sans-serif;
+    -fx-background-color: #0038A8;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-background-radius: 4px;
+    -fx-cursor: hand;
+    -fx-max-width: infinity;
+}
+
+.btn-register:hover {
+    -fx-background-color: #002D86;
+}
+
+.btn-register:pressed {
+    -fx-background-color: #002266;
+}
+
+/* SUCCESS MESSAGE */
+.success-label {
+    -fx-font-family: "Segoe UI", -apple-system, sans-serif;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #16A34A;
+}
