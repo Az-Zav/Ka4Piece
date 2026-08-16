@@ -8,32 +8,31 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class AuthRepository extends MySqlStore {
-    
+
     public AuthRepository(String jdbcUrl, String dbUser, String dbPassword) {
         super(jdbcUrl, dbUser, dbPassword);
     }
 
-
     //-----Household methods-----
     public void saveHousehold(Household h) {
         String sql = "INSERT INTO households (householdId, headName, address, barangay, username, password) VALUES (?, ?, ?, ?, ?, ?)";
-        executeUpdate(sql, 
-            h.getHouseholdId(), 
-            h.getHeadName(), 
-            h.getAddress(), 
-            h.getBarangay(), 
-            h.getUsername(), 
-            h.getPassword()
+        executeUpdate(sql,
+                h.getHouseholdId(),
+                h.getHeadName(),
+                h.getAddress(),
+                h.getBarangay(),
+                h.getUsername(),
+                h.getPassword()
         );
     }
 
     public Household findHouseholdById(String householdId) {
         String sql = "SELECT * FROM households WHERE householdId = ?";
-        List<Map<String, Object>> rows = executeQuery(sql, householdId); //returns a list of rows, each row is a map of column names to values
+        List<Map<String, Object>> rows = executeQuery(sql, householdId);
         if (rows.isEmpty()) {
             return null;
         }
-        return mapRowToHousehold(rows.get(0)); //parses row to a household object
+        return mapRowToHousehold(rows.get(0));
     }
 
     public Household findHouseholdByUsername(String username) {
@@ -49,18 +48,29 @@ public class AuthRepository extends MySqlStore {
         String sql = "SELECT * FROM households";
         List<Map<String, Object>> rows = executeQuery(sql);
         return rows.stream()
-                   .map(this::mapRowToHousehold) // apply the mapping function to each row
-                   .collect(Collectors.toList()); // collect the results into a list of Household objects
+                .map(this::mapRowToHousehold)
+                .collect(Collectors.toList());
+    }
+
+    public void updateHousehold(Household h) {
+        String sql = "UPDATE households SET headName = ?, address = ?, barangay = ?, password = ? WHERE householdId = ?";
+        executeUpdate(sql,
+                h.getHeadName(),
+                h.getAddress(),
+                h.getBarangay(),
+                h.getPassword(),
+                h.getHouseholdId()
+        );
     }
 
     //-----BarangayOfficial methods-----
     public void saveOfficial(BarangayOfficial o) {
         String sql = "INSERT INTO officials (officialId, name, username, password) VALUES (?, ?, ?, ?)";
-        executeUpdate(sql, 
-            o.getOfficialId(), 
-            o.getName(), 
-            o.getUsername(), 
-            o.getPassword()
+        executeUpdate(sql,
+                o.getOfficialId(),
+                o.getName(),
+                o.getUsername(),
+                o.getPassword()
         );
     }
 
@@ -86,28 +96,37 @@ public class AuthRepository extends MySqlStore {
         String sql = "SELECT * FROM officials";
         List<Map<String, Object>> rows = executeQuery(sql);
         return rows.stream()
-                   .map(this::mapRowToOfficial)
-                   .collect(Collectors.toList());
+                .map(this::mapRowToOfficial)
+                .collect(Collectors.toList());
     }
 
-    //-----Helper Methods-----
-    private Household mapRowToHousehold(Map<String, Object> row) { //parses a row from the database into a Household object
-        return new Household(
-            (String) row.get("householdId"),
-            (String) row.get("headName"),
-            (String) row.get("address"),
-            (String) row.get("barangay"),
-            (String) row.get("username"),
-            (String) row.get("password")
+    public void updateOfficial(BarangayOfficial o) {
+        String sql = "UPDATE officials SET name = ?, password = ? WHERE officialId = ?";
+        executeUpdate(sql,
+                o.getName(),
+                o.getPassword(),
+                o.getOfficialId()
         );
     }
 
-    private BarangayOfficial mapRowToOfficial(Map<String, Object> row) { //parses a row from the database into a BarangayOfficial object
+    //-----Helper Methods-----
+    private Household mapRowToHousehold(Map<String, Object> row) {
+        return new Household(
+                (String) row.get("householdId"),
+                (String) row.get("headName"),
+                (String) row.get("address"),
+                (String) row.get("barangay"),
+                (String) row.get("username"),
+                (String) row.get("password")
+        );
+    }
+
+    private BarangayOfficial mapRowToOfficial(Map<String, Object> row) {
         return new BarangayOfficial(
-            (String) row.get("officialId"),
-            (String) row.get("name"),
-            (String) row.get("username"),
-            (String) row.get("password")
+                (String) row.get("officialId"),
+                (String) row.get("name"),
+                (String) row.get("username"),
+                (String) row.get("password")
         );
     }
 }

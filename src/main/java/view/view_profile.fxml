@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane prefHeight="900.0" prefWidth="1280.0" stylesheets="@compliance.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ka4piece.controller.ViewProfileController">
+
+    <!-- TOP NAVIGATION BAR -->
+    <top>
+        <VBox BorderPane.alignment="CENTER">
+            <children>
+                <HBox alignment="CENTER_LEFT" prefHeight="65.0" styleClass="navbar">
+                    <children>
+                        <Label styleClass="brand-label" />
+                        <ImageView fitHeight="24.0" fitWidth="100.0">
+                            <image>
+                                <Image url="@/ka4piece_logo.png" />
+                            </image>
+                            <HBox.margin>
+                                <Insets left="15.0" />
+                            </HBox.margin>
+                        </ImageView>
+
+                        <Region prefHeight="65.0" prefWidth="90.0" HBox.hgrow="ALWAYS" />
+
+                        <!-- TAB NAVIGATION -->
+                        <HBox alignment="CENTER" spacing="30.0">
+                            <children>
+                                <!-- Inactive Compliance Tab -->
+                                <VBox alignment="CENTER" prefHeight="65.0" prefWidth="120.0">
+                                    <children>
+                                        <Region VBox.vgrow="ALWAYS" />
+                                        <Label onMouseClicked="#goToCompliance" style="-fx-cursor: hand;" styleClass="nav-inactive-label" text="Compliance" />
+                                        <Region VBox.vgrow="ALWAYS" />
+                                        <Region prefHeight="3.0" />
+                                    </children>
+                                </VBox>
+
+                                <!-- Inactive Job Vacancies Tab -->
+                                <VBox alignment="CENTER" prefHeight="65.0" prefWidth="120.0">
+                                    <children>
+                                        <Region VBox.vgrow="ALWAYS" />
+                                        <Label onMouseClicked="#goToJobVacancies" style="-fx-cursor: hand;" styleClass="nav-inactive-label" text="Job Vacancies" />
+                                        <Region VBox.vgrow="ALWAYS" />
+                                        <Region prefHeight="3.0" />
+                                    </children>
+                                </VBox>
+                            </children>
+                        </HBox>
+
+                        <Region HBox.hgrow="ALWAYS" />
+
+                        <!-- PROFILE ICON & LOGOUT BUTTON -->
+                        <HBox alignment="CENTER" spacing="15.0">
+                            <children>
+                                <Button style="-fx-background-color: transparent; -fx-cursor: hand; -fx-padding: 0;">
+                                    <graphic>
+                                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                                            <image>
+                                                <Image url="@/profile_icon.png" />
+                                            </image>
+                                        </ImageView>
+                                    </graphic>
+                                </Button>
+                                <Button onAction="#handleLogout" styleClass="btn-outline" text="↳ Logout">
+                                    <padding>
+                                        <Insets bottom="6.0" left="12.0" right="12.0" top="6.0" />
+                                    </padding>
+                                </Button>
+                            </children>
+                        </HBox>
+
+                    </children>
+                </HBox>
+                <Separator prefWidth="1280.0" />
+            </children>
+        </VBox>
+    </top>
+
+    <!-- MAIN CONTENT AREA -->
+    <center>
+        <ScrollPane fitToWidth="true" styleClass="main-scroll-pane" BorderPane.alignment="CENTER">
+            <content>
+                <VBox alignment="TOP_CENTER" spacing="20.0">
+                    <padding>
+                        <Insets bottom="40.0" left="40.0" right="40.0" top="30.0" />
+                    </padding>
+                    <children>
+
+                        <!-- MAIN PROFILE CARD -->
+                        <VBox maxWidth="800.0" spacing="20.0" styleClass="card">
+                            <padding>
+                                <Insets bottom="32.0" left="32.0" right="32.0" top="32.0" />
+                            </padding>
+                            <children>
+
+                                <!-- CARD HEADER -->
+                                <HBox alignment="CENTER_LEFT" spacing="15.0">
+                                    <children>
+                                        <VBox HBox.hgrow="ALWAYS">
+                                            <children>
+                                                <Label text="USER PROFILE" textFill="#0f172a">
+                                                    <font>
+                                                        <Font name="System Bold" size="22.0" />
+                                                    </font>
+                                                </Label>
+                                                <Label text="Manage your account preferences and personal information." textFill="#64748b">
+                                                    <font>
+                                                        <Font size="13.0" />
+                                                    </font>
+                                                </Label>
+                                            </children>
+                                        </VBox>
+                                        <Button fx:id="btnToggleEdit" onAction="#handleToggleEditMode" styleClass="btn-outline" text="✎ Edit Profile">
+                                            <padding>
+                                                <Insets bottom="8.0" left="16.0" right="16.0" top="8.0" />
+                                            </padding>
+                                        </Button>
+                                    </children>
+                                </HBox>
+
+                                <Separator prefWidth="200.0" />
+
+                                <!-- ID FIELD (READ-ONLY) -->
+                                <VBox spacing="6.0">
+                                    <children>
+                                        <Label styleClass="card-title" text="USER / ACCOUNT ID" />
+                                        <TextField fx:id="txtUserId" editable="false" styleClass="search-field" />
+                                    </children>
+                                </VBox>
+
+                                <!-- NAME -->
+                                <VBox spacing="6.0">
+                                    <children>
+                                        <Label fx:id="lblFullName" styleClass="card-title" text="FULL NAME" />
+                                        <TextField fx:id="txtName" editable="false" styleClass="search-field" />
+                                    </children>
+                                </VBox>
+
+                                <!-- EMAIL -->
+                                <VBox spacing="6.0">
+                                    <children>
+                                        <Label styleClass="card-title" text="EMAIL ADDRESS" />
+                                        <TextField fx:id="txtEmail" editable="false" styleClass="search-field" />
+                                    </children>
+                                </VBox>
+
+                                <!-- HOUSEHOLD SPECIFIC FIELDS -->
+                                <VBox fx:id="boxHouseholdFields" managed="true" spacing="20.0" visible="true">
+                                    <children>
+                                        <VBox spacing="6.0">
+                                            <children>
+                                                <Label styleClass="card-title" text="ADDRESS" />
+                                                <TextField fx:id="txtAddress" editable="false" styleClass="search-field" />
+                                            </children>
+                                        </VBox>
+
+                                        <VBox spacing="6.0">
+                                            <children>
+                                                <Label styleClass="card-title" text="BARANGAY" />
+                                                <TextField fx:id="txtBarangay" editable="false" styleClass="search-field" />
+                                            </children>
+                                        </VBox>
+
+                                        <VBox spacing="6.0">
+                                            <children>
+                                                <Label styleClass="card-title" text="STATUS" />
+                                                <ComboBox fx:id="cmbStatus" disable="true" maxWidth="1.7976931348623157E308" styleClass="search-field" />
+                                            </children>
+                                        </VBox>
+
+                                        <VBox fx:id="boxExitDetails" managed="false" spacing="20.0" visible="false">
+                                            <children>
+                                                <VBox spacing="6.0">
+                                                    <children>
+                                                        <Label styleClass="card-title" text="EXIT REASON" />
+                                                        <TextField fx:id="txtExitReason" editable="false" styleClass="search-field" />
+                                                    </children>
+                                                </VBox>
+
+                                                <VBox spacing="6.0">
+                                                    <children>
+                                                        <Label styleClass="card-title" text="EXIT DATE" />
+                                                        <DatePicker fx:id="dpExitDate" disable="true" maxWidth="1.7976931348623157E308" styleClass="search-field" />
+                                                    </children>
+                                                </VBox>
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </VBox>
+
+                                <!-- OFFICIAL SPECIFIC FIELDS -->
+                                <VBox fx:id="boxOfficialFields" managed="false" spacing="20.0" visible="false">
+                                    <children>
+                                        <CheckBox fx:id="chkIsAdmin" disable="true" text="Administrator Privileges (isAdmin)" />
+                                    </children>
+                                </VBox>
+
+                                <!-- PASSWORD FIELD (EDIT MODE ONLY) -->
+                                <VBox fx:id="boxPassword" managed="false" spacing="6.0" visible="false">
+                                    <children>
+                                        <Label styleClass="card-title" text="NEW PASSWORD" />
+                                        <PasswordField fx:id="txtPassword" promptText="Leave blank to keep current password" styleClass="search-field" />
+                                    </children>
+                                </VBox>
+
+                                <!-- ACTION BUTTONS (EDIT MODE ONLY) -->
+                                <HBox fx:id="boxEditActions" alignment="CENTER_RIGHT" managed="false" spacing="12.0" visible="false">
+                                    <children>
+                                        <Button onAction="#handleCancelEdit" styleClass="btn-outline" text="Cancel">
+                                            <padding>
+                                                <Insets bottom="8.0" left="16.0" right="16.0" top="8.0" />
+                                            </padding>
+                                        </Button>
+                                        <Button onAction="#handleSaveProfile" styleClass="btn-primary" text="Save Changes">
+                                            <padding>
+                                                <Insets bottom="8.0" left="20.0" right="20.0" top="8.0" />
+                                            </padding>
+                                        </Button>
+                                    </children>
+                                    <VBox.margin>
+                                        <Insets top="10.0" />
+                                    </VBox.margin>
+                                </HBox>
+
+                                <!-- FEEDBACK MESSAGE -->
+                                <HBox alignment="CENTER">
+                                    <children>
+                                        <Label fx:id="lblMessage" visible="false" />
+                                    </children>
+                                </HBox>
+
+                            </children>
+                        </VBox>
+
+                    </children>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </center>
+</BorderPane>

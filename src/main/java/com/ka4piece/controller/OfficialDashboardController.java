@@ -10,6 +10,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
@@ -26,7 +28,15 @@ public class OfficialDashboardController {
     @FXML private Button btnDecrement;
     @FXML private Button btnIncrement;
 
-    // --- MODAL CONTROLS (Mapped if add_household.fxml uses this controller) ---
+    // --- TABLE CONTROLS ---
+    @FXML private TableView<?> tblHistory;
+    @FXML private TableColumn<?, ?> colMonth;
+    @FXML private TableColumn<?, ?> colHealth;
+    @FXML private TableColumn<?, ?> colEducation;
+    @FXML private TableColumn<?, ?> colFds;
+    @FXML private TableColumn<?, ?> colStatus;
+
+    // --- MODAL CONTROLS (Fallback if modal references this controller) ---
     @FXML private TextField txtHeadName;
     @FXML private TextField txtAddress;
     @FXML private TextField txtBarangay;
@@ -49,18 +59,32 @@ public class OfficialDashboardController {
         }
     }
 
+    // --- NAVBAR & PROFILE EVENT HANDLERS ---
+
+    @FXML
+    private void handleOpenViewProfile(ActionEvent event) {
+        switchSceneFromButton(event, "/view_profile.fxml");
+    }
+
+    // --- TAB NAVIGATION HANDLERS ---
+
+    @FXML
+    private void goToCompliance(MouseEvent event) {
+        switchSceneFromMouse(event, "/compliance.fxml");
+    }
+
+    @FXML
+    private void goToJobVacancies(MouseEvent event) {
+        switchSceneFromMouse(event, "/job_vacancies.fxml");
+    }
+
     // --- MODAL DIALOG HANDLERS ---
 
     @FXML
     private void openAddHouseholdModal(ActionEvent event) {
         try {
             String fxmlPath = "/add_household.fxml";
-            URL resource = getClass().getResource(fxmlPath);
-
-            // Fallback for setups using a /view/ resource directory structure
-            if (resource == null) {
-                resource = getClass().getResource("/view" + fxmlPath);
-            }
+            URL resource = resolveResource(fxmlPath);
 
             if (resource == null) {
                 System.err.println("Could not locate modal resource file: " + fxmlPath);
@@ -89,48 +113,9 @@ public class OfficialDashboardController {
         if (lblSuccessMessage != null) {
             lblSuccessMessage.setVisible(true);
         }
-        // TODO: Insert backend database save logic here
     }
 
-    // --- TAB NAVIGATION HANDLERS ---
-
-    @FXML
-    private void goToCompliance(MouseEvent event) {
-        switchTab(event, "/compliance.fxml");
-    }
-
-    @FXML
-    private void goToJobVacancies(MouseEvent event) {
-        switchTab(event, "/job_vacancies.fxml");
-    }
-
-    private void switchTab(MouseEvent event, String fxmlPath) {
-        try {
-            URL resource = getClass().getResource(fxmlPath);
-
-            if (resource == null) {
-                resource = getClass().getResource("/view" + fxmlPath);
-            }
-
-            if (resource == null) {
-                System.err.println("Could not locate resource file: " + fxmlPath);
-                return;
-            }
-
-            Parent root = FXMLLoader.load(resource);
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
-            if (stage.getScene() != null) {
-                stage.getScene().setRoot(root);
-            } else {
-                stage.setScene(new Scene(root));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // --- COMPLIANCE STEPPER HANDLERS ---
+    // --- STEPPER HANDLERS ---
 
     @FXML
     private void handleIncrement() {
@@ -148,6 +133,42 @@ public class OfficialDashboardController {
         if (currentCount > MIN_CHILDREN) {
             txtChildrenCount.setText(String.valueOf(currentCount - 1));
         }
+    }
+
+    // --- HELPER ROUTING METHODS ---
+
+    private void switchSceneFromMouse(MouseEvent event, String fxmlPath) {
+        try {
+            URL resource = resolveResource(fxmlPath);
+            if (resource == null) return;
+
+            Parent root = FXMLLoader.load(resource);
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.getScene().setRoot(root);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void switchSceneFromButton(ActionEvent event, String fxmlPath) {
+        try {
+            URL resource = resolveResource(fxmlPath);
+            if (resource == null) return;
+
+            Parent root = FXMLLoader.load(resource);
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.getScene().setRoot(root);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private URL resolveResource(String fxmlPath) {
+        URL resource = getClass().getResource(fxmlPath);
+        if (resource == null) {
+            resource = getClass().getResource("/view" + fxmlPath);
+        }
+        return resource;
     }
 
     private int getCurrentCount() {
