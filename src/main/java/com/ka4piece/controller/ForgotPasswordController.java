@@ -52,10 +52,10 @@ public class ForgotPasswordController {
 
     // --- Private helpers ---
 
-    private ResetResult resetOfficialPassword(String username) {
-        BarangayOfficial official = authRepository.findOfficialByUsername(username);
+    private ResetResult resetOfficialPassword(String email) {
+        BarangayOfficial official = authRepository.findOfficialByEmail(email);
         if (official == null) {
-            return ResetResult.failure("No official account found with that username.");
+            return ResetResult.failure("No official account found with that email.");
         }
 
         String tempPassword = PasswordUtil.generateTemporaryPassword();
@@ -69,10 +69,10 @@ public class ForgotPasswordController {
         return ResetResult.success(tempPassword);
     }
 
-    private ResetResult resetHouseholdPassword(String username) {
-        Household household = authRepository.findHouseholdByUsername(username);
+    private ResetResult resetHouseholdPassword(String email) {
+        Household household = authRepository.findHouseholdByEmail(email);
         if (household == null) {
-            return ResetResult.failure("No beneficiary account found with that username.");
+            return ResetResult.failure("No beneficiary account found with that email.");
         }
 
         String tempPassword = PasswordUtil.generateTemporaryPassword();
