@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ComplianceRepository extends CSVStore {
+public class ComplianceRepository extends MySqlStore {
     private String complianceFilePath, grantFilePath;
 
     public ComplianceRepository(String complianceFilePath, String grantFilePath) {

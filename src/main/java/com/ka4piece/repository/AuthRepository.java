@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class AuthRepository extends CSVStore {
+public class AuthRepository extends MySqlStore {
     private String householdFilePath, officialFilePath;
 
     public AuthRepository(String householdFilePath, String officialFilePath) {
