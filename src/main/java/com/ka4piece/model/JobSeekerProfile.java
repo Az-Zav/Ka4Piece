@@ -3,14 +3,14 @@ package com.ka4piece.model;
 import java.util.List;
 import java.util.Map;
 
-public class JobSeekerProfile {
-    private String jobseekerID, householdId, memberName, education, location;
+public class JobseekerProfile {
+    private String jobseekerId, householdId, memberName, education, location;
     private List<String> skills;
     private int experienceYears;
     private Map<String, String> appliedVacancies; //vacancyId -> status
     
-    public JobSeekerProfile(String jobseekerID, String householdId, String memberName, String education, String location, List<String> skills, int experienceYears, Map<String, String> appliedVacancies) {
-        this.jobseekerID = jobseekerID;
+    public JobseekerProfile(String jobseekerId, String householdId, String memberName, String education, String location, List<String> skills, int experienceYears, Map<String, String> appliedVacancies) {
+        this.jobseekerId = jobseekerId;
         this.householdId = householdId;
         this.memberName = memberName;
         this.education = education;
@@ -21,8 +21,8 @@ public class JobSeekerProfile {
     }
 
     // Getters and setters
-    public String getJobseekerID() {return jobseekerID;}
-    public void setJobseekerID(String jobseekerID) {this.jobseekerID = jobseekerID;}
+    public String getJobseekerId() {return jobseekerId;}
+    public void setJobseekerId(String jobseekerID) {this.jobseekerId = jobseekerID;}
     
     public String getHouseholdId() {return householdId;}
     public void setHouseholdId(String householdId) {this.householdId = householdId;}
