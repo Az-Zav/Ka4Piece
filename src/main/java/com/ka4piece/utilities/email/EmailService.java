@@ -22,23 +22,9 @@ import java.util.concurrent.Executors;
 /**
  * Sends system emails (new-account creation and password reset) on a background
  * daemon thread so the JavaFX UI thread is never blocked.
- *
- * <p>Usage example (password reset):
- * <pre>{@code
- * EmailService.sendCredentialsEmail(
- *     "user@example.com", "Juan dela Cruz",
- *     "jdelacruz", tempPassword,
- *     null, false,
- *     email -> showInfo("Email sent to " + email),
- *     (email, err) -> showError("Could not send email: " + err)
- * );
- * }</pre>
  */
 public class EmailService {
 
-    // Two daemon threads handle background email sends.
-    // Daemon threads exit automatically when the JVM shuts down,
-    // so they won't block application exit.
     private static final ExecutorService EXECUTOR =
             Executors.newFixedThreadPool(2, r -> {
                 Thread t = new Thread(r, "ka4piece-email-worker");
@@ -46,25 +32,24 @@ public class EmailService {
                 return t;
             });
 
-    // Lazily created, thread-safe SMTP session singleton.
     private static volatile Session mailSession;
+    private static volatile EmailConfig emailConfig;
 
-    // Utility class — prevent instantiation
     private EmailService() {}
 
-    // =========================================================================
-    // Public API
-    // =========================================================================
+    public static void setEmailConfig(EmailConfig config) {
+        synchronized (EmailService.class) {
+            emailConfig = config;
+            mailSession = null; // Reset session on config change
+        }
+    }
+
+    public static EmailConfig getEmailConfig() {
+        return emailConfig;
+    }
 
     /**
      * Sends a password reset credentials email asynchronously.
-     *
-     * @param recipientEmail    destination address
-     * @param recipientName     display name (used in greeting)
-     * @param username          the account username to include in the email
-     * @param temporaryPassword plain-text temporary password to include
-     * @param onSuccess         called with the recipient address on successful send
-     * @param onFailure         called with the recipient address and error message on failure
      */
     public static void sendCredentialsEmail(
             String recipientEmail,
@@ -76,9 +61,14 @@ public class EmailService {
 
         EXECUTOR.submit(() -> {
             try {
-                Session session = getSession();
-                Message  message = buildMessage(
+                EmailConfig cfg = emailConfig;
+                if (cfg == null) {
+                    throw new IllegalStateException("EmailConfig has not been initialized. Call EmailService.setEmailConfig() first.");
+                }
+                Session session = getSession(cfg);
+                Message message = buildMessage(
                         session,
+                        cfg,
                         recipientEmail,
                         recipientName,
                         username,
@@ -90,7 +80,7 @@ public class EmailService {
                     Platform.runLater(() -> onSuccess.onSuccess(recipientEmail));
                 }
 
-            } catch (MessagingException | UnsupportedEncodingException e) {
+            } catch (MessagingException | UnsupportedEncodingException | IllegalStateException e) {
                 if (onFailure != null) {
                     Platform.runLater(() -> onFailure.onFailure(recipientEmail, e.getMessage()));
                 }
@@ -98,22 +88,18 @@ public class EmailService {
         });
     }
 
-    // =========================================================================
-    // SMTP session
-    // =========================================================================
-
-    private static Session getSession() {
+    private static Session getSession(EmailConfig cfg) {
         if (mailSession == null) {
             synchronized (EmailService.class) {
-                if (mailSession == null) {         // double-checked locking
+                if (mailSession == null) {
                     Properties props = new Properties();
-                    props.put("mail.smtp.host",              EmailConfig.SMTP_HOST);
-                    props.put("mail.smtp.port",              EmailConfig.SMTP_PORT);
-                    props.put("mail.smtp.auth",              EmailConfig.SMTP_AUTH);
-                    props.put("mail.smtp.starttls.enable",   EmailConfig.SMTP_STARTTLS);
+                    props.put("mail.smtp.host",              cfg.getSmtpHost());
+                    props.put("mail.smtp.port",              cfg.getSmtpPort());
+                    props.put("mail.smtp.auth",              cfg.getSmtpAuth());
+                    props.put("mail.smtp.starttls.enable",   cfg.getSmtpStartTls());
                     props.put("mail.smtp.starttls.required", "true");
                     props.put("mail.smtp.ssl.protocols",     "TLSv1.2 TLSv1.3");
-                    props.put("mail.smtp.ssl.trust",         EmailConfig.SMTP_HOST);
+                    props.put("mail.smtp.ssl.trust",         cfg.getSmtpHost());
                     props.put("mail.smtp.connectiontimeout", "15000");
                     props.put("mail.smtp.timeout",           "15000");
                     props.put("mail.smtp.writetimeout",      "15000");
@@ -122,8 +108,8 @@ public class EmailService {
                         @Override
                         protected PasswordAuthentication getPasswordAuthentication() {
                             return new PasswordAuthentication(
-                                    EmailConfig.SENDER_EMAIL,
-                                    EmailConfig.APP_PASSWORD
+                                    cfg.getSenderEmail(),
+                                    cfg.getAppPassword()
                             );
                         }
                     });
@@ -133,12 +119,9 @@ public class EmailService {
         return mailSession;
     }
 
-    // =========================================================================
-    // Message builder
-    // =========================================================================
-
     private static Message buildMessage(
             Session session,
+            EmailConfig cfg,
             String recipientEmail,
             String recipientName,
             String username,
@@ -148,8 +131,8 @@ public class EmailService {
 
         // From
         msg.setFrom(new InternetAddress(
-                EmailConfig.SENDER_EMAIL,
-                EmailConfig.SENDER_NAME,
+                cfg.getSenderEmail(),
+                cfg.getSenderName(),
                 "UTF-8"
         ));
 
@@ -160,10 +143,10 @@ public class EmailService {
         );
 
         // Subject + date
-        msg.setSubject(EmailConfig.SUBJECT_PASSWORD_RESET, "UTF-8");
+        msg.setSubject("[Ka4Piece] Password Reset Request", "UTF-8");
         msg.setSentDate(new Date());
 
-        // Body: multipart/alternative — plain-text fallback first, HTML preferred
+        // Body
         MimeMultipart multipart = new MimeMultipart("alternative");
 
         MimeBodyPart textPart = new MimeBodyPart();
@@ -183,10 +166,6 @@ public class EmailService {
         msg.setContent(multipart);
         return msg;
     }
-
-    // =========================================================================
-    // Body builders
-    // =========================================================================
 
     private static String buildPlainText(
             String name, String username, String tempPassword) {
@@ -297,10 +276,6 @@ public class EmailService {
                 + "</html>";
     }
 
-    // =========================================================================
-    // Helpers
-    // =========================================================================
-
     private static String escapeHtml(String input) {
         if (input == null) return "";
         return input
@@ -311,16 +286,10 @@ public class EmailService {
                 .replace("'",  "&#39;");
     }
 
-    // =========================================================================
-    // Callback interfaces
-    // =========================================================================
-
-    /** Called on the JavaFX Application Thread when the email is sent successfully. */
     public interface SuccessCallback {
         void onSuccess(String recipientEmail);
     }
 
-    /** Called on the JavaFX Application Thread when sending fails. */
     public interface FailureCallback {
         void onFailure(String recipientEmail, String errorMessage);
     }

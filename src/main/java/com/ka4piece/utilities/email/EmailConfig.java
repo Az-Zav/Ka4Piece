@@ -1,27 +1,35 @@
 package com.ka4piece.utilities.email;
 
-/**
- * Centralised SMTP / email configuration for the Ka4Piece system.
- *
- * Fill in SENDER_EMAIL, APP_PASSWORD, and SENDER_NAME before deploying.
- * All other values are suitable defaults for Gmail STARTTLS on port 587.
- */
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 public class EmailConfig {
+    private final String senderEmail, appPassword, senderName;
+    private final String smtpHost, smtpPort, smtpAuth, smtpStartTls;
 
-    // ── Sender identity ──────────────────────────────────────────────────────
-    public static final String SENDER_EMAIL = "";      // Gmail From-address
-    public static final String APP_PASSWORD  = "";     // Gmail App Password
-    public static final String SENDER_NAME   = "Ka4Piece System";  // Display name
+    // Reads from a properties file to get email configuration details
+    public EmailConfig(String propertiesFilePath) throws IOException {
+        Properties props = new Properties();
+        try (InputStream input = new FileInputStream(propertiesFilePath)) {
+            props.load(input);
+        }
 
-    // ── SMTP settings (Gmail STARTTLS) ───────────────────────────────────────
-    public static final String SMTP_HOST     = "smtp.gmail.com";
-    public static final String SMTP_PORT     = "587";   // STARTTLS port
-    public static final String SMTP_AUTH     = "true";
-    public static final String SMTP_STARTTLS = "true";
+        this.senderEmail = props.getProperty("senderEmail", props.getProperty("email.sender", ""));
+        this.appPassword = props.getProperty("appPassword", props.getProperty("email.password", ""));
+        this.senderName = props.getProperty("senderName", props.getProperty("email.name", "Ka4Piece System"));
+        this.smtpHost = props.getProperty("smtpHost", props.getProperty("email.smtp.host", "smtp.gmail.com"));
+        this.smtpPort = props.getProperty("smtpPort", props.getProperty("email.smtp.port", "587"));
+        this.smtpAuth = props.getProperty("smtpAuth", props.getProperty("email.smtp.auth", "true"));
+        this.smtpStartTls = props.getProperty("smtpStartTls", props.getProperty("email.smtp.starttls", "true"));
+    }
 
-    // ── Email subject templates ───────────────────────────────────────────────
-    public static final String SUBJECT_PASSWORD_RESET = "[Ka4Piece] Password Reset Request";
-
-    // Utility class — prevent instantiation
-    private EmailConfig() {}
+    public String getSenderEmail() { return senderEmail; }
+    public String getAppPassword() { return appPassword; }
+    public String getSenderName() { return senderName; }
+    public String getSmtpHost() { return smtpHost; }
+    public String getSmtpPort() { return smtpPort; }
+    public String getSmtpAuth() { return smtpAuth; }
+    public String getSmtpStartTls() { return smtpStartTls; }
 }
