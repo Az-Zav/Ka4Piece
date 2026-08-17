@@ -1,5 +1,8 @@
 package com.ka4piece.strategy;
 
-public class MatchStrategy {
-    
+import com.ka4piece.model.JobseekerProfile;
+import com.ka4piece.model.Vacancy;
+
+public interface MatchStrategy {
+    double score(JobseekerProfile profile, Vacancy vacancy);
 }
