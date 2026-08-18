@@ -1,7 +1,14 @@
 package com.ka4piece.controller;
 
+import com.ka4piece.model.BarangayOfficial;
+import com.ka4piece.model.Household;
+import com.ka4piece.model.Session;
+import com.ka4piece.repository.AuthRepository;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
@@ -11,6 +18,10 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
+
+import java.io.IOException;
+import java.net.URL;
 
 public class LoginController {
 
@@ -37,9 +48,13 @@ public class LoginController {
     @FXML private Button loginButton;
 
     private boolean isPasswordShowing = false;
+    private AuthRepository authRepository;
 
     @FXML
     public void initialize() {
+        // Initialize AuthRepository connection
+        authRepository = new AuthRepository("jdbc:mysql://localhost:3306/ka4piece", "root", "");
+
         // Hide error message initially
         hideError();
 
@@ -57,7 +72,6 @@ public class LoginController {
     @FXML
     private void togglePassword(ActionEvent event) {
         if (isPasswordShowing) {
-            // Switch back to hidden PasswordField
             passwordHidden.setText(passwordVisible.getText());
             passwordHidden.setVisible(true);
             passwordHidden.setManaged(true);
@@ -68,7 +82,6 @@ public class LoginController {
             eyeBtn.setText("👁");
             isPasswordShowing = false;
         } else {
-            // Switch to visible TextField
             passwordVisible.setText(passwordHidden.getText());
             passwordVisible.setVisible(true);
             passwordVisible.setManaged(true);
@@ -81,19 +94,13 @@ public class LoginController {
         }
     }
 
-    /**
-     * Helper method to get the active password text regardless of visibility state.
-     */
     private String getPassword() {
         return isPasswordShowing ? passwordVisible.getText() : passwordHidden.getText();
     }
 
-    /**
-     * Handles the Login button action.
-     */
     @FXML
     private void handleLogin(ActionEvent event) {
-        String username = usernameField.getText().trim();
+        String emailOrUser = usernameField.getText().trim();
         String password = getPassword();
 
         ToggleButton selectedToggle = (ToggleButton) userTypeGroup.getSelectedToggle();
@@ -102,40 +109,30 @@ public class LoginController {
             return;
         }
 
-        String userType = selectedToggle.getText(); // "OFFICIAL" or "BENEFICIARY"
+        String userType = selectedToggle.getText().toUpperCase(); // "OFFICIAL" or "BENEFICIARY"
 
-        // Basic Validation Check
-        if (username.isEmpty() || password.isEmpty()) {
-            showError("* Username and Password are required.");
+        if (emailOrUser.isEmpty() || password.isEmpty()) {
+            showError("* Email/Username and Password are required.");
             return;
         }
 
-        // Reset error display on valid attempt
         hideError();
 
-        System.out.println("Attempting login for Role: " + userType + " | Username: " + username);
-
-        boolean loginSuccess = performAuthentication(username, password, userType);
+        // Authenticate user with database
+        boolean loginSuccess = performAuthentication(emailOrUser, password, userType);
 
         if (!loginSuccess) {
-            showError("Invalid username or password.");
+            showError("Invalid email/username or password.");
         } else {
-            navigateToMainApp(userType);
+            navigateToMainApp(event, userType);
         }
     }
 
-    /**
-     * Handles Forgot Password link click.
-     */
     @FXML
     private void handleForgotPassword(ActionEvent event) {
-        System.out.println("Redirecting to Forgot Password flow...");
-        // TODO: Load Forgot Password FXML scene or open password recovery dialog
+        switchSceneFromButton(event, "/forgot_password.fxml");
     }
 
-    /**
-     * Displays error messages below inputs.
-     */
     private void showError(String message) {
         if (errorLabel != null) {
             errorLabel.setText(message);
@@ -144,9 +141,6 @@ public class LoginController {
         }
     }
 
-    /**
-     * Hides the error message label.
-     */
     private void hideError() {
         if (errorLabel != null) {
             errorLabel.setVisible(false);
@@ -155,18 +149,76 @@ public class LoginController {
     }
 
     /**
-     * Placeholder method for backend credential checks.
+     * Database authentication check & Session setup.
      */
-    private boolean performAuthentication(String username, String password, String userType) {
-        // TODO: Connect with AuthManager/AuthRepository
-        return true;
+    private boolean performAuthentication(String identifier, String password, String userType) {
+        if (authRepository == null) return false;
+
+        if ("OFFICIAL".contains(userType)) {
+            // Check by ID or Email
+            BarangayOfficial official = authRepository.findOfficialById(identifier);
+            if (official == null) {
+                official = authRepository.findOfficialByEmail(identifier);
+            }
+
+            if (official != null && password.equals(official.getPassword())) {
+                // Set global session
+                Session session = Session.getInstance();
+                session.setUserId(official.getOfficialId());
+                session.setRole("OFFICIAL");
+                session.setDisplayName(official.getName());
+                session.setAdmin(official.isAdmin());
+                return true;
+            }
+        } else {
+            // BENEFICIARY / HOUSEHOLD
+            Household household = authRepository.findHouseholdById(identifier);
+            if (household == null) {
+                household = authRepository.findHouseholdByEmail(identifier);
+            }
+
+            if (household != null && password.equals(household.getPassword())) {
+                // Set global session
+                Session session = Session.getInstance();
+                session.setUserId(household.getHouseholdId());
+                session.setRole("HOUSEHOLD");
+                session.setDisplayName(household.getHeadName());
+                session.setAdmin(false);
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
-     * Placeholder method for switching views after successful login.
+     * Scene routing to appropriate dashboard after login.
      */
-    private void navigateToMainApp(String userType) {
-        // TODO: Implement scene switching logic using App/FXMLLoader
-        System.out.println("Login successful. Navigating to dashboard for: " + userType);
+    private void navigateToMainApp(ActionEvent event, String userType) {
+        if ("OFFICIAL".contains(userType)) {
+            switchSceneFromButton(event, "/official_dashboard.fxml");
+        } else {
+            switchSceneFromButton(event, "/beneficiary_dashboard.fxml");
+        }
+    }
+
+    private void switchSceneFromButton(ActionEvent event, String fxmlPath) {
+        try {
+            URL resource = getClass().getResource(fxmlPath);
+            if (resource == null) {
+                resource = getClass().getResource("/view" + fxmlPath);
+            }
+            if (resource == null) {
+                showError("Could not find view file: " + fxmlPath);
+                return;
+            }
+
+            Parent root = FXMLLoader.load(resource);
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.getScene().setRoot(root);
+        } catch (IOException e) {
+            e.printStackTrace();
+            showError("Error loading screen: " + e.getMessage());
+        }
     }
 }
