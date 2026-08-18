@@ -4,6 +4,7 @@ import com.ka4piece.model.BarangayOfficial;
 import com.ka4piece.model.Household;
 import com.ka4piece.model.Session;
 import com.ka4piece.repository.AuthRepository;
+import com.ka4piece.repository.DbConfig;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -50,11 +51,15 @@ public class LoginController {
     private boolean isPasswordShowing = false;
     private AuthRepository authRepository;
 
+    public LoginController(AuthRepository authRepository) {
+        this.authRepository = authRepository;
+    }
+
+    public LoginController() {
+    }
+
     @FXML
     public void initialize() {
-        // Initialize AuthRepository connection
-        authRepository = new AuthRepository("jdbc:mysql://localhost:3306/ka4piece", "root", "");
-
         // Hide error message initially
         hideError();
 
@@ -196,29 +201,13 @@ public class LoginController {
      */
     private void navigateToMainApp(ActionEvent event, String userType) {
         if ("OFFICIAL".contains(userType)) {
-            switchSceneFromButton(event, "/official_dashboard.fxml");
+            switchSceneFromButton(event, "/view/compliance.fxml");
         } else {
             switchSceneFromButton(event, "/beneficiary_dashboard.fxml");
         }
     }
 
     private void switchSceneFromButton(ActionEvent event, String fxmlPath) {
-        try {
-            URL resource = getClass().getResource(fxmlPath);
-            if (resource == null) {
-                resource = getClass().getResource("/view" + fxmlPath);
-            }
-            if (resource == null) {
-                showError("Could not find view file: " + fxmlPath);
-                return;
-            }
-
-            Parent root = FXMLLoader.load(resource);
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.getScene().setRoot(root);
-        } catch (IOException e) {
-            e.printStackTrace();
-            showError("Error loading screen: " + e.getMessage());
-        }
+        com.ka4piece.app.App.switchScene(event, fxmlPath);
     }
 }
