@@ -50,14 +50,16 @@ public class LoginController {
 
     private boolean isPasswordShowing = false;
     private AuthRepository authRepository;
-    private DbConfig dbconfig;
+
+    public LoginController(AuthRepository authRepository) {
+        this.authRepository = authRepository;
+    }
+
+    public LoginController() {
+    }
 
     @FXML
-    public void initialize() throws IOException {
-        dbconfig = new DbConfig("db.properties");
-        // Initialize AuthRepository connection
-        authRepository = new AuthRepository(dbconfig.getJdbcurl(), dbconfig.getUsername(), dbconfig.getPassword());
-
+    public void initialize() {
         // Hide error message initially
         hideError();
 
@@ -206,22 +208,6 @@ public class LoginController {
     }
 
     private void switchSceneFromButton(ActionEvent event, String fxmlPath) {
-        try {
-            URL resource = getClass().getResource(fxmlPath);
-            if (resource == null) {
-                resource = getClass().getResource("/view" + fxmlPath);
-            }
-            if (resource == null) {
-                showError("Could not find view file: " + fxmlPath);
-                return;
-            }
-
-            Parent root = FXMLLoader.load(resource);
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.getScene().setRoot(root);
-        } catch (IOException e) {
-            e.printStackTrace();
-            showError("Error loading screen: " + e.getMessage());
-        }
+        com.ka4piece.app.App.switchScene(event, fxmlPath);
     }
 }

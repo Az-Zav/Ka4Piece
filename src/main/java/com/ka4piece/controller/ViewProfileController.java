@@ -59,11 +59,16 @@ public class ViewProfileController {
     private boolean isEditMode = false;
     private Session activeSession;
     private AuthRepository authRepository;
-    private DbConfig dbconfig;
+
+    public ViewProfileController(AuthRepository authRepository) {
+        this.authRepository = authRepository;
+    }
+
+    public ViewProfileController() {
+    }
 
     @FXML
-    public void initialize() throws IOException {
-        dbconfig = new DbConfig("db.properties");
+    public void initialize() {
         if (txtUserId != null) {
             txtUserId.setEditable(false);
         }
@@ -72,8 +77,6 @@ public class ViewProfileController {
             cmbStatus.setItems(FXCollections.observableArrayList("Active", "Exited"));
             cmbStatus.valueProperty().addListener((obs, oldVal, newVal) -> toggleExitDetails("Exited".equalsIgnoreCase(newVal)));
         }
-
-        authRepository = new AuthRepository(dbconfig.getJdbcurl(), dbconfig.getUsername(), dbconfig.getPassword());
 
         // Fetch active global session instance
         activeSession = Session.getInstance();
@@ -280,29 +283,11 @@ public class ViewProfileController {
     // --- ROUTING HELPERS ---
 
     private void switchSceneFromButton(ActionEvent event, String fxmlPath) {
-        try {
-            URL resource = resolveResource(fxmlPath);
-            if (resource == null) return;
-
-            Parent root = FXMLLoader.load(resource);
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.getScene().setRoot(root);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        com.ka4piece.app.App.switchScene(event, fxmlPath);
     }
 
     private void switchSceneFromMouse(MouseEvent event, String fxmlPath) {
-        try {
-            URL resource = resolveResource(fxmlPath);
-            if (resource == null) return;
-
-            Parent root = FXMLLoader.load(resource);
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.getScene().setRoot(root);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        com.ka4piece.app.App.switchScene(event, fxmlPath);
     }
 
     private URL resolveResource(String fxmlPath) {

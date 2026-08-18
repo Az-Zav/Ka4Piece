@@ -1,5 +1,9 @@
 package com.ka4piece.controller;
 
+import com.ka4piece.app.App;
+import com.ka4piece.manager.AuthManager;
+import com.ka4piece.manager.ComplianceManager;
+import com.ka4piece.manager.JobMatchManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -21,6 +25,19 @@ import java.io.IOException;
 import java.net.URL;
 
 public class OfficialDashboardController {
+
+    private AuthManager authManager;
+    private ComplianceManager complianceManager;
+    private JobMatchManager jobMatchManager;
+
+    public OfficialDashboardController(AuthManager authManager, ComplianceManager complianceManager, JobMatchManager jobMatchManager) {
+        this.authManager = authManager;
+        this.complianceManager = complianceManager;
+        this.jobMatchManager = jobMatchManager;
+    }
+
+    public OfficialDashboardController() {
+    }
 
     // --- MAIN DASHBOARD CONTROLS ---
     @FXML private Hyperlink linkAddHousehold;
@@ -44,6 +61,9 @@ public class OfficialDashboardController {
     @FXML private PasswordField txtPassword;
     @FXML private Button btnRegister;
     @FXML private Label lblSuccessMessage;
+
+    // --- SEARCH CONTROLS ---
+    @FXML private TextField txtSearch;
 
     private final int MIN_CHILDREN = 0;
     private final int MAX_CHILDREN = 3;
@@ -83,15 +103,7 @@ public class OfficialDashboardController {
     @FXML
     private void openAddHouseholdModal(ActionEvent event) {
         try {
-            String fxmlPath = "/add_household.fxml";
-            URL resource = resolveResource(fxmlPath);
-
-            if (resource == null) {
-                System.err.println("Could not locate modal resource file: " + fxmlPath);
-                return;
-            }
-
-            Parent root = FXMLLoader.load(resource);
+            Parent root = App.loadFXML("/add_household.fxml");
             Stage modalStage = new Stage();
             modalStage.initModality(Modality.APPLICATION_MODAL);
 
@@ -114,6 +126,14 @@ public class OfficialDashboardController {
             lblSuccessMessage.setVisible(true);
         }
     }
+
+    // --- SEARCH METHODS --- 
+
+    @FXML
+    private void handleSearch(ActionEvent event) {
+
+    }
+
 
     // --- STEPPER HANDLERS ---
 
@@ -138,29 +158,11 @@ public class OfficialDashboardController {
     // --- HELPER ROUTING METHODS ---
 
     private void switchSceneFromMouse(MouseEvent event, String fxmlPath) {
-        try {
-            URL resource = resolveResource(fxmlPath);
-            if (resource == null) return;
-
-            Parent root = FXMLLoader.load(resource);
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.getScene().setRoot(root);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        App.switchScene(event, fxmlPath);
     }
 
     private void switchSceneFromButton(ActionEvent event, String fxmlPath) {
-        try {
-            URL resource = resolveResource(fxmlPath);
-            if (resource == null) return;
-
-            Parent root = FXMLLoader.load(resource);
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.getScene().setRoot(root);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        App.switchScene(event, fxmlPath);
     }
 
     private URL resolveResource(String fxmlPath) {
