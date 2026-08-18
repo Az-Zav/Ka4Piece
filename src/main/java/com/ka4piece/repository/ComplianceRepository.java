@@ -15,20 +15,24 @@ public class ComplianceRepository extends MySqlStore {
         super(jdbcUrl, dbUser, dbPassword);
     }
 
-    //-----Compliance methods-----
+    // ----- Compliance methods -----
     public void saveCompliance(ComplianceRecord r) {
         String sql = "INSERT INTO compliance (householdId, monthYear, pregnancyCareStatus, child0to5HealthStatus, " +
-                     "dewormingStatus, daycareAttendanceStatus, schoolAttendanceStatus, fdsAttendanceStatus, childrenMeetingAttendance) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) " +
-                     "ON DUPLICATE KEY UPDATE " + // if the same householdId and monthYear already exists, update the record instead of inserting a new one
+                     "dewormingStatus, daycareAttendanceStatus, schoolAttendanceStatus, fdsAttendanceStatus, " +
+                     "elementaryCount, juniorHighCount, seniorHighCount, recordedByOfficialId) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
+                     "ON DUPLICATE KEY UPDATE " +
                      "pregnancyCareStatus = VALUES(pregnancyCareStatus), " +
                      "child0to5HealthStatus = VALUES(child0to5HealthStatus), " +
                      "dewormingStatus = VALUES(dewormingStatus), " +
                      "daycareAttendanceStatus = VALUES(daycareAttendanceStatus), " +
                      "schoolAttendanceStatus = VALUES(schoolAttendanceStatus), " +
                      "fdsAttendanceStatus = VALUES(fdsAttendanceStatus), " +
-                     "childrenMeetingAttendance = VALUES(childrenMeetingAttendance)";
-        
+                     "elementaryCount = VALUES(elementaryCount), " +
+                     "juniorHighCount = VALUES(juniorHighCount), " +
+                     "seniorHighCount = VALUES(seniorHighCount), " +
+                     "recordedByOfficialId = VALUES(recordedByOfficialId)";
+
         executeUpdate(sql,
             r.getHouseholdId(),
             r.getMonthYear(),
@@ -38,7 +42,10 @@ public class ComplianceRepository extends MySqlStore {
             r.isDaycareAttendanceStatus(),
             r.isSchoolAttendanceStatus(),
             r.isFdsAttendanceStatus(),
-            r.getChildrenMeetingAttendance()
+            r.getElementaryCount(),
+            r.getJuniorHighCount(),
+            r.getSeniorHighCount(),
+            r.getRecordedByOfficialId()
         );
     }
 
@@ -59,16 +66,16 @@ public class ComplianceRepository extends MySqlStore {
                    .collect(Collectors.toList());
     }
 
-    //-----Grant methods-----
-
+    // ----- Grant methods -----
     public void saveGrant(GrantBreakdown g) {
-        String withheldStr = (g.getWithheldReasons() == null || g.getWithheldReasons().isEmpty()) 
-                             ? "" 
+        String withheldStr = (g.getWithheldReasons() == null || g.getWithheldReasons().isEmpty())
+                             ? ""
                              : String.join(";", g.getWithheldReasons());
 
         String sql = "INSERT INTO grants (householdId, monthYear, healthGrantAmount, educationGrantAmount, " +
-                     "riceSubsidyAmount, totalAmount, withheldReasons) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        
+                     "riceSubsidyAmount, totalAmount, withheldReasons, recordType, correctionReason) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
         executeUpdate(sql,
             g.getHouseholdId(),
             g.getMonthYear(),
@@ -76,12 +83,14 @@ public class ComplianceRepository extends MySqlStore {
             g.getEducationGrantAmount(),
             g.getRiceSubsidyAmount(),
             g.getTotalAmount(),
-            withheldStr
+            withheldStr,
+            g.getRecordType() != null ? g.getRecordType() : "INITIAL",
+            g.getCorrectionReason()
         );
     }
 
     public GrantBreakdown findGrantByHouseholdAndMonth(String householdId, String monthYear) {
-        String sql = "SELECT * FROM grants WHERE householdId = ? AND monthYear = ?";
+        String sql = "SELECT * FROM grants WHERE householdId = ? AND monthYear = ? ORDER BY id DESC LIMIT 1";
         List<Map<String, Object>> rows = executeQuery(sql, householdId, monthYear);
         if (rows.isEmpty()) {
             return null;
@@ -97,9 +106,12 @@ public class ComplianceRepository extends MySqlStore {
                    .collect(Collectors.toList());
     }
 
-    //-----Helper methods-----
+    // ----- Helper methods -----
+    private ComplianceRecord mapRowToCompliance(Map<String, Object> row) {
+        int elem = row.get("elementaryCount") != null ? ((Number) row.get("elementaryCount")).intValue() : 0;
+        int jhs = row.get("juniorHighCount") != null ? ((Number) row.get("juniorHighCount")).intValue() : 0;
+        int shs = row.get("seniorHighCount") != null ? ((Number) row.get("seniorHighCount")).intValue() : 0;
 
-    private ComplianceRecord mapRowToCompliance(Map<String, Object> row) { //parses a row from the database into a ComplianceRecord object
         return new ComplianceRecord(
             (String) row.get("householdId"),
             (String) row.get("monthYear"),
@@ -109,15 +121,20 @@ public class ComplianceRepository extends MySqlStore {
             toBoolean(row.get("daycareAttendanceStatus")),
             toBoolean(row.get("schoolAttendanceStatus")),
             toBoolean(row.get("fdsAttendanceStatus")),
-            ((Number) row.get("childrenMeetingAttendance")).intValue()
+            elem,
+            jhs,
+            shs,
+            (String) row.get("recordedByOfficialId")
         );
     }
 
-    private GrantBreakdown mapRowToGrant(Map<String, Object> row) { //parses a row from the database into a GrantBreakdown object
+    private GrantBreakdown mapRowToGrant(Map<String, Object> row) {
         String withheldText = (String) row.get("withheldReasons");
         List<String> reasons = (withheldText == null || withheldText.trim().isEmpty())
                                ? Collections.emptyList()
                                : Arrays.asList(withheldText.split(";"));
+
+        String recordType = row.get("recordType") != null ? (String) row.get("recordType") : "INITIAL";
 
         return new GrantBreakdown(
             (String) row.get("householdId"),
@@ -126,19 +143,20 @@ public class ComplianceRepository extends MySqlStore {
             ((Number) row.get("educationGrantAmount")).doubleValue(),
             ((Number) row.get("riceSubsidyAmount")).doubleValue(),
             ((Number) row.get("totalAmount")).doubleValue(),
-            reasons
+            reasons,
+            recordType,
+            (String) row.get("correctionReason")
         );
     }
 
     private boolean toBoolean(Object val) {
-        if (val instanceof Boolean) { //main routing where all values are caught as boolean from db
+        if (val == null) return false;
+        if (val instanceof Boolean) {
             return (Boolean) val;
         }
-        if (val instanceof Number) { // defensive fallback if boolean is stored as tiny int in db
+        if (val instanceof Number) {
             return ((Number) val).intValue() != 0;
         }
         return Boolean.parseBoolean(String.valueOf(val));
     }
-
-
 }
