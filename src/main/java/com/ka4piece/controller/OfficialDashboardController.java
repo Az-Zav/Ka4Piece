@@ -138,19 +138,27 @@ public class OfficialDashboardController {
 
     @FXML
     private void handleOpenViewProfile(ActionEvent event) {
-        switchSceneFromButton(event, "/view_profile.fxml");
+        switchSceneFromButton(event, "/view/official_profile.fxml");
+    }
+
+    @FXML
+    private void handleLogout(ActionEvent event) {
+        if (com.ka4piece.model.Session.getInstance() != null) {
+            com.ka4piece.model.Session.getInstance().clearSession();
+        }
+        switchSceneFromButton(event, "/view/login.fxml");
     }
 
     // --- TAB NAVIGATION HANDLERS ---
 
     @FXML
     private void goToCompliance(MouseEvent event) {
-        switchSceneFromMouse(event, "/compliance.fxml");
+        switchSceneFromMouse(event, "/view/official_compliance.fxml");
     }
 
     @FXML
     private void goToJobVacancies(MouseEvent event) {
-        switchSceneFromMouse(event, "/job_vacancies.fxml");
+        switchSceneFromMouse(event, "/view/official_job_vacancies.fxml");
     }
 
     // --- MODAL DIALOG HANDLERS ---
@@ -158,7 +166,7 @@ public class OfficialDashboardController {
     @FXML
     private void openAddHouseholdModal(ActionEvent event) {
         try {
-            Parent root = App.loadFXML("/add_household.fxml");
+            Parent root = App.loadFXML("/view/official_add_household.fxml");
             Stage modalStage = new Stage();
             modalStage.initModality(Modality.APPLICATION_MODAL);
 
