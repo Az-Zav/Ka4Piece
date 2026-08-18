@@ -4,6 +4,7 @@ import com.ka4piece.model.BarangayOfficial;
 import com.ka4piece.model.Household;
 import com.ka4piece.model.Session;
 import com.ka4piece.repository.AuthRepository;
+import com.ka4piece.repository.DbConfig;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -58,9 +59,11 @@ public class ViewProfileController {
     private boolean isEditMode = false;
     private Session activeSession;
     private AuthRepository authRepository;
+    private DbConfig dbconfig;
 
     @FXML
-    public void initialize() {
+    public void initialize() throws IOException {
+        dbconfig = new DbConfig("db.properties");
         if (txtUserId != null) {
             txtUserId.setEditable(false);
         }
@@ -70,7 +73,7 @@ public class ViewProfileController {
             cmbStatus.valueProperty().addListener((obs, oldVal, newVal) -> toggleExitDetails("Exited".equalsIgnoreCase(newVal)));
         }
 
-        authRepository = new AuthRepository("jdbc:mysql://localhost:3306/ka4piece", "root", "");
+        authRepository = new AuthRepository(dbconfig.getJdbcurl(), dbconfig.getUsername(), dbconfig.getPassword());
 
         // Fetch active global session instance
         activeSession = Session.getInstance();

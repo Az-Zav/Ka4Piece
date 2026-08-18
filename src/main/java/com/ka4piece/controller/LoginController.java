@@ -56,7 +56,7 @@ public class LoginController {
     public void initialize() throws IOException {
         dbconfig = new DbConfig("db.properties");
         // Initialize AuthRepository connection
-        authRepository = new AuthRepository("jdbc:mysql://localhost:3306/ka4piece_db", "root", "");
+        authRepository = new AuthRepository(dbconfig.getJdbcurl(), dbconfig.getUsername(), dbconfig.getPassword());
 
         // Hide error message initially
         hideError();
@@ -199,7 +199,7 @@ public class LoginController {
      */
     private void navigateToMainApp(ActionEvent event, String userType) {
         if ("OFFICIAL".contains(userType)) {
-            switchSceneFromButton(event, "/official_dashboard.fxml");
+            switchSceneFromButton(event, "/view/compliance.fxml");
         } else {
             switchSceneFromButton(event, "/beneficiary_dashboard.fxml");
         }
