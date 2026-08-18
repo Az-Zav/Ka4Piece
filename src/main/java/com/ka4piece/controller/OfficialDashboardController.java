@@ -20,6 +20,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.scene.layout.VBox;
+
+import java.util.List;
 
 import java.io.IOException;
 import java.net.URL;
@@ -64,6 +67,8 @@ public class OfficialDashboardController {
 
     // --- SEARCH CONTROLS ---
     @FXML private TextField txtSearch;
+    @FXML private VBox boxSearchResults;
+    @FXML private Label lblResultCount;
 
     private final int MIN_CHILDREN = 0;
     private final int MAX_CHILDREN = 3;
@@ -77,6 +82,56 @@ public class OfficialDashboardController {
                 }
             });
         }
+
+        if (txtSearch != null) {
+            txtSearch.textProperty().addListener((observable, oldValue, newValue) -> performSearch(newValue));
+            performSearch("");
+        }
+    }
+
+    // --- SEARCH METHODS --- 
+
+    @FXML
+    private void handleSearch(ActionEvent event) {
+        if (txtSearch != null) {
+            performSearch(txtSearch.getText());
+        }
+    }
+
+    private void performSearch(String query) {
+        if (authManager == null) return;
+        java.util.List<com.ka4piece.model.Household> results = authManager.searchHouseholds(query);
+
+        if (lblResultCount != null) {
+            lblResultCount.setText("RESULTS (" + results.size() + ")");
+        }
+
+        if (boxSearchResults != null) {
+            boxSearchResults.getChildren().clear();
+            for (com.ka4piece.model.Household h : results) {
+                VBox itemBox = new VBox();
+                itemBox.getStyleClass().add("list-item");
+                itemBox.setSpacing(2.0);
+
+                Label nameLabel = new Label(h.getHeadName() != null ? h.getHeadName() : "Unnamed");
+                nameLabel.getStyleClass().add("list-item-title");
+
+                String subText = "ID: " + (h.getHouseholdId() != null ? h.getHouseholdId() : "N/A");
+                if (h.getAddress() != null && !h.getAddress().isBlank()) {
+                    subText += "  •  " + h.getAddress();
+                }
+                Label subLabel = new Label(subText);
+                subLabel.getStyleClass().add("list-item-sub");
+
+                itemBox.getChildren().addAll(nameLabel, subLabel);
+                itemBox.setOnMouseClicked(e -> selectHousehold(h));
+                boxSearchResults.getChildren().add(itemBox);
+            }
+        }
+    }
+
+    private void selectHousehold(com.ka4piece.model.Household h) {
+        // Selection hook for displaying details & history
     }
 
     // --- NAVBAR & PROFILE EVENT HANDLERS ---
@@ -125,13 +180,6 @@ public class OfficialDashboardController {
         if (lblSuccessMessage != null) {
             lblSuccessMessage.setVisible(true);
         }
-    }
-
-    // --- SEARCH METHODS --- 
-
-    @FXML
-    private void handleSearch(ActionEvent event) {
-
     }
 
 

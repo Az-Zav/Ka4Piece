@@ -81,13 +81,17 @@ public class AuthManager {
     }
 
     /**
-     * Searches households by head name or address (case-insensitive substring match).
+     * Searches households by ID, head name, or address (case-insensitive substring match).
      */
     public List<Household> searchHouseholds(String query) {
+        if (query == null || query.isBlank()) {
+            return authRepository.findAllHouseholds();
+        }
         String q = query.toLowerCase().trim();
         return authRepository.findAllHouseholds().stream()
-            .filter(h -> h.getHeadName().toLowerCase().contains(q)
-                      || h.getAddress().toLowerCase().contains(q))
+            .filter(h -> (h.getHouseholdId() != null && h.getHouseholdId().toLowerCase().contains(q))
+                      || (h.getHeadName() != null && h.getHeadName().toLowerCase().contains(q))
+                      || (h.getAddress() != null && h.getAddress().toLowerCase().contains(q)))
             .collect(Collectors.toList());
     }
 

@@ -141,7 +141,7 @@
                                                 </HBox>
                                                 <HBox spacing="0.0">
                                                     <children>
-                                                        <TextField fx:id="txtSearch" promptText="Enter ID or Name..." styleClass="search-field" HBox.hgrow="ALWAYS">
+                                                        <TextField fx:id="txtSearch" promptText="Enter ID, Name, or Address..." styleClass="search-field" HBox.hgrow="ALWAYS">
                                                             <padding>
                                                                 <Insets bottom="8.0" left="10.0" right="10.0" top="8.0" />
                                                             </padding>
@@ -160,45 +160,10 @@
                                             <children>
                                                 <HBox styleClass="results-header">
                                                     <children>
-                                                        <Label styleClass="card-title" text="RESULTS (12)" />
+                                                        <Label fx:id="lblResultCount" styleClass="card-title" text="RESULTS (0)" />
                                                     </children>
                                                 </HBox>
-                                                <VBox styleClass="list-item-active">
-                                                    <children>
-                                                        <HBox alignment="CENTER_LEFT">
-                                                            <children>
-                                                                <VBox spacing="2.0" HBox.hgrow="ALWAYS">
-                                                                    <children>
-                                                                        <Label styleClass="list-item-title-active" text="Santos Family" />
-                                                                        <Label styleClass="list-item-sub" text="ID: 4P-2023-0012" />
-                                                                    </children>
-                                                                </VBox>
-                                                                <Label text="›" textFill="#4338ca">
-                                                                    <font>
-                                                                        <Font name="System Bold" size="18.0" />
-                                                                    </font>
-                                                                </Label>
-                                                            </children>
-                                                        </HBox>
-                                                    </children>
-                                                </VBox>
-                                                <VBox styleClass="list-item">
-                                                    <children>
-                                                        <Label styleClass="list-item-title" text="Reyes, Maria P." />
-                                                        <Label styleClass="list-item-sub" text="ID: 4P-2023-0045" />
-                                                    </children>
-                                                </VBox>
-                                                <VBox styleClass="list-item">
-                                                    <children>
-                                                        <Label styleClass="list-item-title" text="Cruz Household" />
-                                                        <Label styleClass="list-item-sub" text="ID: 4P-2023-0088" />
-                                                    </children>
-                                                </VBox>
-                                                <VBox styleClass="list-item">
-                                                    <children>
-                                                        <Label styleClass="list-item-title" text="Garcia, Juan" />
-                                                        <Label styleClass="list-item-sub" text="ID: 4P-2023-0102" />
-                                                    </children>
+                                                <VBox fx:id="boxSearchResults" spacing="4.0">
                                                 </VBox>
                                             </children>
                                         </VBox>
