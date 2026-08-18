@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- ADD PROFILE FOR BENEFICIARY DASHBOARD-->
+
+<VBox prefWidth="480.0" styleClass="modal-container" stylesheets="@beneficiary_add_profile.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ka4piece.controller.AddProfileController">
+    <children>
+
+        <!-- DARK MODAL HEADER -->
+        <HBox alignment="CENTER_LEFT" styleClass="modal-header">
+            <children>
+                <Label styleClass="modal-title" text="Add Jobseeker Profile" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Button onAction="#handleClose" styleClass="btn-close" text="✕" />
+            </children>
+        </HBox>
+
+        <!-- FORM BODY (SINGLE COLUMN) -->
+        <VBox spacing="15.0">
+            <padding>
+                <Insets bottom="25.0" left="24.0" right="24.0" top="20.0" />
+            </padding>
+            <children>
+                <Label styleClass="modal-subtitle" text="Create a profile for a working-age household member." />
+
+                <!-- MEMBER NAME -->
+                <VBox spacing="5.0">
+                    <children>
+                        <Label styleClass="form-label" text="MEMBER NAME" />
+                        <TextField fx:id="memberNameField" promptText="Enter household member name" styleClass="form-control" />
+                    </children>
+                </VBox>
+
+                <!-- EDUCATION -->
+                <VBox spacing="5.0">
+                    <children>
+                        <Label styleClass="form-label" text="EDUCATION" />
+                        <ComboBox fx:id="educationComboBox" prefWidth="432.0" promptText="Select education level" styleClass="form-control, combo-box">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="Elementary Graduate" />
+                                    <String fx:value="Highschool Graduate" />
+                                    <String fx:value="Senior Highschool Graduate" />
+                                    <String fx:value="College Undergraduate" />
+                                    <String fx:value="Bachelor's Degree" />
+                                </FXCollections>
+                            </items>
+                        </ComboBox>
+                    </children>
+                </VBox>
+
+                <!-- SKILLS -->
+                <VBox spacing="5.0">
+                    <children>
+                        <Label styleClass="form-label" text="SKILLS" />
+                        <TextArea fx:id="skillsArea" prefHeight="75.0" promptText="e.g. Communication, Microsoft Office, Inventory" styleClass="form-control, text-area" wrapText="true" />
+                    </children>
+                </VBox>
+
+                <!-- EXPERIENCE (YEARS) -->
+                <VBox spacing="5.0">
+                    <children>
+                        <Label styleClass="form-label" text="EXPERIENCE (YEARS)" />
+                        <TextField fx:id="experienceField" promptText="0" styleClass="form-control" />
+                    </children>
+                </VBox>
+
+                <!-- LOCATION / BARANGAY -->
+                <VBox spacing="5.0">
+                    <children>
+                        <Label styleClass="form-label" text="LOCATION / BARANGAY" />
+                        <TextField fx:id="barangayField" promptText="Enter barangay" styleClass="form-control" />
+                    </children>
+                </VBox>
+
+                <!-- ACTION BUTTONS -->
+                <HBox alignment="CENTER_RIGHT" spacing="10.0" style="-fx-padding: 10px 0 0 0;">
+                    <children>
+                        <Button onAction="#handleClose" styleClass="btn-cancel" text="Cancel" />
+                        <Button onAction="#handleSaveProfile" styleClass="btn-save" text="Save Profile" />
+                    </children>
+                </HBox>
+
+            </children>
+        </VBox>
+
+    </children>
+</VBox>
