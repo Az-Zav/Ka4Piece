@@ -1,6 +1,8 @@
 package com.ka4piece.model;
 
 public class Session {
+    private static Session instance;
+
     private String userId, role, displayName; // role as OFFICIAL or HOUSEHOLD
     private boolean isAdmin;
 
@@ -15,6 +17,27 @@ public class Session {
         this.role = role;
         this.displayName = displayName;
         this.isAdmin = isAdmin;
+    }
+
+    // --- ADDED GLOBAL SESSION METHODS ---
+
+    public static Session getInstance() {
+        if (instance == null) {
+            instance = new Session(null, null, null);
+        }
+        return instance;
+    }
+
+    public static void setInstance(Session session) {
+        instance = session;
+    }
+
+    public void clearSession() {
+        this.userId = null;
+        this.role = null;
+        this.displayName = null;
+        this.isAdmin = false;
+        instance = null;
     }
 
     // Getters and setters
