@@ -4,6 +4,7 @@ import com.ka4piece.model.BarangayOfficial;
 import com.ka4piece.model.Household;
 import com.ka4piece.model.Session;
 import com.ka4piece.repository.AuthRepository;
+import com.ka4piece.repository.DbConfig;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -49,11 +50,13 @@ public class LoginController {
 
     private boolean isPasswordShowing = false;
     private AuthRepository authRepository;
+    private DbConfig dbconfig;
 
     @FXML
-    public void initialize() {
+    public void initialize() throws IOException {
+        dbconfig = new DbConfig("db.properties");
         // Initialize AuthRepository connection
-        authRepository = new AuthRepository("jdbc:mysql://localhost:3306/ka4piece", "root", "");
+        authRepository = new AuthRepository("jdbc:mysql://localhost:3306/ka4piece_db", "root", "");
 
         // Hide error message initially
         hideError();
