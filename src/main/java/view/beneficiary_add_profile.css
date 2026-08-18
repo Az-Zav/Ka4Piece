@@ -1,0 +1,104 @@
+/* Container Box */
+.modal-container {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 8px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.25), 12, 0, 0, 6);
+}
+
+/* Modal Header */
+.modal-header {
+    -fx-background-color: #1e293b;
+    -fx-background-radius: 8px 8px 0 0;
+    -fx-padding: 14px 20px;
+}
+
+.modal-title {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+.btn-close {
+    -fx-background-color: transparent;
+    -fx-text-fill: #94a3b8;
+    -fx-font-size: 15px;
+    -fx-cursor: hand;
+    -fx-padding: 0;
+}
+
+.btn-close:hover {
+    -fx-text-fill: #ffffff;
+}
+
+/* Subtitle & Labels */
+.modal-subtitle {
+    -fx-text-fill: #64748b;
+    -fx-font-size: 12px;
+}
+
+.form-label {
+    -fx-font-weight: bold;
+    -fx-font-size: 11px;
+    -fx-text-fill: #334155;
+}
+
+/* Input Fields (TextField, ComboBox, TextArea) */
+.form-control {
+    -fx-pref-height: 38px;
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-font-size: 13px;
+    -fx-padding: 0 10px;
+}
+
+.form-control:focused {
+    -fx-border-color: #0038a8;
+    -fx-background-color: #ffffff;
+}
+
+/* TextArea Tweaks */
+.text-area {
+    -fx-padding: 6px 8px;
+}
+
+.text-area .scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.text-area .scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.text-area .scroll-pane .content {
+    -fx-background-color: transparent;
+}
+
+/* Buttons */
+.btn-cancel {
+    -fx-background-color: transparent;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 4px;
+    -fx-padding: 8px 18px;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+    -fx-text-fill: #475569;
+}
+
+.btn-cancel:hover {
+    -fx-background-color: #f1f5f9;
+}
+
+.btn-save {
+    -fx-background-color: #0038a8;
+    -fx-background-radius: 4px;
+    -fx-padding: 8px 20px;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff;
+}
+
+.btn-save:hover {
+    -fx-background-color: #002b80;
+}

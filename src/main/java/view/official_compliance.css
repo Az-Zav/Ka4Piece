@@ -1,0 +1,346 @@
+/* GLOBAL & ROOT STYLES */
+.root {
+    -fx-font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+    -fx-background-color: #F8FAFC;
+}
+
+/* ScrollPane Configuration */
+.main-scroll-pane {
+    -fx-background-color: #F8FAFC;
+    -fx-background: #F8FAFC;
+    -fx-viewport-background-color: #F8FAFC;
+    -fx-border-color: transparent;
+}
+
+.main-scroll-pane .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 8px;
+}
+
+.main-scroll-pane .scroll-bar:vertical .thumb {
+    -fx-background-color: #CBD5E1;
+    -fx-background-radius: 4px;
+}
+
+/* TOP NAVIGATION BAR */
+.navbar {
+    -fx-background-color: #FFFFFF;
+}
+
+.nav-tab {
+    -fx-background-color: transparent;
+    -fx-text-fill: #64748B;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+    -fx-padding: 8px 12px;
+    -fx-border-color: transparent;
+    -fx-border-width: 0 0 3px 0;
+}
+
+.nav-tab:hover {
+    -fx-text-fill: #0F388A;
+}
+
+.nav-tab-active {
+    -fx-background-color: transparent;
+    -fx-text-fill: #0F388A;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+    -fx-padding: 8px 12px;
+    -fx-border-color: #0F388A;
+    -fx-border-width: 0 0 3px 0;
+}
+
+.icon-btn {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+    -fx-padding: 0;
+}
+
+.user-label {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #334155;
+}
+
+/* CARDS & CONTAINERS */
+.card {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 8px;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 8px;
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.02), 6, 0, 0, 2);
+}
+
+.card-title {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0F388A;
+}
+
+.results-header {
+    -fx-background-color: #F1F5F9;
+    -fx-padding: 12px 15px;
+    -fx-background-radius: 8px 8px 0 0;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 0 0 1px 0;
+}
+
+/* INPUT FIELDS & COMBOBOXES */
+.search-field {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 8px 12px;
+    -fx-font-size: 13px;
+    -fx-text-fill: #1E293B;
+}
+
+.search-field:focused {
+    -fx-border-color: #0F388A;
+    -fx-border-width: 1.5px;
+}
+
+.btn-search {
+    -fx-background-color: #0F388A;
+    -fx-background-radius: 0 6px 6px 0;
+    -fx-text-fill: #FFFFFF;
+    -fx-cursor: hand;
+    -fx-padding: 8px 14px;
+}
+
+.btn-search:hover {
+    -fx-background-color: #0A2660;
+}
+
+/* BUTTONS & BADGES */
+.btn-primary {
+    -fx-background-color: #0F388A;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-background-radius: 6px;
+    -fx-cursor: hand;
+}
+
+.btn-primary:hover {
+    -fx-background-color: #0A2660;
+}
+
+.btn-outline {
+    -fx-background-color: transparent;
+    -fx-border-color: #0F388A;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 6px 14px;
+    -fx-text-fill: #0F388A;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-cursor: hand;
+}
+
+.btn-outline:hover {
+    -fx-background-color: #F0F4FF;
+}
+
+.badge-active {
+    -fx-background-color: #DCFCE7;
+    -fx-text-fill: #15803D;
+    -fx-font-weight: bold;
+    -fx-font-size: 11px;
+    -fx-padding: 4px 10px;
+    -fx-background-radius: 12px;
+}
+
+.badge-gray {
+    -fx-background-color: #F1F5F9;
+    -fx-text-fill: #475569;
+    -fx-font-weight: bold;
+    -fx-font-size: 11px;
+    -fx-padding: 4px 10px;
+    -fx-background-radius: 12px;
+}
+
+/* LIST ITEMS (HOUSEHOLD LIST) */
+.list-item {
+    -fx-padding: 14px 15px;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 0 0 1px 0;
+    -fx-cursor: hand;
+}
+
+.list-item:hover {
+    -fx-background-color: #F8FAFC;
+}
+
+.list-item-active {
+    -fx-padding: 14px 15px;
+    -fx-background-color: #EEF2FF;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 0 0 1px 0;
+    -fx-cursor: hand;
+}
+
+.list-item-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1E293B;
+}
+
+.list-item-title-active {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0F388A;
+}
+
+.list-item-sub {
+    -fx-font-size: 12px;
+    -fx-text-fill: #64748B;
+}
+
+/* STEPPER COUNTER CONTROL */
+.counter-btn {
+    -fx-background-color: #F1F5F9;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-text-fill: #334155;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-cursor: hand;
+    -fx-padding: 4px 10px;
+}
+
+.counter-btn:hover {
+    -fx-background-color: #E2E8F0;
+}
+
+.counter-field {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 4px 8px;
+    -fx-font-size: 13px;
+    -fx-text-fill: #1E293B;
+}
+
+/* CUSTOM GRID TABLES */
+.table-header {
+    -fx-background-color: #F8FAFC;
+    -fx-padding: 10px 15px;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.table-header-text {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #475569;
+}
+
+.table-row {
+    -fx-padding: 12px 15px;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.table-row:hover {
+    -fx-background-color: #F8FAFC;
+}
+
+/* ==========================================================================
+   COMPLIANCE HISTORY TABLE STYLING
+   ========================================================================== */
+
+.history-table {
+    -fx-background-color: transparent;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+}
+
+.history-table .corner {
+    -fx-background-color: transparent;
+}
+
+/* Modern Header */
+.history-table .column-header-background {
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: transparent transparent #E2E8F0 transparent;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.history-table .column-header {
+    -fx-background-color: transparent;
+    -fx-padding: 10px 12px;
+}
+
+.history-table .column-header .label {
+    -fx-text-fill: #475569;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+}
+
+/* Rows & Hover States */
+.history-table .table-row-cell {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: transparent transparent #F1F5F9 transparent;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.history-table .table-row-cell:odd {
+    -fx-background-color: #FFFFFF;
+}
+
+.history-table .table-row-cell:hover {
+    -fx-background-color: #F8FAFC;
+}
+
+.history-table .table-row-cell:selected {
+    -fx-background-color: #EEF2FF;
+}
+
+/* Cell Alignment & Text */
+.history-table .table-cell {
+    -fx-text-fill: #1E293B;
+    -fx-font-size: 13px;
+    -fx-padding: 8px 12px;
+}
+
+/* Status Pill Badges */
+.status-badge-compliant {
+    -fx-text-fill: #15803D;
+    -fx-font-weight: bold;
+    -fx-font-size: 11px;
+    -fx-background-color: #DCFCE7;
+    -fx-background-radius: 12px;
+    -fx-padding: 4px 12px;
+}
+
+.status-badge-noncompliant {
+    -fx-text-fill: #B91C1C;
+    -fx-font-weight: bold;
+    -fx-font-size: 11px;
+    -fx-background-color: #FEE2E2;
+    -fx-background-radius: 12px;
+    -fx-padding: 4px 12px;
+}
+
+/* Styled Column Icons */
+.icon-check {
+    -fx-text-fill: #16A34A;
+    -fx-font-weight: bold;
+    -fx-font-size: 15px;
+}
+
+.icon-cross {
+    -fx-text-fill: #DC2626;
+    -fx-font-weight: bold;
+    -fx-font-size: 15px;
+}

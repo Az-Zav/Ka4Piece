@@ -52,11 +52,22 @@ public class AuthRepository extends MySqlStore {
         saveHousehold(h);
     }
 
-    public void updateHouseholdPassword(String householdId, String newPassword) {
+    public boolean updateHouseholdPassword(String householdId, String newPassword) {
         Household h = findHouseholdById(householdId);
-        if (h == null) throw new IllegalArgumentException("Household not found: " + householdId);
+        if (h == null) {
+            return false;
+        }
         h.setPassword(newPassword);
         saveHousehold(h);
+        return true;
+    }
+
+    public boolean verifyCurrentPassword(String householdId, String currentPassword) {
+        Household h = findHouseholdById(householdId);
+        if (h == null || h.getPassword() == null) {
+            return false;
+        }
+        return h.getPassword().equals(currentPassword);
     }
 
     public void updateHouseholdExitStatus(String householdId, String status, String exitReason, LocalDate exitDate) {
@@ -121,11 +132,14 @@ public class AuthRepository extends MySqlStore {
         saveOfficial(o);
     }
 
-    public void updateOfficialPassword(String officialId, String newPassword) {
+    public boolean updateOfficialPassword(String officialId, String newPassword) {
         BarangayOfficial o = findOfficialById(officialId);
-        if (o == null) throw new IllegalArgumentException("Official not found: " + officialId);
+        if (o == null) {
+            return false;
+        }
         o.setPassword(newPassword);
         saveOfficial(o);
+        return true;
     }
 
     public BarangayOfficial findOfficialById(String officialId) {

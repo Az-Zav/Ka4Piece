@@ -13,7 +13,7 @@ public class App extends Application {
         try {
             // Load the login.fxml file from your resources/controller path
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/view/login.fxml")
+                    getClass().getResource("/view/beneficiary_compliance.fxml")
             );
 
             Parent root = loader.load();

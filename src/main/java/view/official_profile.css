@@ -1,0 +1,171 @@
+/* GLOBAL & ROOT STYLES */
+.root {
+    -fx-font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+    -fx-background-color: #F8FAFC;
+}
+
+/* NAVBAR & HEADER */
+.navbar {
+    -fx-background-color: #FFFFFF;
+}
+
+.brand-label {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1E293B;
+}
+
+.nav-tab {
+    -fx-background-color: transparent;
+    -fx-text-fill: #64748B;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+    -fx-padding: 4px 8px;
+    -fx-border-color: transparent;
+    -fx-border-width: 0 0 2px 0;
+}
+
+.nav-tab:hover {
+    -fx-text-fill: #0F388A;
+}
+
+.nav-tab-active {
+    -fx-background-color: transparent;
+    -fx-text-fill: #0F388A;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+    -fx-padding: 4px 8px;
+    -fx-border-color: #0F388A;
+    -fx-border-width: 0 0 2px 0;
+}
+
+.icon-btn {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+    -fx-padding: 0;
+}
+
+.icon-btn:hover {
+    -fx-opacity: 0.8;
+}
+
+/* CONTAINER & CARDS */
+.profile-card {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.02), 6, 0, 0, 2);
+}
+
+.page-title {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0F172A;
+}
+
+.page-subtitle {
+    -fx-font-size: 13px;
+    -fx-text-fill: #64748B;
+}
+
+.form-label {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #64748B;
+}
+
+/* INPUT FORM FIELDS */
+.form-control {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 8px 12px;
+    -fx-font-size: 14px;
+    -fx-text-fill: #1E293B;
+}
+
+.form-control:focused {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #0F388A;
+    -fx-border-width: 1.5px;
+}
+
+.form-control:read-only, .form-control:disabled {
+    -fx-background-color: #F1F5F9;
+    -fx-border-color: #E2E8F0;
+    -fx-opacity: 0.85;
+    -fx-text-fill: #64748B;
+}
+
+/* CHECKBOX */
+.custom-checkbox {
+    -fx-font-size: 13px;
+    -fx-text-fill: #334155;
+    -fx-font-weight: bold;
+}
+
+/* BUTTONS */
+.btn-primary {
+    -fx-background-color: #0F388A;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 16px;
+    -fx-background-radius: 6px;
+    -fx-cursor: hand;
+}
+
+.btn-primary:hover {
+    -fx-background-color: #0A2660;
+}
+
+.btn-secondary {
+    -fx-background-color: #F1F5F9;
+    -fx-text-fill: #334155;
+    -fx-font-weight: bold;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-cursor: hand;
+}
+
+.btn-cancel {
+    -fx-background-color: transparent;
+    -fx-text-fill: #64748B;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 16px;
+    -fx-cursor: hand;
+}
+
+.btn-cancel:hover {
+    -fx-text-fill: #0F172A;
+}
+
+.btn-outline {
+    -fx-background-color: transparent;
+    -fx-border-color: #0F388A;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 6px 14px;
+    -fx-text-fill: #0F388A;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.btn-outline:hover {
+    -fx-background-color: #F0F4FF;
+}
+
+/* MESSAGES & NOTIFICATIONS */
+.success-label {
+    -fx-text-fill: #10B981;
+    -fx-font-weight: bold;
+}
+
+.error-label {
+    -fx-text-fill: #EF4444;
+    -fx-font-weight: bold;
+}
