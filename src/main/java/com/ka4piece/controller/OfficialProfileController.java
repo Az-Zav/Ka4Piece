@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 
-public class ViewProfileController {
+public class OfficialProfileController {
 
     // --- GENERAL CONTROLS ---
     @FXML private Button btnToggleEdit;
@@ -60,11 +60,11 @@ public class ViewProfileController {
     private Session activeSession;
     private AuthRepository authRepository;
 
-    public ViewProfileController(AuthRepository authRepository) {
+    public OfficialProfileController(AuthRepository authRepository) {
         this.authRepository = authRepository;
     }
 
-    public ViewProfileController() {
+    public OfficialProfileController() {
     }
 
     @FXML
