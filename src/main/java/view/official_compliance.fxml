@@ -215,13 +215,13 @@
                                                         <Label styleClass="card-title" text="HEALTH &amp; NUTRITION" />
                                                         <Label styleClass="card-title" text="EDUCATION &amp; FAMILY" GridPane.columnIndex="1" />
 
-                                                        <CheckBox text="Pregnancy Care Attended" GridPane.rowIndex="1" />
-                                                        <CheckBox text="Daycare Attendance (85%+)" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                        <CheckBox fx:id="chkPregnancyCare" text="Pregnancy Care Attended" GridPane.rowIndex="1" />
+                                                        <CheckBox fx:id="chkDaycare" text="Daycare Attendance (85%+)" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
-                                                        <CheckBox selected="true" text="Child 0-5 Health Checkup" GridPane.rowIndex="2" />
-                                                        <CheckBox selected="true" text="School Attendance (85%+)" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                        <CheckBox fx:id="chkHealthCheckup" text="Child 0-5 Health Checkup" GridPane.rowIndex="2" />
+                                                        <CheckBox fx:id="chkSchoolAttendance" text="School Attendance (85%+)" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
-                                                        <CheckBox selected="true" text="Deworming (Bi-annual)" GridPane.rowIndex="3" />
+                                                        <CheckBox fx:id="chkDeworming" text="Deworming (Bi-annual)" GridPane.rowIndex="3" />
 
                                                         <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
                                                             <children>
@@ -231,7 +231,7 @@
                                                                         <Button fx:id="btnDecrement" onAction="#handleDecrement" styleClass="counter-btn" text="-" />
                                                                         <TextField fx:id="txtChildrenCount" alignment="CENTER" prefWidth="45.0" styleClass="counter-field" text="2" />
                                                                         <Button fx:id="btnIncrement" onAction="#handleIncrement" styleClass="counter-btn" text="+" />
-                                                                        <Label text="out of 3 eligible" textFill="#64748B">
+                                                                        <Label fx:id="lblEligibleChildrenCount" text="out of 3 eligible" textFill="#64748B">
                                                                             <font>
                                                                                 <Font size="12.0" />
                                                                             </font>
@@ -244,14 +244,14 @@
                                                             </children>
                                                         </VBox>
 
-                                                        <CheckBox selected="true" text="Family Development Session (FDS)" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                                        <CheckBox fx:id="chkFDS" text="Family Development Session (FDS)" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                                                     </children>
                                                 </GridPane>
 
                                                 <Separator prefWidth="200.0" />
                                                 <HBox alignment="CENTER_RIGHT">
                                                     <children>
-                                                        <Button styleClass="btn-primary" text="Record Monthly Status">
+                                                        <Button onAction="#handleRecordMonthlyStatus" styleClass="btn-primary" text="Record Monthly Status">
                                                             <padding>
                                                                 <Insets bottom="10.0" left="24.0" right="24.0" top="10.0" />
                                                             </padding>

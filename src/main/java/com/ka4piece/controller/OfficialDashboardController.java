@@ -392,13 +392,13 @@ public class OfficialDashboardController {
     // --- TAB NAVIGATION HANDLERS ---
 
     @FXML
-    private void goToCompliance(MouseEvent event) {
-        switchSceneFromMouse(event, "/view/official_compliance.fxml");
+    private void goToCompliance(ActionEvent event) {
+        switchSceneFromButton(event, "/view/official_compliance.fxml");
     }
 
     @FXML
-    private void goToJobVacancies(MouseEvent event) {
-        switchSceneFromMouse(event, "/view/official_job_vacancies.fxml");
+    private void goToJobVacancies(ActionEvent event) {
+        switchSceneFromButton(event, "/view/official_job_vacancies.fxml");
     }
 
     // --- MODAL DIALOG HANDLERS ---
@@ -469,10 +469,6 @@ public class OfficialDashboardController {
     }
 
     // --- HELPER ROUTING METHODS ---
-
-    private void switchSceneFromMouse(MouseEvent event, String fxmlPath) {
-        App.switchScene(event, fxmlPath);
-    }
 
     private void switchSceneFromButton(ActionEvent event, String fxmlPath) {
         App.switchScene(event, fxmlPath);
