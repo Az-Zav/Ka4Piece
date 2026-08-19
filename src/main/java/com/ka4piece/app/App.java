@@ -81,6 +81,8 @@ public class App extends Application {
                 return new BeneficiaryDashboardController(authRepository, complianceManager);
             } else if (clazz == ForgotPasswordController.class) {
                 return new ForgotPasswordController(authRepository);
+            } else if (clazz == ChangePasswordController.class) {
+                return new ChangePasswordController(authManager);
             }
             try {
                 return clazz.getDeclaredConstructor().newInstance();

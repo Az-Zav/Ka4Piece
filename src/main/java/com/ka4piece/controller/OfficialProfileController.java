@@ -280,26 +280,17 @@ public class OfficialProfileController {
 
     private void openModal(Event event, String path, String title) {
         try {
-            String resourcePath = path.startsWith("/") ? path : "/" + path;
-            URL location = App.class.getResource(resourcePath);
+            // Delegate FXML loading to App.loadFXML so the custom controllerFactory is applied
+            Parent root = App.loadFXML(path);
 
-            if (location == null) {
-                location = getClass().getResource(resourcePath);
-            }
-            if (location == null && resourcePath.startsWith("/view/")) {
-                location = App.class.getResource(resourcePath.replace("/view/", "/"));
-            }
-
-            if (location == null) {
-                showMessage("FXML file not found: " + path, true);
-                return;
-            }
-
-            FXMLLoader loader = new FXMLLoader(location);
-            Parent root = loader.load();
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
-            stage.initOwner(((Node) event.getSource()).getScene().getWindow());
+            
+            // Retrieve parent window safely from the event source
+            if (event != null && event.getSource() instanceof Node node) {
+                stage.initOwner(node.getScene().getWindow());
+            }
+
             stage.setTitle(title);
             stage.setScene(new Scene(root));
             stage.setResizable(false);

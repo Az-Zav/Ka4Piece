@@ -109,4 +109,24 @@ public class AuthManager {
         h.setExitDate(exitDate);
         authRepository.saveHousehold(h);
     }
+
+    public boolean verifyCurrentPassword(String id, String currentPassword, Session session) {
+        if ("OFFICIAL".equalsIgnoreCase(session.getRole())) {
+            BarangayOfficial o = authRepository.findOfficialById(id);
+            if (o == null || o.getPassword() == null) return false;
+            return o.getPassword().equals(currentPassword);
+        } else {
+            Household h = authRepository.findHouseholdById(id);
+            if (h == null || h.getPassword() == null) return false;
+            return h.getPassword().equals(currentPassword);
+        }
+    }
+
+    public boolean changePassword(String userId, String role, String newPassword) {
+        if ("OFFICIAL".equalsIgnoreCase(role)) {
+            return authRepository.updateOfficialPassword(userId, newPassword);
+        } else {
+            return authRepository.updateHouseholdPassword(userId, newPassword);
+        }
+    }
 }

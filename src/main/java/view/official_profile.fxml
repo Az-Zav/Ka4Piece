@@ -119,7 +119,7 @@
                                 <VBox spacing="6.0">
                                     <children>
                                         <Label styleClass="form-label" text="USER / ACCOUNT ID" />
-                                        <TextField fx:id="txtUserId" editable="false" styleClass="form-control" />
+                                        <TextField fx:id="txtUserId" disable="true" styleClass="form-control" />
                                     </children>
                                 </VBox>
 
@@ -127,7 +127,7 @@
                                 <VBox spacing="6.0">
                                     <children>
                                         <Label fx:id="lblFullName" styleClass="form-label" text="FULL NAME" />
-                                        <TextField fx:id="txtName" editable="false" styleClass="form-control" />
+                                        <TextField fx:id="txtName" styleClass="form-control" />
                                     </children>
                                 </VBox>
 
@@ -135,7 +135,7 @@
                                 <VBox spacing="6.0">
                                     <children>
                                         <Label styleClass="form-label" text="EMAIL ADDRESS" />
-                                        <TextField fx:id="txtEmail" editable="false" styleClass="form-control" />
+                                        <TextField fx:id="txtEmail" styleClass="form-control" />
                                     </children>
                                 </VBox>
 

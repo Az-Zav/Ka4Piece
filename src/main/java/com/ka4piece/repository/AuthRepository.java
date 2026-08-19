@@ -71,12 +71,6 @@ public class AuthRepository extends MySqlStore {
         return true;
     }
 
-    public boolean verifyCurrentPassword(String householdId, String currentPassword) {
-        Household h = findHouseholdById(householdId);
-        if (h == null || h.getPassword() == null) return false;
-        return h.getPassword().equals(currentPassword);
-    }
-
     public void updateHouseholdExitStatus(String householdId, String status, String exitReason, LocalDate exitDate) {
         Household h = findHouseholdById(householdId);
         if (h == null) throw new IllegalArgumentException("Household not found: " + householdId);
