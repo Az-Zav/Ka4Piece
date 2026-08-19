@@ -3,6 +3,8 @@ package com.ka4piece.controller;
 import com.ka4piece.app.App;
 import com.ka4piece.controller.LogoutModalController;
 import com.ka4piece.model.Session;
+
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -54,5 +56,10 @@ public class NavigationUtils {
             e.printStackTrace();
             System.err.println("Failed to display logout modal window.");
         }
+    }
+
+    // Public Service Util Method
+    public static void switchSceneFromButton(ActionEvent event, String fxmlPath) {
+        com.ka4piece.app.App.switchScene(event, fxmlPath);
     }
 }

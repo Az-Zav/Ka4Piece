@@ -82,6 +82,14 @@ public class OfficialDashboardController {
     @FXML private VBox boxSearchResults;
     @FXML private Label lblResultCount;
 
+    // --- HOUSEHOLD PROFILE BADGES ---
+    @FXML private Label lblStatusBadge;
+    @FXML private Label lblPregnantBadge;
+    @FXML private Label lblHas0_5Badge;
+    @FXML private Label lblElemBadge;
+    @FXML private Label lblJhsBadge;
+    @FXML private Label lblShsBadge;
+
     // --- COMPLIANCE FORM CONTROLS ---
     @FXML private CheckBox chkPregnancyCare;
     @FXML private CheckBox chkHealthCheckup;
@@ -160,26 +168,74 @@ public class OfficialDashboardController {
         // Save current selection context
         this.selectedHousehold = h;
 
-        // 1. Update Head Name
+        // 1. EXTRACT & FORMAT HEADER TEXT VARIABLES
+        String headName = (h.getHeadName() != null && !h.getHeadName().isBlank()) 
+                ? h.getHeadName() 
+                : "Unnamed Household";
+
+        String householdId = (h.getHouseholdId() != null) 
+                ? h.getHouseholdId() 
+                : "N/A";
+
+        String addressInfo = (h.getBarangay() != null && !h.getBarangay().isBlank()) 
+                ? h.getBarangay() 
+                : ((h.getAddress() != null && !h.getAddress().isBlank()) ? h.getAddress() : "No Address Listed");
+
+        String subDetailsText = addressInfo + "  •  ID: " + householdId;
+
+        // 2. UPDATE HEADER UI LABELS
         if (lblHeaderName != null) {
-            lblHeaderName.setText(h.getHeadName() != null ? h.getHeadName() : "Unnamed Household");
+            lblHeaderName.setText(headName);
         }
 
-        // 2. Format & Update Sub-details (Barangay / Address & ID)
         if (lblHeaderSubDetails != null) {
-            String id = h.getHouseholdId() != null ? h.getHouseholdId() : "N/A";
-            
-            // Build address / barangay text string
-            String addressInfo = "";
-            if (h.getBarangay() != null && !h.getBarangay().isBlank()) {
-                addressInfo = h.getBarangay();
-            } else if (h.getAddress() != null && !h.getAddress().isBlank()) {
-                addressInfo = h.getAddress();
-            } else {
-                addressInfo = "No Barangay/Address Listed";
-            }
+            lblHeaderSubDetails.setText(subDetailsText);
+        }
 
-            lblHeaderSubDetails.setText(addressInfo + "  •  ID: " + id);
+        // 3. FETCH VALUES FROM MODEL
+        boolean hasPregnant = h.isHasPregnantMember();
+        boolean has0to5 = h.isHas0to5Member();
+        int elemCount = h.getElemCount();
+        int jhsCount = h.getJhsCount();
+        int shsCount = h.getShsCount();
+        boolean hasAnySchoolChild = (elemCount > 0) || (jhsCount > 0) || (shsCount > 0);
+
+        // 4. UPDATE HEADER BADGES (VISIBLE / MANAGED TOGGLES & TEXT)
+        
+        // Pregnant Badge
+        if (lblPregnantBadge != null) {
+            lblPregnantBadge.setVisible(hasPregnant);
+            lblPregnantBadge.setManaged(hasPregnant);
+        }
+
+        // 0-5 Children Badge
+        if (lblHas0_5Badge != null) {
+            lblHas0_5Badge.setVisible(has0to5);
+            lblHas0_5Badge.setManaged(has0to5);
+        }
+
+        // Elementary Badge
+        if (lblElemBadge != null) {
+            boolean hasElem = elemCount > 0;
+            lblElemBadge.setText(elemCount + " ELEM");
+            lblElemBadge.setVisible(hasElem);
+            lblElemBadge.setManaged(hasElem);
+        }
+
+        // Junior High Badge
+        if (lblJhsBadge != null) {
+            boolean hasJhs = jhsCount > 0;
+            lblJhsBadge.setText(jhsCount + " JHS");
+            lblJhsBadge.setVisible(hasJhs);
+            lblJhsBadge.setManaged(hasJhs);
+        }
+
+        // Senior High Badge
+        if (lblShsBadge != null) {
+            boolean hasShs = shsCount > 0;
+            lblShsBadge.setText(shsCount + " SHS");
+            lblShsBadge.setVisible(hasShs);
+            lblShsBadge.setManaged(hasShs);
         }
 
         // Populate compliance form
@@ -221,7 +277,7 @@ public class OfficialDashboardController {
                 txtChildrenCount.setText(String.valueOf(total));
             }
         } else {
-            // Reset to defaults
+            // Reset to defaults if currentRecord = null
             if (chkPregnancyCare != null) chkPregnancyCare.setSelected(false);
             if (chkHealthCheckup != null) chkHealthCheckup.setSelected(false);
             if (chkDeworming != null) chkDeworming.setSelected(false);
@@ -256,15 +312,15 @@ public class OfficialDashboardController {
         boolean hasChildren = (household.getElemCount() > 0 || household.getJhsCount() > 0 || household.getShsCount() > 0);
 
         if (chkPregnancyCare != null) {
-            chkPregnancyCare.setVisible(household.isHasPregnantMember());
+            chkPregnancyCare.setDisable(!household.isHasPregnantMember());
             chkPregnancyCare.setManaged(household.isHasPregnantMember());
         }
         if (chkHealthCheckup != null) {
-            chkHealthCheckup.setVisible(household.isHas0to5Member());
+            chkHealthCheckup.setDisable(!household.isHas0to5Member());
             chkHealthCheckup.setManaged(household.isHas0to5Member());
         }
         if (chkDeworming != null) {
-            chkDeworming.setVisible(hasChildren);
+            chkDeworming.setDisable(!hasChildren);
             chkDeworming.setManaged(hasChildren);
         }
     }
@@ -345,7 +401,7 @@ public class OfficialDashboardController {
 
     @FXML
     private void handleOpenViewProfile(ActionEvent event) {
-        switchSceneFromButton(event, "/view/official_profile.fxml");
+        NavigationUtils.switchSceneFromButton(event, "/view/official_profile.fxml");
     }
 
     @FXML
@@ -378,14 +434,14 @@ public class OfficialDashboardController {
                 if (Session.getInstance() != null) {
                     Session.getInstance().clearSession();
                 }
-                switchSceneFromButton(event, "/view/login.fxml");
+                NavigationUtils.switchSceneFromButton(event, "/view/login.fxml");
             }
         } catch (Exception e) {
             // Direct fallback if modal loading encounters pathing variations
             if (Session.getInstance() != null) {
                 Session.getInstance().clearSession();
             }
-            switchSceneFromButton(event, "/view/login.fxml");
+            NavigationUtils.switchSceneFromButton(event, "/view/login.fxml");
         }
     }
 
@@ -393,12 +449,12 @@ public class OfficialDashboardController {
 
     @FXML
     private void goToCompliance(ActionEvent event) {
-        switchSceneFromButton(event, "/view/official_compliance.fxml");
+        NavigationUtils.switchSceneFromButton(event, "/view/official_compliance.fxml");
     }
 
     @FXML
     private void goToJobVacancies(ActionEvent event) {
-        switchSceneFromButton(event, "/view/official_job_vacancies.fxml");
+        NavigationUtils.switchSceneFromButton(event, "/view/official_job_vacancies.fxml");
     }
 
     // --- MODAL DIALOG HANDLERS ---
@@ -466,12 +522,6 @@ public class OfficialDashboardController {
         if (currentCount > MIN_CHILDREN) {
             txtChildrenCount.setText(String.valueOf(currentCount - 1));
         }
-    }
-
-    // --- HELPER ROUTING METHODS ---
-
-    private void switchSceneFromButton(ActionEvent event, String fxmlPath) {
-        App.switchScene(event, fxmlPath);
     }
 
     private URL resolveResource(String fxmlPath) {

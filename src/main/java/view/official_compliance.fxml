@@ -176,14 +176,18 @@
                                                                 <Insets top="6.0" />
                                                             </padding>
                                                             <children>
-                                                                <Label styleClass="badge-active" text="ACTIVE STATUS" />
-                                                                <Label styleClass="badge-gray" text="3 CHILDREN" />
+                                                                <Label fx:id="lblStatusBadge" styleClass="badge-active" text="STATUS" />
+                                                                <Label fx:id="lblPregnantBadge" styleClass="badge-gray" text="Pregnant Member" />
+                                                                <Label fx:id="lblHas0_5Badge" styleClass="badge-gray" text="0-5 Children" />
+                                                                <Label fx:id="lblElemBadge" styleClass="badge-gray" text="Elem Student" />
+                                                                <Label fx:id="lblJhsBadge" styleClass="badge-gray" text="JHS Student" />
+                                                                <Label fx:id="lblShsBadge" styleClass="badge-gray" text="SHS Student" />
                                                             </children>
                                                         </HBox>
                                                     </children>
                                                 </VBox>
                                                 <Region HBox.hgrow="ALWAYS" />
-                                                <Button styleClass="btn-outline" text="👁 View Profile">
+                                                <Button onAction="#handleOpenViewProfile" styleClass="btn-outline" text="👁 View Profile">
                                                     <padding>
                                                         <Insets bottom="8.0" left="16.0" right="16.0" top="8.0" />
                                                     </padding>

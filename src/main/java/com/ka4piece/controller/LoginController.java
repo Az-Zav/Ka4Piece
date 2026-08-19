@@ -135,7 +135,7 @@ public class LoginController {
 
     @FXML
     private void handleForgotPassword(ActionEvent event) {
-        switchSceneFromButton(event, "/forgot_password.fxml");
+        NavigationUtils.switchSceneFromButton(event, "/forgot_password.fxml");
     }
 
     private void showError(String message) {
@@ -201,13 +201,10 @@ public class LoginController {
      */
     private void navigateToMainApp(ActionEvent event, String userType) {
         if ("OFFICIAL".contains(userType)) {
-            switchSceneFromButton(event, "/view/official_compliance.fxml");
+            NavigationUtils.switchSceneFromButton(event, "/view/official_compliance.fxml");
         } else {
-            switchSceneFromButton(event, "/view/beneficiary_compliance.fxml");
+            NavigationUtils.switchSceneFromButton(event, "/view/beneficiary_compliance.fxml");
         }
     }
 
-    private void switchSceneFromButton(ActionEvent event, String fxmlPath) {
-        com.ka4piece.app.App.switchScene(event, fxmlPath);
-    }
 }
