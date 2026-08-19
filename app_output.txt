@@ -1,0 +1,17 @@
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by com.sun.glass.utils.NativeLibLoader in module javafx.graphics (file:/C:/Users/Victor%20Jazz/Desktop/IamFolder/(1)%20Projects/Ka4Piece/lib/javafx.graphics.jar)
+WARNING: Use --enable-native-access=javafx.graphics to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+java.lang.IllegalStateException: Location is not set.
+	at javafx.fxml@26.0.2/javafx.fxml.FXMLLoader.loadImpl(FXMLLoader.java:2526)
+	at javafx.fxml@26.0.2/javafx.fxml.FXMLLoader.load(FXMLLoader.java:2503)
+	at com.ka4piece.app.App.start(App.java:19)
+	at javafx.graphics@26.0.2/com.sun.javafx.application.LauncherImpl.lambda$launchApplication1$4(LauncherImpl.java:845)
+	at javafx.graphics@26.0.2/com.sun.javafx.application.PlatformImpl.lambda$runAndWait$0(PlatformImpl.java:449)
+	at javafx.graphics@26.0.2/com.sun.javafx.application.PlatformImpl.lambda$runLater$0(PlatformImpl.java:424)
+	at javafx.graphics@26.0.2/com.sun.glass.ui.InvokeLaterDispatcher$Future.run(InvokeLaterDispatcher.java:95)
+	at javafx.graphics@26.0.2/com.sun.glass.ui.win.WinApplication._runLoop(Native Method)
+	at javafx.graphics@26.0.2/com.sun.glass.ui.win.WinApplication.lambda$runLoop$0(WinApplication.java:173)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Failed to load login.fxml. Verify the resource path and CSS/image locations.

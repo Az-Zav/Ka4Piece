@@ -75,6 +75,8 @@ public class App extends Application {
                 return new OfficialDashboardController(authManager, complianceManager, jobMatchManager);
             } else if (clazz == OfficialProfileController.class) {
                 return new OfficialProfileController(authRepository);
+            } else if (clazz == RegisterHouseholdController.class) {
+                return new RegisterHouseholdController(authManager);
             } else if (clazz == BeneficiaryDashboardController.class) {
                 return new BeneficiaryDashboardController(authRepository, complianceManager);
             } else if (clazz == ForgotPasswordController.class) {

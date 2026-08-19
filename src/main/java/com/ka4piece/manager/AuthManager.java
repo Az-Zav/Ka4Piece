@@ -4,6 +4,7 @@ import com.ka4piece.model.BarangayOfficial;
 import com.ka4piece.model.Household;
 import com.ka4piece.model.Session;
 import com.ka4piece.repository.AuthRepository;
+import com.ka4piece.utilities.IdUtil;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -47,7 +48,6 @@ public class AuthManager {
     public void registerHousehold(Household h) {
         if (authRepository.findHouseholdByEmail(h.getEmail()) != null)
             throw new IllegalArgumentException("Email already taken.");
-        h.setHouseholdId(authRepository.generateId("HH"));
         h.setStatus("ACTIVE");
         authRepository.saveHousehold(h);
     }
@@ -61,7 +61,6 @@ public class AuthManager {
             throw new SecurityException("Only an admin official can register new officials.");
         if (authRepository.findOfficialByEmail(o.getEmail()) != null)
             throw new IllegalArgumentException("email already taken.");
-        o.setOfficialId(authRepository.generateId("OFF"));
         authRepository.saveOfficial(o);
     }
 
