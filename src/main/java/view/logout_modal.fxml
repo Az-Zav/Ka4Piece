@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" prefWidth="420.0" spacing="20.0" styleClass="modal-container" stylesheets="@logout_modal.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ka4piece.controller.LogoutModalController">
+<VBox alignment="CENTER" prefWidth="420.0" spacing="20.0" styleClass="modal-container" stylesheets="@logout_modal.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ka4piece.controller.LogoutModalController">
     <padding>
         <Insets bottom="32.0" left="32.0" right="32.0" top="32.0" />
     </padding>

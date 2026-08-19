@@ -6,7 +6,6 @@ import com.ka4piece.model.Household;
 import com.ka4piece.model.Session;
 import com.ka4piece.repository.AuthRepository;
 import com.ka4piece.repository.DbConfig;
-import com.ka4piece.util.NavigationUtils;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

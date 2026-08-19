@@ -5,8 +5,8 @@ import com.ka4piece.model.Household;
 import com.ka4piece.model.Session;
 import com.ka4piece.repository.AuthRepository;
 import com.ka4piece.repository.DbConfig;
-import com.ka4piece.util.NavigationUtils;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -45,13 +45,20 @@ public class BeneficiaryProfileController {
     private Session activeSession;
     private AuthRepository authRepository;
 
+    public BeneficiaryProfileController(AuthRepository authRepository) {
+        this.authRepository = authRepository;
+    }
+
+    public BeneficiaryProfileController() {
+    }
+
     @FXML
     public void initialize() {
         if (txtUserId != null) {
             txtUserId.setEditable(false);
         }
 
-        // Dynamically load DB config to prevent Access Denied SQL crashes
+        // Load DB config as fallback to prevent null repository crashes
         if (authRepository == null) {
             try {
                 DbConfig config = new DbConfig("db.properties");
@@ -61,7 +68,6 @@ public class BeneficiaryProfileController {
             }
         }
 
-        // Fetch active global session instance
         activeSession = Session.getInstance();
 
         autoPopulateProfileData();
@@ -106,7 +112,6 @@ public class BeneficiaryProfileController {
         if (txtAddress != null) txtAddress.setEditable(enable);
         if (txtBarangay != null) txtBarangay.setEditable(enable);
 
-        // Toggle visibility between action box (Save/Cancel) and main action buttons
         if (boxEditActions != null) {
             boxEditActions.setVisible(enable);
             boxEditActions.setManaged(enable);
@@ -162,7 +167,6 @@ public class BeneficiaryProfileController {
                 return;
             }
         } else {
-            // Guest mode session update fallback
             if (activeSession != null) {
                 activeSession.setDisplayName(newName);
             }
@@ -180,17 +184,17 @@ public class BeneficiaryProfileController {
     // --- NAVIGATION HANDLERS ---
 
     @FXML
-    private void handleOpenViewProfile(ActionEvent event) {
+    private void handleOpenViewProfile(Event event) {
         App.switchScene(event, "/view/beneficiary_profile.fxml");
     }
 
     @FXML
-    private void goToCompliance(ActionEvent event) {
+    private void goToCompliance(Event event) {
         App.switchScene(event, "/view/beneficiary_compliance.fxml");
     }
 
     @FXML
-    private void goToJobMatches(ActionEvent event) {
+    private void goToJobMatches(Event event) {
         App.switchScene(event, "/view/beneficiary_job_matches.fxml");
     }
 
@@ -205,13 +209,13 @@ public class BeneficiaryProfileController {
     }
 
     @FXML
-    private void handleLogout(ActionEvent event) {
+    private void handleLogout(Event event) {
         NavigationUtils.showLogoutModal(event);
     }
 
     // --- HELPER METHODS ---
 
-    private void openModal(ActionEvent event, String path, String title) {
+    private void openModal(Event event, String path, String title) {
         try {
             String resourcePath = path.startsWith("/") ? path : "/" + path;
             URL location = App.class.getResource(resourcePath);

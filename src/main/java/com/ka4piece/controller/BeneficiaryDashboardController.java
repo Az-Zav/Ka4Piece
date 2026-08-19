@@ -3,7 +3,6 @@ package com.ka4piece.controller;
 import com.ka4piece.app.App;
 import com.ka4piece.manager.ComplianceManager;
 import com.ka4piece.repository.AuthRepository;
-import com.ka4piece.util.NavigationUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
