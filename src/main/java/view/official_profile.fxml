@@ -2,7 +2,6 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
@@ -13,7 +12,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="800.0" prefWidth="1280.0" stylesheets="@official_profile.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ka4piece.controller.OfficialProfileController">
+<BorderPane prefHeight="800.0" prefWidth="1280.0" stylesheets="@official_profile.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ka4piece.controller.OfficialProfileController">
 
     <!-- TOP NAVIGATION BAR -->
     <top>
@@ -71,7 +70,7 @@
                 <Insets bottom="40.0" top="40.0" />
             </padding>
             <children>
-                <!-- MAIN PROFILE CARD (WIDENED TO 640px) -->
+                <!-- MAIN PROFILE CARD -->
                 <VBox maxWidth="640.0" prefWidth="640.0" spacing="20.0" styleClass="profile-card">
                     <padding>
                         <Insets bottom="35.0" left="35.0" right="35.0" top="30.0" />
@@ -92,8 +91,17 @@
                                 <!-- RIGHT ACTION BUTTONS WITH MINIMUM WIDTH -->
                                 <VBox alignment="TOP_RIGHT" minWidth="150.0" spacing="8.0">
                                     <children>
+                                        <!-- DEFAULT VIEW BUTTONS -->
                                         <Button fx:id="btnToggleEdit" minWidth="145.0" onAction="#handleToggleEditMode" styleClass="btn-outline" text="✎ Edit Profile" />
                                         <Button fx:id="btnChangePassword" minWidth="145.0" onAction="#handleChangePassword" styleClass="btn-outline" text="🔒 Change Password" />
+
+                                        <!-- EDIT MODE ACTIONS PANEL (Hidden by default) -->
+                                        <HBox fx:id="boxEditActions" alignment="CENTER_RIGHT" managed="false" spacing="8.0" visible="false">
+                                            <children>
+                                                <Button onAction="#handleCancelEdit" styleClass="btn-outline" text="Cancel" />
+                                                <Button onAction="#handleSaveProfile" styleClass="btn-primary" text="💾 Save Changes" />
+                                            </children>
+                                        </HBox>
                                     </children>
                                 </VBox>
                             </children>
@@ -132,21 +140,9 @@
                                 </VBox>
 
                                 <!-- OFFICIAL SPECIFIC FIELDS -->
-                                <VBox fx:id="boxOfficialFields" spacing="12.0">
-                                    <children>
-                                        <CheckBox fx:id="chkIsAdmin" disable="true" styleClass="custom-checkbox" text="Administrator Privileges (isAdmin)" />
-                                    </children>
-                                </VBox>
+                                <VBox fx:id="boxOfficialFields" spacing="12.0" />
                             </children>
                         </VBox>
-
-                        <!-- ACTION BUTTONS (EDIT MODE ONLY) -->
-                        <HBox fx:id="boxEditActions" alignment="CENTER_RIGHT" managed="false" spacing="12.0" style="-fx-padding: 10px 0 0 0;" visible="false">
-                            <children>
-                                <Button onAction="#handleCancelEdit" styleClass="btn-cancel" text="Cancel" />
-                                <Button onAction="#handleSaveProfile" styleClass="btn-primary" text="Save Changes" />
-                            </children>
-                        </HBox>
 
                     </children>
                 </VBox>

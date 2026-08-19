@@ -1,11 +1,13 @@
 package com.ka4piece.controller;
 
 import com.ka4piece.app.App;
+import com.ka4piece.model.BarangayOfficial;
 import com.ka4piece.model.Household;
 import com.ka4piece.model.Session;
 import com.ka4piece.repository.AuthRepository;
 import com.ka4piece.repository.DbConfig;
 import com.ka4piece.util.NavigationUtils;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -13,19 +15,21 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.net.URL;
 
-public class BeneficiaryProfileController {
+public class OfficialProfileController {
 
-    // --- GENERAL CONTROLS ---
     @FXML private Button btnToggleEdit;
     @FXML private Button btnChangePassword;
     @FXML private TextField txtUserId;
@@ -34,24 +38,33 @@ public class BeneficiaryProfileController {
     @FXML private TextField txtEmail;
     @FXML private Label lblMessage;
 
-    // --- HOUSEHOLD / BENEFICIARY FIELDS ---
+    @FXML private VBox boxHouseholdFields;
     @FXML private TextField txtAddress;
     @FXML private TextField txtBarangay;
+    @FXML private ComboBox<String> cmbStatus;
+    @FXML private VBox boxExitDetails;
+    @FXML private TextField txtExitReason;
+    @FXML private DatePicker dpExitDate;
 
-    // --- CONTAINER PANELS ---
+    @FXML private VBox boxOfficialFields;
+    @FXML private CheckBox chkIsAdmin;
     @FXML private HBox boxEditActions;
 
-    private boolean isEditMode = false;
     private Session activeSession;
     private AuthRepository authRepository;
 
+    public OfficialProfileController(AuthRepository authRepository) { this.authRepository = authRepository; }
+    public OfficialProfileController() {}
+
     @FXML
     public void initialize() {
-        if (txtUserId != null) {
-            txtUserId.setEditable(false);
+        if (txtUserId != null) txtUserId.setEditable(false);
+
+        if (cmbStatus != null) {
+            cmbStatus.setItems(FXCollections.observableArrayList("Active", "Exited"));
+            cmbStatus.valueProperty().addListener((obs, oldVal, newVal) -> toggleExitDetails("Exited".equalsIgnoreCase(newVal)));
         }
 
-        // Dynamically load DB config to prevent Access Denied SQL crashes
         if (authRepository == null) {
             try {
                 DbConfig config = new DbConfig("db.properties");
@@ -61,9 +74,7 @@ public class BeneficiaryProfileController {
             }
         }
 
-        // Fetch active global session instance
         activeSession = Session.getInstance();
-
         autoPopulateProfileData();
         setEditMode(false);
     }
@@ -71,63 +82,71 @@ public class BeneficiaryProfileController {
     private void autoPopulateProfileData() {
         if (activeSession == null || activeSession.getUserId() == null) {
             if (txtUserId != null) txtUserId.setText("N/A");
-            if (txtName != null) txtName.setText("Guest Beneficiary");
+            if (txtName != null) txtName.setText("Guest User");
             if (txtEmail != null) txtEmail.setText("guest@ka4piece.com");
             return;
         }
 
-        if (lblFullName != null) {
-            lblFullName.setText("HEAD OF HOUSEHOLD NAME");
-        }
+        boolean isOfficial = "OFFICIAL".equalsIgnoreCase(activeSession.getRole());
 
-        Household household = authRepository != null
-                ? authRepository.findHouseholdById(activeSession.getUserId())
-                : null;
+        if (isOfficial) {
+            if (lblFullName != null) lblFullName.setText("OFFICIAL NAME");
 
-        if (household != null) {
-            if (txtUserId != null) txtUserId.setText(household.getHouseholdId());
-            if (txtName != null) txtName.setText(household.getHeadName());
-            if (txtEmail != null) txtEmail.setText(household.getEmail());
-            if (txtAddress != null) txtAddress.setText(household.getAddress());
-            if (txtBarangay != null) txtBarangay.setText(household.getBarangay());
+            BarangayOfficial official = authRepository != null ? authRepository.findOfficialById(activeSession.getUserId()) : null;
+
+            if (official != null) {
+                if (txtUserId != null) txtUserId.setText(official.getOfficialId());
+                if (txtName != null) txtName.setText(official.getName());
+                if (txtEmail != null) txtEmail.setText(official.getEmail());
+                if (chkIsAdmin != null) chkIsAdmin.setSelected(official.isAdmin());
+            } else {
+                if (txtUserId != null) txtUserId.setText(activeSession.getUserId());
+                if (txtName != null) txtName.setText(activeSession.getDisplayName());
+            }
         } else {
-            if (txtUserId != null) txtUserId.setText(activeSession.getUserId());
-            if (txtName != null) txtName.setText(activeSession.getDisplayName());
+            if (lblFullName != null) lblFullName.setText("HEAD OF HOUSEHOLD NAME");
+
+            Household household = authRepository != null ? authRepository.findHouseholdById(activeSession.getUserId()) : null;
+
+            if (household != null) {
+                if (txtUserId != null) txtUserId.setText(household.getHouseholdId());
+                if (txtName != null) txtName.setText(household.getHeadName());
+                if (txtEmail != null) txtEmail.setText(household.getEmail());
+                if (txtAddress != null) txtAddress.setText(household.getAddress());
+                if (txtBarangay != null) txtBarangay.setText(household.getBarangay());
+                if (cmbStatus != null) cmbStatus.setValue(household.getStatus() != null ? household.getStatus() : "Active");
+            }
         }
     }
 
     private void setEditMode(boolean enable) {
-        isEditMode = enable;
-
-        if (txtUserId != null) txtUserId.setEditable(false);
-
         if (txtName != null) txtName.setEditable(enable);
         if (txtEmail != null) txtEmail.setEditable(enable);
         if (txtAddress != null) txtAddress.setEditable(enable);
         if (txtBarangay != null) txtBarangay.setEditable(enable);
 
-        // Toggle visibility between action box (Save/Cancel) and main action buttons
         if (boxEditActions != null) {
             boxEditActions.setVisible(enable);
             boxEditActions.setManaged(enable);
         }
-
         if (btnToggleEdit != null) {
             btnToggleEdit.setVisible(!enable);
             btnToggleEdit.setManaged(!enable);
         }
-
         if (btnChangePassword != null) {
             btnChangePassword.setVisible(!enable);
             btnChangePassword.setManaged(!enable);
         }
     }
 
-    @FXML
-    private void handleToggleEditMode(ActionEvent event) {
-        setEditMode(true);
-        showMessage("", false);
+    private void toggleExitDetails(boolean show) {
+        if (boxExitDetails != null) {
+            boxExitDetails.setVisible(show);
+            boxExitDetails.setManaged(show);
+        }
     }
+
+    @FXML private void handleToggleEditMode(ActionEvent event) { setEditMode(true); showMessage("", false); }
 
     @FXML
     private void handleCancelEdit(ActionEvent event) {
@@ -146,29 +165,25 @@ public class BeneficiaryProfileController {
             return;
         }
 
-        String userId = (activeSession != null) ? activeSession.getUserId() : null;
+        if (activeSession != null && authRepository != null) {
+            activeSession.setDisplayName(newName);
+            String userId = activeSession.getUserId();
+            boolean isOfficial = "OFFICIAL".equalsIgnoreCase(activeSession.getRole());
 
-        if (userId != null && authRepository != null) {
             try {
-                activeSession.setDisplayName(newName);
-
-                String address = txtAddress != null ? txtAddress.getText().trim() : "";
-                String barangay = txtBarangay != null ? txtBarangay.getText().trim() : "";
-                authRepository.updateHouseholdProfile(userId, newName, address, barangay, newEmail);
+                if (isOfficial) {
+                    authRepository.updateOfficialProfile(userId, newName, newEmail);
+                } else {
+                    String address = txtAddress != null ? txtAddress.getText().trim() : "";
+                    String barangay = txtBarangay != null ? txtBarangay.getText().trim() : "";
+                    authRepository.updateHouseholdProfile(userId, newName, address, barangay, newEmail);
+                }
                 showMessage("Profile updated successfully!", false);
             } catch (Exception e) {
-                e.printStackTrace();
                 showMessage("Failed to save profile: " + e.getMessage(), true);
                 return;
             }
-        } else {
-            // Guest mode session update fallback
-            if (activeSession != null) {
-                activeSession.setDisplayName(newName);
-            }
-            showMessage("Guest profile updated locally.", false);
         }
-
         setEditMode(false);
     }
 
@@ -177,39 +192,9 @@ public class BeneficiaryProfileController {
         openModal(event, "/view/change_password_dialog.fxml", "Change Password");
     }
 
-    // --- NAVIGATION HANDLERS ---
-
-    @FXML
-    private void handleOpenViewProfile(ActionEvent event) {
-        App.switchScene(event, "/view/beneficiary_profile.fxml");
-    }
-
-    @FXML
-    private void goToCompliance(ActionEvent event) {
-        App.switchScene(event, "/view/beneficiary_compliance.fxml");
-    }
-
-    @FXML
-    private void goToJobMatches(ActionEvent event) {
-        App.switchScene(event, "/view/beneficiary_job_matches.fxml");
-    }
-
-    @FXML
-    private void goToComplianceMouse(MouseEvent event) {
-        App.switchScene(event, "/view/beneficiary_compliance.fxml");
-    }
-
-    @FXML
-    private void goToJobMatchesMouse(MouseEvent event) {
-        App.switchScene(event, "/view/beneficiary_job_matches.fxml");
-    }
-
-    @FXML
-    private void handleLogout(ActionEvent event) {
-        NavigationUtils.showLogoutModal(event);
-    }
-
-    // --- HELPER METHODS ---
+    @FXML private void goToCompliance(ActionEvent event) { App.switchScene(event, "/view/official_compliance.fxml"); }
+    @FXML private void goToJobVacancies(ActionEvent event) { App.switchScene(event, "/view/official_job_vacancies.fxml"); }
+    @FXML private void handleLogout(ActionEvent event) { NavigationUtils.showLogoutModal(event); }
 
     private void openModal(ActionEvent event, String path, String title) {
         try {
@@ -245,15 +230,10 @@ public class BeneficiaryProfileController {
 
     private void showMessage(String msg, boolean isError) {
         if (lblMessage != null) {
-            if (msg == null || msg.isEmpty()) {
-                lblMessage.setVisible(false);
-                lblMessage.setManaged(false);
-            } else {
-                lblMessage.setText(msg);
-                lblMessage.setTextFill(isError ? Color.RED : Color.GREEN);
-                lblMessage.setVisible(true);
-                lblMessage.setManaged(true);
-            }
+            lblMessage.setText(msg);
+            lblMessage.setTextFill(isError ? Color.RED : Color.GREEN);
+            lblMessage.setVisible(!msg.isEmpty());
+            lblMessage.setManaged(!msg.isEmpty());
         }
     }
 }

@@ -4,6 +4,8 @@ import com.ka4piece.app.App;
 import com.ka4piece.manager.AuthManager;
 import com.ka4piece.manager.ComplianceManager;
 import com.ka4piece.manager.JobMatchManager;
+import com.ka4piece.model.Household;
+import com.ka4piece.model.Session;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -18,14 +20,13 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.scene.layout.VBox;
-
-import java.util.List;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 
 public class OfficialDashboardController {
 
@@ -89,7 +90,7 @@ public class OfficialDashboardController {
         }
     }
 
-    // --- SEARCH METHODS --- 
+    // --- SEARCH METHODS ---
 
     @FXML
     private void handleSearch(ActionEvent event) {
@@ -100,7 +101,7 @@ public class OfficialDashboardController {
 
     private void performSearch(String query) {
         if (authManager == null) return;
-        java.util.List<com.ka4piece.model.Household> results = authManager.searchHouseholds(query);
+        List<Household> results = authManager.searchHouseholds(query);
 
         if (lblResultCount != null) {
             lblResultCount.setText("RESULTS (" + results.size() + ")");
@@ -108,7 +109,7 @@ public class OfficialDashboardController {
 
         if (boxSearchResults != null) {
             boxSearchResults.getChildren().clear();
-            for (com.ka4piece.model.Household h : results) {
+            for (Household h : results) {
                 VBox itemBox = new VBox();
                 itemBox.getStyleClass().add("list-item");
                 itemBox.setSpacing(2.0);
@@ -130,7 +131,7 @@ public class OfficialDashboardController {
         }
     }
 
-    private void selectHousehold(com.ka4piece.model.Household h) {
+    private void selectHousehold(Household h) {
         // Selection hook for displaying details & history
     }
 
@@ -143,10 +144,43 @@ public class OfficialDashboardController {
 
     @FXML
     private void handleLogout(ActionEvent event) {
-        if (com.ka4piece.model.Session.getInstance() != null) {
-            com.ka4piece.model.Session.getInstance().clearSession();
+        try {
+            Parent root = App.loadFXML("/view/logout_modal.fxml");
+
+            // Fallback load if modal is directly in resources root
+            if (root == null) {
+                root = App.loadFXML("/logout_modal.fxml");
+            }
+
+            FXMLLoader loader = new FXMLLoader();
+            // Obtain controller from loaded root context or load modal scene
+            Stage modalStage = new Stage();
+            modalStage.initModality(Modality.APPLICATION_MODAL);
+
+            Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            modalStage.initOwner(currentStage);
+            modalStage.setTitle("Confirm Logout");
+            modalStage.setScene(new Scene(root));
+            modalStage.setResizable(false);
+
+            LogoutModalController modalController = (LogoutModalController) root.getProperties().get("controller");
+
+            modalStage.showAndWait();
+
+            // Perform logout if user confirmed in modal
+            if (LogoutModalController.isConfirmed()) {
+                if (Session.getInstance() != null) {
+                    Session.getInstance().clearSession();
+                }
+                switchSceneFromButton(event, "/view/login.fxml");
+            }
+        } catch (Exception e) {
+            // Direct fallback if modal loading encounters pathing variations
+            if (Session.getInstance() != null) {
+                Session.getInstance().clearSession();
+            }
+            switchSceneFromButton(event, "/view/login.fxml");
         }
-        switchSceneFromButton(event, "/view/login.fxml");
     }
 
     // --- TAB NAVIGATION HANDLERS ---
@@ -189,7 +223,6 @@ public class OfficialDashboardController {
             lblSuccessMessage.setVisible(true);
         }
     }
-
 
     // --- STEPPER HANDLERS ---
 

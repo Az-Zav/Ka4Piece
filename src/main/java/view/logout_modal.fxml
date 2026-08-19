@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="CENTER" prefWidth="420.0" spacing="20.0" styleClass="modal-container" stylesheets="@logout_modal.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ka4piece.controller.LogoutModalController">
+    <padding>
+        <Insets bottom="32.0" left="32.0" right="32.0" top="32.0" />
+    </padding>
+    <children>
+
+        <!-- TEXT CONTENT -->
+        <VBox alignment="CENTER" spacing="8.0">
+            <children>
+                <Label styleClass="modal-title" text="Log Out Confirmation">
+                    <font>
+                        <Font name="System Bold" size="20.0" />
+                    </font>
+                </Label>
+                <Label styleClass="modal-subtitle" text="Are you sure you want to log out of your account? Any unsaved progress will be lost." textAlignment="CENTER" wrapText="true">
+                    <font>
+                        <Font size="13.0" />
+                    </font>
+                </Label>
+            </children>
+        </VBox>
+
+        <!-- ACTION BUTTONS -->
+        <HBox alignment="CENTER" maxWidth="1.7976931348623157E308" spacing="12.0">
+            <children>
+                <Button fx:id="btnCancel" maxWidth="1.7976931348623157E308" onAction="#handleCancel" styleClass="btn-cancel" text="Cancel" HBox.hgrow="ALWAYS">
+                    <padding>
+                        <Insets bottom="10.0" top="10.0" />
+                    </padding>
+                </Button>
+                <Button fx:id="btnLogout" maxWidth="1.7976931348623157E308" onAction="#handleConfirmLogout" styleClass="btn-danger" text="Yes, Log Out" HBox.hgrow="ALWAYS">
+                    <padding>
+                        <Insets bottom="10.0" top="10.0" />
+                    </padding>
+                </Button>
+            </children>
+            <VBox.margin>
+                <Insets top="10.0" />
+            </VBox.margin>
+        </HBox>
+    </children>
+</VBox>
