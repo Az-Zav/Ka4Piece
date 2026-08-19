@@ -59,16 +59,16 @@ public class ComplianceManager {
      *   <li>Rice subsidy ₱600 — health OR education compliance; FDS no longer gates it.</li>
      * </ul>
      */
-    public GrantBreakdown computeMonthlyGrant(ComplianceRecord r, String recordType, String correctionReason) {
-        Household household = authRepository.findHouseholdById(r.getHouseholdId());
-        if (household == null) {
-            throw new IllegalArgumentException("Household not found: " + r.getHouseholdId());
-        }
+    public GrantBreakdown calculateGrantBreakdown(ComplianceRecord r, Household household) {
+        // Apply auto-fill logic for calculations
+        boolean pregnancyCare = household.isHasPregnantMember() ? r.isPregnancyCareStatus() : true;
+        boolean child0to5 = household.isHas0to5Member() ? r.isChild0to5HealthStatus() : true;
+        boolean hasChildren = (household.getElemCount() > 0 || household.getJhsCount() > 0 || household.getShsCount() > 0);
+        boolean deworming = hasChildren ? r.isDewormingStatus() : true;
 
-        boolean healthCompliant = r.isPregnancyCareStatus() && r.isChild0to5HealthStatus()
-                                   && r.isDewormingStatus();
+        boolean healthCompliant = pregnancyCare && child0to5 && deworming;
         boolean educationCompliant = r.isDaycareAttendanceStatus() && r.isSchoolAttendanceStatus();
-        boolean riceEligible = healthCompliant || educationCompliant; // OR-based, not AND of all 6
+        boolean riceEligible = healthCompliant || educationCompliant; // OR-based
 
         double healthGrantAmount = healthCompliant ? 750.0 : 0.0;
 
@@ -100,8 +100,28 @@ public class ComplianceManager {
             withheldReasons.add("Household has more than 3 eligible children meeting attendance this month — grant computed for the 3 highest-tier children (Senior High prioritized, then Junior High, then Elementary), per system policy since DSWD guidance does not specify precedence.");
         }
 
-        GrantBreakdown g = new GrantBreakdown(r.getHouseholdId(), r.getMonthYear(),
+        return new GrantBreakdown(r.getHouseholdId(), r.getMonthYear(),
             healthGrantAmount, educationGrantAmount, riceSubsidyAmount, totalAmount, withheldReasons);
+    }
+
+    public GrantBreakdown computeMonthlyGrant(ComplianceRecord r, String recordType, String correctionReason) {
+        Household household = authRepository.findHouseholdById(r.getHouseholdId());
+        if (household == null) {
+            throw new IllegalArgumentException("Household not found: " + r.getHouseholdId());
+        }
+
+        // Apply auto-fill logic to persistent record as well
+        if (!household.isHasPregnantMember()) {
+            r.setPregnancyCareStatus(true);
+        }
+        if (!household.isHas0to5Member()) {
+            r.setChild0to5HealthStatus(true);
+        }
+        if (household.getElemCount() == 0 && household.getJhsCount() == 0 && household.getShsCount() == 0) {
+            r.setDewormingStatus(true);
+        }
+
+        GrantBreakdown g = calculateGrantBreakdown(r, household);
         g.setRecordType(recordType);             // "INITIAL" or "CORRECTION"
         g.setCorrectionReason(correctionReason); // null if INITIAL
         complianceRepository.saveGrant(g);

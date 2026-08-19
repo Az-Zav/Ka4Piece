@@ -21,12 +21,22 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.cell.PropertyValueFactory;
+
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.text.Font;
+import com.ka4piece.model.Vacancy;
+import com.ka4piece.model.RankedCandidate;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import java.io.IOException;
 import java.net.URL;
@@ -50,6 +60,29 @@ public class OfficialDashboardController {
     // Track the currently selected household
     private Household selectedHousehold;
 
+    // Track the currently selected vacancy
+    private Vacancy selectedVacancy;
+
+    // --- JOB VACANCIES UI CONTROLS ---
+    @FXML private TextField txtJobTitle;
+    @FXML private ComboBox<String> cmbEducationRequirement;
+    @FXML private TextField txtSkills;
+    @FXML private TextArea txtJobDescription;
+    @FXML private TextField txtExperience;
+    @FXML private TextField txtLocation;
+    @FXML private TextField txtCompensation;
+    @FXML private ComboBox<String> cmbEmploymentType;
+    @FXML private Button btnEnterVacancy;
+
+    @FXML private VBox boxPostedVacancies;
+
+    @FXML private Label lblSelectedVacancyTitle;
+    @FXML private Label lblSelectedVacancyDescription;
+    @FXML private Label lblSelectedVacancyLocTypeSalary;
+    @FXML private Label lblSelectedVacancyEducationExperience;
+    @FXML private Label lblSelectedVacancySkills;
+    @FXML private VBox boxRankedApplicants;
+
     // --- NAME CARD UI CONTROLS (Right Panel Header) ---
     @FXML private Label lblHeaderName;
     @FXML private Label lblHeaderSubDetails; // For Barangay & ID
@@ -60,13 +93,20 @@ public class OfficialDashboardController {
     @FXML private Button btnDecrement;
     @FXML private Button btnIncrement;
 
+    // --- DYNAMIC GRANT BREAKDOWN CONTROLS ---
+    @FXML private Label lblHealthGrant;
+    @FXML private Label lblEducationGrant;
+    @FXML private Label lblRiceSubsidy;
+    @FXML private Label lblTotalGrant;
+    @FXML private Label lblGrantStatus;
+
     // --- TABLE CONTROLS ---
-    @FXML private TableView<?> tblHistory;
-    @FXML private TableColumn<?, ?> colMonth;
-    @FXML private TableColumn<?, ?> colHealth;
-    @FXML private TableColumn<?, ?> colEducation;
-    @FXML private TableColumn<?, ?> colFds;
-    @FXML private TableColumn<?, ?> colStatus;
+    @FXML private TableView<ComplianceHistoryRecord> tblHistory;
+    @FXML private TableColumn<ComplianceHistoryRecord, String> colMonth;
+    @FXML private TableColumn<ComplianceHistoryRecord, String> colHealth;
+    @FXML private TableColumn<ComplianceHistoryRecord, String> colEducation;
+    @FXML private TableColumn<ComplianceHistoryRecord, String> colFds;
+    @FXML private TableColumn<ComplianceHistoryRecord, String> colStatus;
 
     // --- MODAL CONTROLS (Fallback if modal references this controller) ---
     @FXML private TextField txtHeadName;
@@ -98,17 +138,19 @@ public class OfficialDashboardController {
     @FXML private CheckBox chkSchoolAttendance;
     @FXML private CheckBox chkFDS;
     @FXML private Label lblEligibleChildrenCount; // e.g., "out of 3 eligible"
-    @FXML private Spinner<Integer> elementaryCountSpinner;
-    @FXML private Spinner<Integer> juniorHighCountSpinner;
-    @FXML private Spinner<Integer> seniorHighCountSpinner;
     @FXML private Label lblComplianceFeedback;
     @FXML private Button btnRecordCompliance;
 
     private final int MIN_CHILDREN = 0;
-    private final int MAX_CHILDREN = 3;
 
     @FXML
     public void initialize() {
+        if (txtSearch != null) {
+            txtSearch.textProperty().addListener((observable, oldValue, newValue) -> performSearch(newValue));
+            performSearch("");
+        }
+
+        // Validate txtChildrenCount to digits only
         if (txtChildrenCount != null) {
             txtChildrenCount.textProperty().addListener((observable, oldValue, newValue) -> {
                 if (!newValue.matches("\\d*")) {
@@ -117,9 +159,85 @@ public class OfficialDashboardController {
             });
         }
 
-        if (txtSearch != null) {
-            txtSearch.textProperty().addListener((observable, oldValue, newValue) -> performSearch(newValue));
-            performSearch("");
+        // Configure history table cell value factories
+        if (colMonth != null) colMonth.setCellValueFactory(new PropertyValueFactory<>("month"));
+        if (colHealth != null) colHealth.setCellValueFactory(new PropertyValueFactory<>("health"));
+        if (colEducation != null) colEducation.setCellValueFactory(new PropertyValueFactory<>("education"));
+        if (colFds != null) colFds.setCellValueFactory(new PropertyValueFactory<>("fds"));
+        if (colStatus != null) colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
+
+        // Setup custom cell factories for table styling
+        javafx.util.Callback<TableColumn<ComplianceHistoryRecord, String>, TableCell<ComplianceHistoryRecord, String>> iconCellFactory =
+            column -> new TableCell<>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                        setGraphic(null);
+                    } else {
+                        getStyleClass().removeAll("icon-check", "icon-cross");
+                        if (item.equalsIgnoreCase("Compliant") || item.equals("✓")) {
+                            setText("✓");
+                            getStyleClass().add("icon-check");
+                        } else {
+                            setText("✗");
+                            getStyleClass().add("icon-cross");
+                        }
+                    }
+                }
+            };
+
+        javafx.util.Callback<TableColumn<ComplianceHistoryRecord, String>, TableCell<ComplianceHistoryRecord, String>> statusCellFactory =
+            column -> new TableCell<>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                        setGraphic(null);
+                    } else {
+                        setText(item);
+                        getStyleClass().removeAll("status-badge-compliant", "status-badge-noncompliant");
+                        if (item.equalsIgnoreCase("Compliant")) {
+                            getStyleClass().add("status-badge-compliant");
+                        } else {
+                            getStyleClass().add("status-badge-noncompliant");
+                        }
+                    }
+                }
+            };
+
+        if (colHealth != null) colHealth.setCellFactory(iconCellFactory);
+        if (colEducation != null) colEducation.setCellFactory(iconCellFactory);
+        if (colFds != null) colFds.setCellFactory(iconCellFactory);
+        if (colStatus != null) colStatus.setCellFactory(statusCellFactory);
+
+        // Wire checkbox listeners for real-time grant computation
+        if (chkPregnancyCare != null) chkPregnancyCare.selectedProperty().addListener((obs, oldVal, newVal) -> handleFormChange());
+        if (chkHealthCheckup != null) chkHealthCheckup.selectedProperty().addListener((obs, oldVal, newVal) -> handleFormChange());
+        if (chkDeworming != null) chkDeworming.selectedProperty().addListener((obs, oldVal, newVal) -> handleFormChange());
+        if (chkDaycare != null) chkDaycare.selectedProperty().addListener((obs, oldVal, newVal) -> handleFormChange());
+        if (chkSchoolAttendance != null) chkSchoolAttendance.selectedProperty().addListener((obs, oldVal, newVal) -> handleFormChange());
+        if (chkFDS != null) chkFDS.selectedProperty().addListener((obs, oldVal, newVal) -> handleFormChange());
+
+        // Wire children count text listener for real-time grant computation
+        if (txtChildrenCount != null) {
+            txtChildrenCount.textProperty().addListener((obs, oldVal, newVal) -> handleFormChange());
+        }
+
+        // Initialize Job Vacancies screen if loaded
+        if (txtJobTitle != null) {
+            if (cmbEducationRequirement != null) {
+                cmbEducationRequirement.getItems().setAll("HighSchool", "Vocational", "College");
+            }
+            if (cmbEmploymentType != null) {
+                cmbEmploymentType.getItems().setAll("Full-time", "Part-time", "Contractual", "Temporary");
+            }
+            if (btnEnterVacancy != null) {
+                btnEnterVacancy.setOnAction(e -> handleEnterVacancy());
+            }
+            populatePostedVacancies();
         }
     }
 
@@ -203,7 +321,14 @@ public class OfficialDashboardController {
         boolean hasAnySchoolChild = (elemCount > 0) || (jhsCount > 0) || (shsCount > 0);
 
         // 4. UPDATE HEADER BADGES (VISIBLE / MANAGED TOGGLES & TEXT)
-        
+
+        // Status Badge (ACTIVE / EXITED)
+        if (lblStatusBadge != null) {
+            boolean isExited = "EXITED".equalsIgnoreCase(h.getStatus());
+            lblStatusBadge.setText(isExited ? "• EXITED" : "• ACTIVE");
+            lblStatusBadge.getStyleClass().setAll(isExited ? "badge-gray" : "badge-active");
+        }
+
         // Pregnant Badge
         if (lblPregnantBadge != null) {
             lblPregnantBadge.setVisible(hasPregnant);
@@ -242,6 +367,9 @@ public class OfficialDashboardController {
 
         // Populate compliance form
         populateComplianceForm(h);
+
+        // Populate compliance history
+        populateComplianceHistory(h);
     }
 
     private void populateComplianceForm(com.ka4piece.model.Household household) {
@@ -258,22 +386,7 @@ public class OfficialDashboardController {
             if (chkSchoolAttendance != null) chkSchoolAttendance.setSelected(currentRecord.isSchoolAttendanceStatus());
             if (chkFDS != null) chkFDS.setSelected(currentRecord.isFdsAttendanceStatus());
 
-            if (elementaryCountSpinner != null) {
-                int val = Math.min(currentRecord.getElementaryCount(), household.getElemCount());
-                elementaryCountSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(
-                        0, household.getElemCount(), val));
-            }
-            if (juniorHighCountSpinner != null) {
-                int val = Math.min(currentRecord.getJuniorHighCount(), household.getJhsCount());
-                juniorHighCountSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(
-                        0, household.getJhsCount(), val));
-            }
-            if (seniorHighCountSpinner != null) {
-                int val = Math.min(currentRecord.getSeniorHighCount(), household.getShsCount());
-                seniorHighCountSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(
-                        0, household.getShsCount(), val));
-            }
-
+            // Restore total count as the sum of all tiers from the existing record
             if (txtChildrenCount != null) {
                 int total = currentRecord.getElementaryCount() + currentRecord.getJuniorHighCount() + currentRecord.getSeniorHighCount();
                 txtChildrenCount.setText(String.valueOf(total));
@@ -299,19 +412,6 @@ public class OfficialDashboardController {
             if (chkDaycare != null) chkDaycare.setSelected(false);
             if (chkSchoolAttendance != null) chkSchoolAttendance.setSelected(false);
             if (chkFDS != null) chkFDS.setSelected(false);
-
-            if (elementaryCountSpinner != null) {
-                elementaryCountSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(
-                        0, household.getElemCount(), 0));
-            }
-            if (juniorHighCountSpinner != null) {
-                juniorHighCountSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(
-                        0, household.getJhsCount(), 0));
-            }
-            if (seniorHighCountSpinner != null) {
-                seniorHighCountSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(
-                        0, household.getShsCount(), 0));
-            }
 
             if (txtChildrenCount != null) {
                 txtChildrenCount.setText("0");
@@ -373,23 +473,11 @@ public class OfficialDashboardController {
         boolean school = chkSchoolAttendance != null && chkSchoolAttendance.isSelected();
         boolean fds = chkFDS != null && chkFDS.isSelected();
 
-        int elem = 0;
-        if (elementaryCountSpinner != null) {
-            elem = elementaryCountSpinner.getValue();
-        } else if (txtChildrenCount != null) {
-            // fallback if spinners are not present
-            elem = getCurrentCount();
-        }
-
-        int jhs = 0;
-        if (juniorHighCountSpinner != null) {
-            jhs = juniorHighCountSpinner.getValue();
-        }
-
-        int shs = 0;
-        if (seniorHighCountSpinner != null) {
-            shs = seniorHighCountSpinner.getValue();
-        }
+        // Distribute total count using SHS-first tier precedence
+        int[] tiers = distributeTiersBySHSPrecedence(getCurrentCount());
+        int elem = tiers[0];
+        int jhs = tiers[1];
+        int shs = tiers[2];
 
         String officialId = Session.getInstance() != null ? Session.getInstance().getUserId() : null;
 
@@ -413,6 +501,9 @@ public class OfficialDashboardController {
         try {
             complianceManager.recordConditionStatus(record);
             complianceManager.computeMonthlyGrant(record, recordType, correctionReason);
+
+            // Refresh compliance history table immediately
+            populateComplianceHistory(selectedHousehold);
 
             // 1. Immediately disable button and show green success feedback
             if (btnRecordCompliance != null) {
@@ -560,15 +651,11 @@ public class OfficialDashboardController {
     private void handleIncrement() {
         if (txtChildrenCount == null) return;
         int currentCount = getCurrentCount();
-        if (selectedHousehold != null) {
-            int maxTotal = selectedHousehold.getElemCount() + selectedHousehold.getJhsCount() + selectedHousehold.getShsCount();
-            if (currentCount < maxTotal) {
-                txtChildrenCount.setText(String.valueOf(currentCount + 1));
-            }
-        } else {
-            if (currentCount < MAX_CHILDREN) {
-                txtChildrenCount.setText(String.valueOf(currentCount + 1));
-            }
+        int maxTotal = selectedHousehold != null
+                ? selectedHousehold.getElemCount() + selectedHousehold.getJhsCount() + selectedHousehold.getShsCount()
+                : 0;
+        if (currentCount < maxTotal) {
+            txtChildrenCount.setText(String.valueOf(currentCount + 1));
         }
     }
 
@@ -579,6 +666,26 @@ public class OfficialDashboardController {
         if (currentCount > MIN_CHILDREN) {
             txtChildrenCount.setText(String.valueOf(currentCount - 1));
         }
+    }
+
+    /**
+     * Distributes a total compliant-children count across tiers using SHS-first precedence.
+     * SHS gets filled first (highest grant), then JHS, then Elementary.
+     * Counts are capped by household composition.
+     *
+     * @return int[3] where [0]=elem, [1]=jhs, [2]=shs
+     */
+    private int[] distributeTiersBySHSPrecedence(int totalCount) {
+        int shsCap  = selectedHousehold != null ? selectedHousehold.getShsCount()  : 0;
+        int jhsCap  = selectedHousehold != null ? selectedHousehold.getJhsCount()  : 0;
+        int elemCap = selectedHousehold != null ? selectedHousehold.getElemCount() : 0;
+
+        int remaining = totalCount;
+        int shs  = Math.min(remaining, shsCap);  remaining -= shs;
+        int jhs  = Math.min(remaining, jhsCap);  remaining -= jhs;
+        int elem = Math.min(remaining, elemCap);
+
+        return new int[]{elem, jhs, shs};
     }
 
     private URL resolveResource(String fxmlPath) {
@@ -605,5 +712,306 @@ public class OfficialDashboardController {
         java.time.format.DateTimeFormatter formatter =
                 java.time.format.DateTimeFormatter.ofPattern("MMMM dd, yyyy - HH:mm");
         return localDateTime.format(formatter);
+    }
+
+    private void handleFormChange() {
+        if (selectedHousehold == null || complianceManager == null) {
+            return;
+        }
+
+        boolean pregnancyCare = chkPregnancyCare != null && chkPregnancyCare.isSelected();
+        boolean healthCheckup = chkHealthCheckup != null && chkHealthCheckup.isSelected();
+        boolean deworming = chkDeworming != null && chkDeworming.isSelected();
+        boolean daycare = chkDaycare != null && chkDaycare.isSelected();
+        boolean schoolAttendance = chkSchoolAttendance != null && chkSchoolAttendance.isSelected();
+        boolean fds = chkFDS != null && chkFDS.isSelected();
+
+        // Distribute count using SHS-first tier precedence
+        int[] tiers = distributeTiersBySHSPrecedence(getCurrentCount());
+        int elem = tiers[0];
+        int jhs  = tiers[1];
+        int shs  = tiers[2];
+
+        com.ka4piece.model.ComplianceRecord tempRecord = new com.ka4piece.model.ComplianceRecord(
+                selectedHousehold.getHouseholdId(),
+                java.time.YearMonth.now().toString(),
+                pregnancyCare,
+                healthCheckup,
+                deworming,
+                daycare,
+                schoolAttendance,
+                fds,
+                elem,
+                jhs,
+                shs,
+                null
+        );
+
+        try {
+            com.ka4piece.model.GrantBreakdown breakdown = complianceManager.calculateGrantBreakdown(tempRecord, selectedHousehold);
+            updateGrantBreakdownUI(breakdown);
+        } catch (Exception e) {
+            System.err.println("Error calculating dynamic grant breakdown: " + e.getMessage());
+        }
+    }
+
+    private void updateGrantBreakdownUI(com.ka4piece.model.GrantBreakdown breakdown) {
+        if (lblHealthGrant != null) {
+            lblHealthGrant.setText(String.format("₱%,.2f", breakdown.getHealthGrantAmount()));
+        }
+        if (lblEducationGrant != null) {
+            lblEducationGrant.setText(String.format("₱%,.2f", breakdown.getEducationGrantAmount()));
+        }
+        if (lblRiceSubsidy != null) {
+            lblRiceSubsidy.setText(String.format("₱%,.2f", breakdown.getRiceSubsidyAmount()));
+        }
+        if (lblTotalGrant != null) {
+            lblTotalGrant.setText(String.format("TOTAL ELIGIBLE:  ₱%,.2f", breakdown.getTotalAmount()));
+        }
+        if (lblGrantStatus != null) {
+            if (breakdown.getWithheldReasons() != null && !breakdown.getWithheldReasons().isEmpty()) {
+                lblGrantStatus.setText("• WITHHELD");
+                lblGrantStatus.getStyleClass().setAll("badge-gray");
+            } else {
+                lblGrantStatus.setText("• ELIGIBLE");
+                lblGrantStatus.getStyleClass().setAll("badge-active");
+            }
+        }
+    }
+
+    private void populateComplianceHistory(com.ka4piece.model.Household h) {
+        if (tblHistory == null || complianceManager == null || h == null) return;
+
+        List<com.ka4piece.model.ComplianceRecord> records = complianceManager.getComplianceHistory(h.getHouseholdId());
+        javafx.collections.ObservableList<ComplianceHistoryRecord> historyList = javafx.collections.FXCollections.observableArrayList();
+
+        for (com.ka4piece.model.ComplianceRecord r : records) {
+            boolean healthPregnancy = !h.isHasPregnantMember() || r.isPregnancyCareStatus();
+            boolean health0to5 = !h.isHas0to5Member() || r.isChild0to5HealthStatus();
+            boolean hasChildren = (h.getElemCount() > 0 || h.getJhsCount() > 0 || h.getShsCount() > 0);
+            boolean healthDeworming = !hasChildren || r.isDewormingStatus();
+            boolean healthCompliant = healthPregnancy && health0to5 && healthDeworming;
+
+            boolean educationCompliant = r.isDaycareAttendanceStatus() && r.isSchoolAttendanceStatus();
+            boolean fdsCompliant = r.isFdsAttendanceStatus();
+            boolean fullyCompliant = healthCompliant && educationCompliant && fdsCompliant;
+
+            String healthStr = healthCompliant ? "Compliant" : "Non-Compliant";
+            String eduStr = educationCompliant ? "Compliant" : "Non-Compliant";
+            String fdsStr = fdsCompliant ? "Compliant" : "Non-Compliant";
+            String statusStr = fullyCompliant ? "Compliant" : "Non-Compliant";
+
+            historyList.add(new ComplianceHistoryRecord(
+                r.getMonthYear(),
+                healthStr,
+                eduStr,
+                fdsStr,
+                statusStr
+            ));
+        }
+
+        tblHistory.setItems(historyList);
+    }
+
+    // --- JOB VACANCY HELPER METHODS ---
+
+    private void populatePostedVacancies() {
+        if (boxPostedVacancies == null || jobMatchManager == null) return;
+        boxPostedVacancies.getChildren().clear();
+
+        List<Vacancy> vacancies = jobMatchManager.getAllVacancies();
+        for (Vacancy v : vacancies) {
+            VBox itemBox = new VBox();
+            itemBox.setSpacing(2.0);
+            
+            // Highlight selected vacancy
+            if (selectedVacancy != null && selectedVacancy.getVacancyId().equals(v.getVacancyId())) {
+                itemBox.getStyleClass().add("list-item-active");
+            } else {
+                itemBox.getStyleClass().add("list-item");
+            }
+
+            Label titleLabel = new Label(v.getTitle() != null ? v.getTitle() : "Unnamed Job");
+            if (selectedVacancy != null && selectedVacancy.getVacancyId().equals(v.getVacancyId())) {
+                titleLabel.getStyleClass().add("list-item-title-active");
+            } else {
+                titleLabel.getStyleClass().add("list-item-title");
+            }
+
+            String subText = (v.getLocation() != null ? v.getLocation() : "No Location") + " • " + (v.getType() != null ? v.getType() : "Full-time");
+            if (v.getStatus() != null && v.getStatus().equals("ARCHIVED")) {
+                subText += " (ARCHIVED)";
+            }
+            Label subLabel = new Label(subText);
+            subLabel.getStyleClass().add("list-item-sub");
+
+            itemBox.getChildren().addAll(titleLabel, subLabel);
+            itemBox.setOnMouseClicked(e -> selectVacancy(v));
+            boxPostedVacancies.getChildren().add(itemBox);
+        }
+    }
+
+    private void selectVacancy(Vacancy v) {
+        if (v == null) return;
+        this.selectedVacancy = v;
+
+        // Refresh lists and details
+        populatePostedVacancies();
+
+        if (lblSelectedVacancyTitle != null) {
+            lblSelectedVacancyTitle.setText(v.getTitle());
+        }
+        if (lblSelectedVacancyDescription != null) {
+            lblSelectedVacancyDescription.setText(v.getDescription() != null && !v.getDescription().isEmpty()
+                    ? v.getDescription()
+                    : "No job description provided.");
+        }
+        if (lblSelectedVacancyLocTypeSalary != null) {
+            String locTypeSalary = "📍 Location: " + (v.getLocation() != null ? v.getLocation() : "N/A") + "\n" +
+                                   "💼 Type: " + (v.getType() != null ? v.getType() : "N/A") + "\n" +
+                                   "💰 Salary: " + (v.getCompensation() != null ? v.getCompensation() : "N/A");
+            if (v.getStatus() != null && v.getStatus().equals("ARCHIVED")) {
+                locTypeSalary += " (ARCHIVED: " + (v.getArchiveReason() != null ? v.getArchiveReason() : "Filled") + ")";
+            }
+            lblSelectedVacancyLocTypeSalary.setText(locTypeSalary);
+        }
+        if (lblSelectedVacancyEducationExperience != null) {
+            String eduExp = "🎓 Education: " + (v.getEducationRequirement() != null ? v.getEducationRequirement() : "N/A") + "\n" +
+                            "⏳ Experience: " + v.getExperienceYearsRequired() + " Year(s)";
+            lblSelectedVacancyEducationExperience.setText(eduExp);
+        }
+        if (lblSelectedVacancySkills != null) {
+            String skills = "🛠️ Skills:\n" +
+                            ((v.getSkillRequirements() != null && !v.getSkillRequirements().isEmpty())
+                                    ? String.join(", ", v.getSkillRequirements())
+                                    : "None specified");
+            lblSelectedVacancySkills.setText(skills);
+        }
+
+        populateRankedApplicants(v.getVacancyId());
+    }
+
+    private void populateRankedApplicants(String vacancyId) {
+        if (boxRankedApplicants == null || jobMatchManager == null) return;
+        boxRankedApplicants.getChildren().clear();
+
+        List<RankedCandidate> candidates = jobMatchManager.getRankedApplicants(vacancyId);
+        if (candidates.isEmpty()) {
+            Label noApplicantsLabel = new Label("No applicants for this vacancy yet.");
+            noApplicantsLabel.setStyle("-fx-text-fill: #64748b; -fx-font-style: italic; -fx-padding: 15px;");
+            boxRankedApplicants.getChildren().add(noApplicantsLabel);
+            return;
+        }
+
+        for (RankedCandidate c : candidates) {
+            GridPane row = new GridPane();
+            row.getStyleClass().add("table-row");
+            
+            ColumnConstraints col1 = new ColumnConstraints();
+            col1.setPercentWidth(40.0);
+            ColumnConstraints col2 = new ColumnConstraints();
+            col2.setPercentWidth(30.0);
+            ColumnConstraints col3 = new ColumnConstraints();
+            col3.setPercentWidth(30.0);
+            row.getColumnConstraints().addAll(col1, col2, col3);
+
+            Label nameLabel = new Label(c.getProfile().getMemberName());
+            nameLabel.setTextFill(javafx.scene.paint.Color.web("#1e293b"));
+            nameLabel.setFont(Font.font("System", javafx.scene.text.FontWeight.BOLD, 13));
+
+            Label scoreLabel = new Label((int)(c.getScore() * 100) + "%");
+            scoreLabel.getStyleClass().add("badge-active");
+
+            ComboBox<String> cmbStatus = new ComboBox<>();
+            cmbStatus.getItems().addAll("APPLIED", "FOR_INTERVIEW", "REJECTED", "HIRED");
+            cmbStatus.setValue(c.getStatus());
+            cmbStatus.setMaxWidth(Double.MAX_VALUE);
+            cmbStatus.getStyleClass().add("search-field");
+
+            cmbStatus.setOnAction(e -> {
+                String newStatus = cmbStatus.getValue();
+                if (newStatus != null) {
+                    try {
+                        jobMatchManager.updateApplicationStatus(c.getProfile().getJobseekerId(), vacancyId, newStatus);
+                        Vacancy updatedVacancy = jobMatchManager.getVacancyDetail(vacancyId);
+                        selectVacancy(updatedVacancy);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            });
+
+            row.add(nameLabel, 0, 0);
+            row.add(scoreLabel, 1, 0);
+            row.add(cmbStatus, 2, 0);
+
+            boxRankedApplicants.getChildren().add(row);
+        }
+    }
+
+    private void handleEnterVacancy() {
+        if (jobMatchManager == null) return;
+
+        String title = txtJobTitle.getText().trim();
+        String education = cmbEducationRequirement.getValue();
+        String skillsText = txtSkills.getText().trim();
+        String description = txtJobDescription.getText().trim();
+        String experienceStr = txtExperience.getText().trim();
+        String location = txtLocation.getText().trim();
+        String compensation = txtCompensation.getText().trim();
+        String type = cmbEmploymentType.getValue();
+
+        if (title.isEmpty() || education == null || skillsText.isEmpty() || location.isEmpty() || type == null) {
+            System.err.println("Required fields are missing.");
+            return;
+        }
+
+        int experience = 0;
+        try {
+            if (!experienceStr.isEmpty()) {
+                experience = Integer.parseInt(experienceStr);
+            }
+        } catch (NumberFormatException e) {
+            System.err.println("Experience must be a number.");
+            return;
+        }
+
+        List<String> skills = Arrays.stream(skillsText.split("[,;]"))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toList());
+
+        String officialId = Session.getInstance() != null ? Session.getInstance().getUserId() : null;
+
+        Vacancy v = new Vacancy(
+                null,
+                title,
+                description,
+                education,
+                location,
+                compensation,
+                type,
+                skills,
+                experience,
+                officialId
+        );
+
+        try {
+            jobMatchManager.createVacancy(v);
+            
+            // Clear inputs
+            txtJobTitle.clear();
+            cmbEducationRequirement.setValue(null);
+            txtSkills.clear();
+            txtJobDescription.clear();
+            txtExperience.clear();
+            txtLocation.clear();
+            txtCompensation.clear();
+            cmbEmploymentType.setValue(null);
+
+            populatePostedVacancies();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }

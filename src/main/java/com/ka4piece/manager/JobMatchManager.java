@@ -116,4 +116,9 @@ public class JobMatchManager {
     public Vacancy getVacancyDetail(String vacancyId) {
         return jobMatchRepository.findVacancyById(vacancyId);
     }
+
+    /** Returns all vacancies in the system. */
+    public List<Vacancy> getAllVacancies() {
+        return jobMatchRepository.findAllVacancies();
+    }
 }

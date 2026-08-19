@@ -175,14 +175,20 @@
                                             </children>
                                         </GridPane>
 
-                                        <Button fx:id="btnEnterVacancy" maxWidth="1.7976931348623157E308" styleClass="btn-primary" text="ENTER VACANCY">
-                                            <padding>
-                                                <Insets bottom="12.0" top="12.0" />
-                                            </padding>
-                                            <VBox.margin>
-                                                <Insets top="10.0" />
-                                            </VBox.margin>
-                                        </Button>
+                                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                            <children>
+                                                <Label fx:id="lblVacancyFormFeedback" text="" wrapText="true" HBox.hgrow="ALWAYS">
+                                                    <font><Font size="12.0" /></font>
+                                                </Label>
+                                                <Button fx:id="btnCancelEdit" managed="false" styleClass="btn-outline" text="Cancel" visible="false">
+                                                    <padding><Insets bottom="10.0" left="16.0" right="16.0" top="10.0" /></padding>
+                                                </Button>
+                                                <Button fx:id="btnEnterVacancy" maxWidth="1.7976931348623157E308" styleClass="btn-primary" text="ENTER VACANCY">
+                                                    <padding><Insets bottom="12.0" top="12.0" /></padding>
+                                                </Button>
+                                            </children>
+                                            <VBox.margin><Insets top="10.0" /></VBox.margin>
+                                        </HBox>
                                     </children>
                                 </VBox>
 
@@ -194,39 +200,12 @@
                                                 <Label styleClass="card-title" text="POSTED VACANCIES" />
                                             </children>
                                         </HBox>
-                                        <VBox styleClass="list-item-active">
-                                            <children>
-                                                <HBox alignment="CENTER_LEFT">
-                                                    <children>
-                                                        <VBox spacing="2.0" HBox.hgrow="ALWAYS">
-                                                            <children>
-                                                                <Label styleClass="list-item-title-active" text="Administrative Assistant" />
-                                                                <Label styleClass="list-item-sub" text="Municipal Hall • Posted: 2 days ago" />
-                                                            </children>
-                                                        </VBox>
-                                                        <Label text="›" textFill="#4338ca">
-                                                            <font>
-                                                                <Font name="System Bold" size="18.0" />
-                                                            </font>
-                                                        </Label>
-                                                    </children>
-                                                </HBox>
-                                            </children>
-                                        </VBox>
-
-                                        <VBox styleClass="list-item">
-                                            <children>
-                                                <Label styleClass="list-item-title" text="Community Health Worker" />
-                                                <Label styleClass="list-item-sub" text="Health Center • Posted: 5 days ago" />
-                                            </children>
-                                        </VBox>
-
-                                        <VBox styleClass="list-item">
-                                            <children>
-                                                <Label styleClass="list-item-title" text="Data Encoder" />
-                                                <Label styleClass="list-item-sub" text="Social Welfare Office • Posted: 1 week ago" />
-                                            </children>
-                                        </VBox>
+                                        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;" VBox.vgrow="ALWAYS">
+                                            <content>
+                                                <VBox fx:id="boxPostedVacancies" spacing="4.0">
+                                                </VBox>
+                                            </content>
+                                        </ScrollPane>
                                     </children>
                                 </VBox>
                             </children>
@@ -240,22 +219,46 @@
                             <children>
                                 <HBox alignment="CENTER_LEFT">
                                     <children>
-                                        <VBox spacing="4.0">
-                                            <children>
-                                                <Label text="Administrative Assistant" textFill="#0f172a">
-                                                    <font>
-                                                        <Font name="System Bold" size="20.0" />
-                                                    </font>
-                                                </Label>
-                                                <Label text="Location: Municipal Hall    Type: Full-time    Salary: ₱15,000 - ₱18,000" textFill="#64748b">
-                                                    <font>
-                                                        <Font size="13.0" />
-                                                    </font>
-                                                </Label>
-                                            </children>
-                                        </VBox>
+                                         <VBox spacing="8.0" HBox.hgrow="ALWAYS">
+                                             <children>
+                                                 <Label fx:id="lblSelectedVacancyTitle" text="No Vacancy Selected" textFill="#0f172a">
+                                                     <font>
+                                                         <Font name="System Bold" size="20.0" />
+                                                     </font>
+                                                 </Label>
+                                                 <Label fx:id="lblSelectedVacancyDescription" text="Select a vacancy from the list to view details and applicants." textFill="#334155" wrapText="true">
+                                                     <font>
+                                                         <Font size="13.0" />
+                                                     </font>
+                                                 </Label>
+                                                 <GridPane hgap="20.0" vgap="6.0">
+                                                     <columnConstraints>
+                                                         <ColumnConstraints minWidth="150.0" percentWidth="33.0" />
+                                                         <ColumnConstraints minWidth="150.0" percentWidth="33.0" />
+                                                         <ColumnConstraints minWidth="150.0" percentWidth="34.0" />
+                                                     </columnConstraints>
+                                                     <children>
+                                                         <Label fx:id="lblSelectedVacancyLocTypeSalary" text="" textFill="#64748b" wrapText="true" GridPane.columnIndex="0">
+                                                             <font>
+                                                                 <Font size="12.0" />
+                                                             </font>
+                                                         </Label>
+                                                         <Label fx:id="lblSelectedVacancyEducationExperience" text="" textFill="#64748b" wrapText="true" GridPane.columnIndex="1">
+                                                             <font>
+                                                                 <Font size="12.0" />
+                                                             </font>
+                                                         </Label>
+                                                         <Label fx:id="lblSelectedVacancySkills" text="" textFill="#64748b" wrapText="true" GridPane.columnIndex="2">
+                                                             <font>
+                                                                 <Font size="12.0" />
+                                                             </font>
+                                                         </Label>
+                                                     </children>
+                                                 </GridPane>
+                                             </children>
+                                         </VBox>
                                         <Region HBox.hgrow="ALWAYS" />
-                                        <Button styleClass="btn-outline" text="Edit Vacancy">
+                                        <Button fx:id="btnEditVacancy" onAction="#handleEditVacancy" styleClass="btn-outline" text="Edit Vacancy">
                                             <padding>
                                                 <Insets bottom="8.0" left="16.0" right="16.0" top="8.0" />
                                             </padding>
@@ -283,40 +286,8 @@
                                                 <Label styleClass="table-header-text" text="Status" GridPane.columnIndex="2" />
                                             </children>
                                         </GridPane>
-
-                                        <GridPane styleClass="table-row">
-                                            <columnConstraints>
-                                                <ColumnConstraints percentWidth="40.0" />
-                                                <ColumnConstraints percentWidth="30.0" />
-                                                <ColumnConstraints percentWidth="30.0" />
-                                            </columnConstraints>
-                                            <children>
-                                                <Label text="Dela Cruz, Maria Clara" textFill="#1e293b">
-                                                    <font>
-                                                        <Font name="System Bold" size="13.0" />
-                                                    </font>
-                                                </Label>
-                                                <Label styleClass="badge-active" text="98%" GridPane.columnIndex="1" />
-                                                <ComboBox fx:id="cmbStatusRow1" maxWidth="1.7976931348623157E308" promptText="For Interview" styleClass="search-field" GridPane.columnIndex="2" />
-                                            </children>
-                                        </GridPane>
-
-                                        <GridPane styleClass="table-row">
-                                            <columnConstraints>
-                                                <ColumnConstraints percentWidth="40.0" />
-                                                <ColumnConstraints percentWidth="30.0" />
-                                                <ColumnConstraints percentWidth="30.0" />
-                                            </columnConstraints>
-                                            <children>
-                                                <Label text="Santos, Juan Paolo" textFill="#1e293b">
-                                                    <font>
-                                                        <Font name="System Bold" size="13.0" />
-                                                    </font>
-                                                </Label>
-                                                <Label styleClass="badge-active" text="85%" GridPane.columnIndex="1" />
-                                                <ComboBox fx:id="cmbStatusRow2" maxWidth="1.7976931348623157E308" promptText="Applied" styleClass="search-field" GridPane.columnIndex="2" />
-                                            </children>
-                                        </GridPane>
+                                        
+                                        <VBox fx:id="boxRankedApplicants" spacing="2.0" />
                                     </children>
                                 </VBox>
                             </children>
