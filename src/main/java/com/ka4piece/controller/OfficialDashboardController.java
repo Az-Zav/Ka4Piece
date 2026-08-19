@@ -83,7 +83,12 @@ public class OfficialDashboardController {
     @FXML private Label lblSelectedVacancySkills;
     @FXML private VBox boxRankedApplicants;
 
-    // --- NAME CARD UI CONTROLS (Right Panel Header) ---
+    @FXML private Label lblVacancyFormFeedback;
+    @FXML private Button btnCancelEdit;
+    @FXML private Button btnEditVacancy;
+
+    // Track whether the form is in EDIT mode (vacancyId set) or CREATE mode (null)
+    private String vacancyEditModeId = null;
     @FXML private Label lblHeaderName;
     @FXML private Label lblHeaderSubDetails; // For Barangay & ID
 
@@ -236,6 +241,9 @@ public class OfficialDashboardController {
             }
             if (btnEnterVacancy != null) {
                 btnEnterVacancy.setOnAction(e -> handleEnterVacancy());
+            }
+            if (btnCancelEdit != null) {
+                btnCancelEdit.setOnAction(e -> cancelEditMode());
             }
             populatePostedVacancies();
         }
@@ -819,7 +827,9 @@ public class OfficialDashboardController {
         if (boxPostedVacancies == null || jobMatchManager == null) return;
         boxPostedVacancies.getChildren().clear();
 
-        List<Vacancy> vacancies = jobMatchManager.getAllVacancies();
+        List<Vacancy> vacancies = jobMatchManager.getAllVacancies().stream()
+                .filter(v -> v.getStatus() == null || !v.getStatus().equals("ARCHIVED"))
+                .collect(Collectors.toList());
         for (Vacancy v : vacancies) {
             VBox itemBox = new VBox();
             itemBox.setSpacing(2.0);
@@ -949,6 +959,42 @@ public class OfficialDashboardController {
         }
     }
 
+    @FXML
+    private void handleEditVacancy() {
+        if (selectedVacancy == null) return;
+        // Populate form with selected vacancy data
+        if (txtJobTitle != null)           txtJobTitle.setText(selectedVacancy.getTitle() != null ? selectedVacancy.getTitle() : "");
+        if (cmbEducationRequirement != null) cmbEducationRequirement.setValue(selectedVacancy.getEducationRequirement());
+        if (txtSkills != null && selectedVacancy.getSkillRequirements() != null)
+            txtSkills.setText(String.join(", ", selectedVacancy.getSkillRequirements()));
+        if (txtJobDescription != null)     txtJobDescription.setText(selectedVacancy.getDescription() != null ? selectedVacancy.getDescription() : "");
+        if (txtExperience != null)         txtExperience.setText(String.valueOf(selectedVacancy.getExperienceYearsRequired()));
+        if (txtLocation != null)           txtLocation.setText(selectedVacancy.getLocation() != null ? selectedVacancy.getLocation() : "");
+        if (txtCompensation != null)       txtCompensation.setText(selectedVacancy.getCompensation() != null ? selectedVacancy.getCompensation() : "");
+        if (cmbEmploymentType != null)     cmbEmploymentType.setValue(selectedVacancy.getType());
+
+        // Switch form to EDIT mode
+        vacancyEditModeId = selectedVacancy.getVacancyId();
+        if (btnEnterVacancy != null) btnEnterVacancy.setText("UPDATE VACANCY");
+        if (btnCancelEdit != null) { btnCancelEdit.setVisible(true); btnCancelEdit.setManaged(true); }
+        if (lblVacancyFormFeedback != null) { lblVacancyFormFeedback.setText(""); lblVacancyFormFeedback.setStyle(""); }
+    }
+
+    private void cancelEditMode() {
+        vacancyEditModeId = null;
+        if (btnEnterVacancy != null) btnEnterVacancy.setText("ENTER VACANCY");
+        if (btnCancelEdit != null) { btnCancelEdit.setVisible(false); btnCancelEdit.setManaged(false); }
+        if (lblVacancyFormFeedback != null) { lblVacancyFormFeedback.setText(""); lblVacancyFormFeedback.setStyle(""); }
+        if (txtJobTitle != null)           txtJobTitle.clear();
+        if (cmbEducationRequirement != null) cmbEducationRequirement.setValue(null);
+        if (txtSkills != null)             txtSkills.clear();
+        if (txtJobDescription != null)     txtJobDescription.clear();
+        if (txtExperience != null)         txtExperience.clear();
+        if (txtLocation != null)           txtLocation.clear();
+        if (txtCompensation != null)       txtCompensation.clear();
+        if (cmbEmploymentType != null)     cmbEmploymentType.setValue(null);
+    }
+
     private void handleEnterVacancy() {
         if (jobMatchManager == null) return;
 
@@ -962,7 +1008,10 @@ public class OfficialDashboardController {
         String type = cmbEmploymentType.getValue();
 
         if (title.isEmpty() || education == null || skillsText.isEmpty() || location.isEmpty() || type == null) {
-            System.err.println("Required fields are missing.");
+            if (lblVacancyFormFeedback != null) {
+                lblVacancyFormFeedback.setText("Please fill in all required fields.");
+                lblVacancyFormFeedback.setStyle("-fx-text-fill: #DC2626; -fx-font-weight: bold;");
+            }
             return;
         }
 
@@ -972,46 +1021,55 @@ public class OfficialDashboardController {
                 experience = Integer.parseInt(experienceStr);
             }
         } catch (NumberFormatException e) {
-            System.err.println("Experience must be a number.");
+            if (lblVacancyFormFeedback != null) {
+                lblVacancyFormFeedback.setText("Experience must be a number.");
+                lblVacancyFormFeedback.setStyle("-fx-text-fill: #DC2626; -fx-font-weight: bold;");
+            }
             return;
         }
 
-        List<String> skills = Arrays.stream(skillsText.split("[,;]"))
-                .map(String::trim)
-                .filter(s -> !s.isEmpty())
-                .collect(Collectors.toList());
-
-        String officialId = Session.getInstance() != null ? Session.getInstance().getUserId() : null;
-
-        Vacancy v = new Vacancy(
-                null,
-                title,
-                description,
-                education,
-                location,
-                compensation,
-                type,
-                skills,
-                experience,
-                officialId
-        );
-
         try {
-            jobMatchManager.createVacancy(v);
-            
-            // Clear inputs
-            txtJobTitle.clear();
-            cmbEducationRequirement.setValue(null);
-            txtSkills.clear();
-            txtJobDescription.clear();
-            txtExperience.clear();
-            txtLocation.clear();
-            txtCompensation.clear();
-            cmbEmploymentType.setValue(null);
-
-            populatePostedVacancies();
+            if (vacancyEditModeId != null) {
+                // UPDATE existing vacancy
+                List<String> skills = Arrays.stream(skillsText.split("[,;]"))
+                        .map(String::trim).filter(s -> !s.isEmpty()).collect(Collectors.toList());
+                jobMatchManager.getJobMatchRepository().updateVacancyDetails(
+                        vacancyEditModeId, title, description, education, skills, experience, location, compensation, type
+                );
+                selectedVacancy = jobMatchManager.getVacancyDetail(vacancyEditModeId);
+                if (lblVacancyFormFeedback != null) {
+                    lblVacancyFormFeedback.setText("✓ Vacancy updated successfully.");
+                    lblVacancyFormFeedback.setStyle("-fx-text-fill: #15803D; -fx-font-weight: bold;");
+                }
+                cancelEditMode();
+                selectVacancy(selectedVacancy);
+            } else {
+                // CREATE new vacancy
+                String officialId = Session.getInstance() != null ? Session.getInstance().getUserId() : null;
+                List<String> skills = Arrays.stream(skillsText.split("[,;]"))
+                        .map(String::trim).filter(s -> !s.isEmpty()).collect(Collectors.toList());
+                Vacancy newVacancy = new Vacancy(null, title, description, education, location, compensation, type, skills, experience, officialId);
+                jobMatchManager.createVacancy(newVacancy);
+                txtJobTitle.clear();
+                cmbEducationRequirement.setValue(null);
+                txtSkills.clear();
+                txtJobDescription.clear();
+                txtExperience.clear();
+                txtLocation.clear();
+                txtCompensation.clear();
+                cmbEmploymentType.setValue(null);
+                if (lblVacancyFormFeedback != null) {
+                    lblVacancyFormFeedback.setText("✓ Vacancy posted successfully.");
+                    lblVacancyFormFeedback.setStyle("-fx-text-fill: #15803D; -fx-font-weight: bold;");
+                }
+                populatePostedVacancies();
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
+            if (lblVacancyFormFeedback != null) {
+                lblVacancyFormFeedback.setText("✗ Error: " + ex.getMessage());
+                lblVacancyFormFeedback.setStyle("-fx-text-fill: #DC2626; -fx-font-weight: bold;");
+            }
         }
     }
 }

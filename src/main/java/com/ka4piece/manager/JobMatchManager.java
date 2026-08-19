@@ -121,4 +121,9 @@ public class JobMatchManager {
     public List<Vacancy> getAllVacancies() {
         return jobMatchRepository.findAllVacancies();
     }
+
+    /** Returns the underlying repository for direct update operations. */
+    public JobMatchRepository getJobMatchRepository() {
+        return jobMatchRepository;
+    }
 }
