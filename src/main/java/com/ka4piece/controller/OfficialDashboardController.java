@@ -4,6 +4,8 @@ import com.ka4piece.app.App;
 import com.ka4piece.manager.AuthManager;
 import com.ka4piece.manager.ComplianceManager;
 import com.ka4piece.manager.JobMatchManager;
+import com.ka4piece.model.Household;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,6 +13,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -42,6 +45,13 @@ public class OfficialDashboardController {
     public OfficialDashboardController() {
     }
 
+    // Track the currently selected household
+    private Household selectedHousehold;
+
+    // --- NAME CARD UI CONTROLS (Right Panel Header) ---
+    @FXML private Label lblHeaderName;
+    @FXML private Label lblHeaderSubDetails; // For Barangay & ID
+
     // --- MAIN DASHBOARD CONTROLS ---
     @FXML private Hyperlink linkAddHousehold;
     @FXML private TextField txtChildrenCount;
@@ -69,6 +79,15 @@ public class OfficialDashboardController {
     @FXML private TextField txtSearch;
     @FXML private VBox boxSearchResults;
     @FXML private Label lblResultCount;
+
+    // --- COMPLIANCE FORM CONTROLS ---
+    @FXML private CheckBox chkPregnancyCare;
+    @FXML private CheckBox chkHealthCheckup;
+    @FXML private CheckBox chkDeworming;
+    @FXML private CheckBox chkDaycare;
+    @FXML private CheckBox chkSchoolAttendance;
+    @FXML private CheckBox chkFDS;
+    @FXML private Label lblEligibleChildrenCount; // e.g., "out of 3 eligible"
 
     private final int MIN_CHILDREN = 0;
     private final int MAX_CHILDREN = 3;
@@ -131,7 +150,32 @@ public class OfficialDashboardController {
     }
 
     private void selectHousehold(com.ka4piece.model.Household h) {
-        // Selection hook for displaying details & history
+        if (h == null) return;
+        
+        // Save current selection context
+        this.selectedHousehold = h;
+
+        // 1. Update Head Name
+        if (lblHeaderName != null) {
+            lblHeaderName.setText(h.getHeadName() != null ? h.getHeadName() : "Unnamed Household");
+        }
+
+        // 2. Format & Update Sub-details (Barangay / Address & ID)
+        if (lblHeaderSubDetails != null) {
+            String id = h.getHouseholdId() != null ? h.getHouseholdId() : "N/A";
+            
+            // Build address / barangay text string
+            String addressInfo = "";
+            if (h.getBarangay() != null && !h.getBarangay().isBlank()) {
+                addressInfo = h.getBarangay();
+            } else if (h.getAddress() != null && !h.getAddress().isBlank()) {
+                addressInfo = h.getAddress();
+            } else {
+                addressInfo = "No Barangay/Address Listed";
+            }
+
+            lblHeaderSubDetails.setText(addressInfo + "  •  ID: " + id);
+        }
     }
 
     // --- NAVBAR & PROFILE EVENT HANDLERS ---
@@ -177,7 +221,18 @@ public class OfficialDashboardController {
             modalStage.setTitle("Register Household");
             modalStage.setScene(new Scene(root));
             modalStage.setResizable(false);
+            
+            //wait for modal to open and pause execution until modal is closed
             modalStage.showAndWait();
+
+            /// REFRESH TRIGGER: Automatically refresh search results once the modal closes
+            if (txtSearch != null) {
+                performSearch(txtSearch.getText());
+            } else {
+                performSearch(""); // Fallback to clear list refresh
+            }
+
+
         } catch (IOException e) {
             e.printStackTrace();
         }

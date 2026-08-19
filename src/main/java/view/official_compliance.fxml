@@ -159,12 +159,14 @@
                                             <children>
                                                 <VBox spacing="4.0">
                                                     <children>
-                                                        <Label text="Santos Family" textFill="#0f172a">
+                                                        <!-- Dynamically loaded household headName --> 
+                                                        <Label fx:id="lblHeaderName" text="Household" textFill="#0f172a">
                                                             <font>
                                                                 <Font name="System Bold" size="20.0" />
                                                             </font>
                                                         </Label>
-                                                        <Label text="Barangay San Isidro  •  ID: 4P-2023-0012" textFill="#64748b">
+                                                        <!-- Dynamically loaded household address and id --> 
+                                                        <Label fx:id="lblHeaderSubDetails" text="Barangay •  ID: 00-00000" textFill="#64748b">
                                                             <font>
                                                                 <Font size="13.0" />
                                                             </font>
