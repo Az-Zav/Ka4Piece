@@ -272,16 +272,6 @@ public class OfficialProfileController {
     }
 
     @FXML
-    private void goToComplianceMouse(MouseEvent event) {
-        App.switchScene(event, "/view/official_compliance.fxml");
-    }
-
-    @FXML
-    private void goToJobVacanciesMouse(MouseEvent event) {
-        App.switchScene(event, "/view/official_job_vacancies.fxml");
-    }
-
-    @FXML
     private void handleLogout(Event event) {
         NavigationUtils.showLogoutModal(event);
     }
