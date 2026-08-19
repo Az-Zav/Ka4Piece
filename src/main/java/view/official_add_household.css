@@ -17,6 +17,12 @@
     -fx-letter-spacing: 0.5px;
 }
 
+.sub-field-label {
+    -fx-font-family: "Segoe UI", -apple-system, sans-serif;
+    -fx-font-size: 11px;
+    -fx-text-fill: #64748B;
+}
+
 /* INPUT FIELDS */
 .modal-text-field {
     -fx-font-family: "Segoe UI", -apple-system, sans-serif;
@@ -24,7 +30,7 @@
     -fx-border-color: #CBD5E1;
     -fx-border-radius: 2px;
     -fx-background-radius: 2px;
-    -fx-padding: 10px 12px;
+    -fx-padding: 8px 10px;
     -fx-font-size: 13px;
     -fx-text-fill: #334155;
 }
@@ -36,6 +42,72 @@
 
 .modal-text-field .text {
     -fx-prompt-text-fill: #94A3B8;
+}
+
+/* CHECKBOX STYLING */
+.modal-checkbox {
+    -fx-font-family: "Segoe UI", -apple-system, sans-serif;
+    -fx-font-size: 12px;
+    -fx-text-fill: #334155;
+    -fx-cursor: hand;
+}
+
+.modal-checkbox .box {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 3px;
+    -fx-background-radius: 3px;
+}
+
+.modal-checkbox:selected .box {
+    -fx-background-color: #0038A8;
+    -fx-border-color: #0038A8;
+}
+
+.modal-checkbox:selected .mark {
+    -fx-background-color: #FFFFFF;
+}
+
+/* STEPPER BOX & BUTTONS (- / +) */
+.stepper-box {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-padding: 2px;
+}
+
+.btn-stepper {
+    -fx-background-color: #F1F5F9;
+    -fx-text-fill: #334155;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-min-width: 28px;
+    -fx-max-width: 28px;
+    -fx-min-height: 28px;
+    -fx-max-height: 28px;
+    -fx-background-radius: 3px;
+    -fx-cursor: hand;
+    -fx-padding: 0;
+}
+
+.btn-stepper:hover {
+    -fx-background-color: #E2E8F0;
+}
+
+.btn-stepper:pressed {
+    -fx-background-color: #CBD5E1;
+}
+
+.stepper-field {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-font-family: "Segoe UI", -apple-system, sans-serif;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1E293B;
+    -fx-pref-width: 36px;
+    -fx-padding: 0;
 }
 
 /* HELPER / INFO LABEL */

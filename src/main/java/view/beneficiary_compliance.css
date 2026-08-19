@@ -10,12 +10,6 @@
     -fx-padding: 0 40 0 40;
 }
 
-.brand-label {
-    -fx-text-fill: #0F388A;
-    -fx-font-weight: bold;
-    -fx-font-size: 22px;
-}
-
 .nav-tab {
     -fx-background-color: transparent;
     -fx-text-fill: #64748B;
@@ -33,7 +27,6 @@
     -fx-border-color: #0F388A;
 }
 
-/* UNIFORM LOGOUT BUTTON */
 .btn-outline {
     -fx-background-color: transparent;
     -fx-border-color: #0F388A;
@@ -50,25 +43,25 @@
     -fx-background-color: #EFF6FF;
 }
 
-/* TYPOGRAPHY */
+/* PAGE TYPOGRAPHY */
 .page-title {
-    -fx-font-size: 26px;
+    -fx-font-size: 24px;
     -fx-font-weight: bold;
     -fx-text-fill: #0F172A;
 }
 
 .page-subtitle {
-    -fx-font-size: 13px;
+    -fx-font-size: 12px;
     -fx-text-fill: #64748B;
 }
 
 .section-title {
     -fx-font-size: 16px;
     -fx-font-weight: bold;
-    -fx-text-fill: #1E293B;
+    -fx-text-fill: #0F172A;
 }
 
-/* ASSESSMENT BAR */
+/* ASSESSMENT PERIOD BAR */
 .assessment-bar {
     -fx-background-color: #FFFFFF;
     -fx-border-color: #E2E8F0;
@@ -77,77 +70,60 @@
 }
 
 .assessment-label {
+    -fx-font-size: 12px;
     -fx-font-weight: bold;
-    -fx-font-size: 11px;
-    -fx-text-fill: #475569;
+    -fx-text-fill: #0F388A;
 }
 
 /* COMPLIANCE CONDITION CARDS */
 .condition-card {
     -fx-background-color: #FFFFFF;
-    -fx-border-color: #E2E8F0;
-    -fx-border-radius: 8px;
-    -fx-background-radius: 8px;
-    -fx-padding: 15;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 12px 16px;
     -fx-alignment: center-left;
-    -fx-spacing: 12;
-    -fx-min-height: 75px;
-    -fx-pref-height: 75px;
 }
 
 .pass-card {
-    -fx-border-color: #E2E8F0;
+    -fx-border-color: #86EFAC;
+    -fx-border-width: 1px 1px 1px 4px;
 }
 
 .fail-card {
-    -fx-border-color: #EF4444;
-    -fx-border-width: 1.5px;
+    -fx-border-color: #FCA5A5;
+    -fx-border-width: 1px 1px 1px 4px;
 }
 
 .icon-check {
-    -fx-background-color: #DBEAFE;
-    -fx-text-fill: #2563EB;
-    -fx-font-weight: bold;
-    -fx-font-size: 12px;
-    -fx-min-width: 28px;
-    -fx-min-height: 28px;
-    -fx-max-width: 28px;
-    -fx-max-height: 28px;
-    -fx-alignment: center;
-    -fx-background-radius: 14px;
+    -fx-font-size: 16px;
+    -fx-text-fill: #16A34A;
+    -fx-padding: 0 10 0 0;
 }
 
 .icon-cross {
-    -fx-background-color: #FEE2E2;
+    -fx-font-size: 16px;
     -fx-text-fill: #DC2626;
-    -fx-font-weight: bold;
-    -fx-font-size: 12px;
-    -fx-min-width: 28px;
-    -fx-min-height: 28px;
-    -fx-max-width: 28px;
-    -fx-max-height: 28px;
-    -fx-alignment: center;
-    -fx-background-radius: 14px;
+    -fx-padding: 0 10 0 0;
 }
 
 .condition-title {
-    -fx-font-weight: bold;
     -fx-font-size: 12px;
-    -fx-text-fill: #1E293B;
+    -fx-font-weight: bold;
+    -fx-text-fill: #166534;
 }
 
 .condition-title-fail {
-    -fx-font-weight: bold;
     -fx-font-size: 12px;
-    -fx-text-fill: #DC2626;
+    -fx-font-weight: bold;
+    -fx-text-fill: #991B1B;
 }
 
 .condition-desc {
     -fx-font-size: 11px;
-    -fx-text-fill: #64748B;
+    -fx-text-fill: #475569;
 }
 
-/* SIDEBAR CARDS */
+/* SIDEBAR & GRANT HISTORY TABLE */
 .side-card {
     -fx-background-color: #FFFFFF;
     -fx-border-color: #E2E8F0;
@@ -155,35 +131,72 @@
     -fx-background-radius: 8px;
 }
 
-.side-card-title {
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #0F172A;
+.history-header {
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 0 0 1px 0;
+    -fx-background-radius: 8px 8px 0 0;
 }
 
-.grant-label {
-    -fx-font-size: 12px;
-    -fx-text-fill: #475569;
+.th-label {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #64748B;
 }
 
-.grant-value {
-    -fx-font-weight: bold;
+.history-scroll {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-border-color: transparent;
+}
+
+.history-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.history-row {
+    -fx-background-color: #FFFFFF;
+}
+
+.history-row:hover {
+    -fx-background-color: #F1F5F9;
+}
+
+.history-date {
+    -fx-font-size: 11px;
+    -fx-text-fill: #64748B;
+}
+
+.history-type {
     -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1E293B;
+}
+
+.history-amount {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
     -fx-text-fill: #0F172A;
+    -fx-alignment: center-right;
+}
+
+.text-right {
+    -fx-alignment: center-right;
 }
 
 .total-label {
-    -fx-font-weight: bold;
-    -fx-font-size: 11px;
-    -fx-text-fill: #334155;
-}
-
-.total-value {
-    -fx-font-size: 22px;
+    -fx-font-size: 12px;
     -fx-font-weight: bold;
     -fx-text-fill: #0F388A;
 }
 
+.total-value {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0F388A;
+}
+
+/* WITHHELD NOTICE */
 .notice-title {
     -fx-font-size: 11px;
     -fx-font-weight: bold;
@@ -191,11 +204,13 @@
 }
 
 .notice-box {
-    -fx-background-color: #F1F5F9;
+    -fx-background-color: #FEF2F2;
+    -fx-border-color: #FECACA;
+    -fx-border-radius: 6px;
     -fx-background-radius: 6px;
 }
 
 .notice-text {
     -fx-font-size: 11px;
-    -fx-text-fill: #334155;
+    -fx-text-fill: #991B1B;
 }

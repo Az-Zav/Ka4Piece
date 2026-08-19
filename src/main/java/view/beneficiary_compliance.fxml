@@ -2,14 +2,17 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
 <BorderPane prefHeight="800.0" prefWidth="1280.0" stylesheets="@beneficiary_compliance.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ka4piece.controller.BeneficiaryDashboardController">
@@ -31,7 +34,7 @@
 
                         <Region prefHeight="65.0" prefWidth="90.0" HBox.hgrow="ALWAYS" />
 
-                        <!-- NAV TABS IN CENTER -->
+                        <!-- NAV TABS -->
                         <HBox alignment="CENTER" spacing="30.0">
                             <children>
                                 <Button styleClass="nav-tab, active-tab" text="Compliance" />
@@ -71,189 +74,273 @@
         </VBox>
     </top>
 
-    <!-- MAIN COMPLIANCE CONTENT -->
+    <!-- MAIN CONTENT AREA -->
     <center>
-        <VBox spacing="20.0" style="-fx-background-color: #f8fafc;" BorderPane.alignment="CENTER">
-            <padding>
-                <Insets bottom="30.0" left="40.0" right="40.0" top="25.0" />
-            </padding>
-            <children>
-                <!-- HEADER TITLE -->
-                <VBox spacing="4.0">
-                    <children>
-                        <Label styleClass="page-title" text="Compliance" />
-                        <Label styleClass="page-subtitle" text="Review personalized job recommendations based on your profile." />
-                    </children>
-                </VBox>
-
-                <!-- ASSESSMENT PERIOD BAR -->
-                <HBox alignment="CENTER_LEFT" styleClass="assessment-bar">
+        <ScrollPane fitToWidth="true" style="-fx-background-color: #f8fafc;" BorderPane.alignment="CENTER">
+            <content>
+                <VBox spacing="20.0" style="-fx-background-color: #f8fafc;">
                     <padding>
-                        <Insets bottom="12.0" left="15.0" right="15.0" top="12.0" />
+                        <Insets bottom="30.0" left="40.0" right="40.0" top="25.0" />
                     </padding>
                     <children>
-                        <Label styleClass="assessment-label" text="📅  ASSESSMENT PERIOD" />
-                        <Region HBox.hgrow="ALWAYS" />
-                        <ComboBox fx:id="cmbAssessmentPeriod" prefWidth="180.0" promptText="August 2026" />
-                    </children>
-                </HBox>
+                        <!-- HEADER TITLE & BACK TO CURRENT MONTH BUTTON -->
+                        <HBox alignment="CENTER_LEFT">
+                            <children>
+                                <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                                    <children>
+                                        <Label styleClass="page-title" text="Compliance &amp; Grant Tracking" />
+                                        <Label styleClass="page-subtitle" text="Review personalized job recommendations and 4Ps compliance history based on your profile." />
+                                    </children>
+                                </VBox>
+                                <Button fx:id="btnBackToCurrentMonth" styleClass="btn-outline" text="↺ Back to Current Month" visible="false" />
+                            </children>
+                        </HBox>
 
-                <HBox spacing="20.0">
-                    <!-- COMPLIANCE CONDITIONS (LEFT SIDE) -->
-                    <VBox spacing="15.0" HBox.hgrow="ALWAYS">
-                        <children>
-                            <Label styleClass="section-title" text="Compliance Conditions" />
+                        <!-- TOP SECTION: COMPLIANCE CARDS (LEFT) + GRANT BREAKDOWN & NOTICES (RIGHT) -->
+                        <HBox spacing="25.0">
 
-                            <!-- ROW 1 -->
-                            <HBox spacing="15.0">
+                            <!-- LEFT SIDE: 6 UNIFORM GRID CARDS -->
+                            <VBox spacing="15.0" HBox.hgrow="ALWAYS">
                                 <children>
-                                    <HBox prefWidth="350.0" styleClass="condition-card, pass-card" HBox.hgrow="ALWAYS">
-                                        <children>
-                                            <Label styleClass="icon-check" text="✔" />
-                                            <VBox spacing="4.0" HBox.hgrow="ALWAYS">
-                                                <children>
-                                                    <Label styleClass="condition-title" text="PREGNANCY CARE" />
-                                                    <Label styleClass="condition-desc" text="Attended scheduled health center visit and vaccination." wrapText="true" />
-                                                </children>
-                                            </VBox>
-                                        </children>
-                                    </HBox>
-                                    <HBox prefWidth="350.0" styleClass="condition-card, pass-card" HBox.hgrow="ALWAYS">
-                                        <children>
-                                            <Label styleClass="icon-check" text="✔" />
-                                            <VBox spacing="4.0" HBox.hgrow="ALWAYS">
-                                                <children>
-                                                    <Label styleClass="condition-title" text="DEWORMING (6-14YRS)" />
-                                                    <Label styleClass="condition-desc" text="Received deworming pills at school." wrapText="true" />
-                                                </children>
-                                            </VBox>
-                                        </children>
-                                    </HBox>
-                                </children>
-                            </HBox>
+                                    <Label styleClass="section-title" text="Compliance Conditions" />
 
-                            <!-- ROW 2 -->
-                            <HBox spacing="15.0">
-                                <children>
-                                    <HBox prefWidth="350.0" styleClass="condition-card, pass-card" HBox.hgrow="ALWAYS">
+                                    <GridPane hgap="15.0" vgap="15.0">
+                                        <columnConstraints>
+                                            <ColumnConstraints percentWidth="50.0" />
+                                            <ColumnConstraints percentWidth="50.0" />
+                                        </columnConstraints>
+                                        <rowConstraints>
+                                            <RowConstraints minHeight="75.0" prefHeight="75.0" />
+                                            <RowConstraints minHeight="75.0" prefHeight="75.0" />
+                                            <RowConstraints minHeight="75.0" prefHeight="75.0" />
+                                        </rowConstraints>
                                         <children>
-                                            <Label styleClass="icon-check" text="✔" />
-                                            <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                                            <!-- CARD 1 -->
+                                            <HBox styleClass="condition-card, pass-card" GridPane.columnIndex="0" GridPane.rowIndex="0">
                                                 <children>
-                                                    <Label styleClass="condition-title" text="SCHOOL ATTENDANCE" />
-                                                    <Label styleClass="condition-desc" text="Maintained &gt;85% monthly attendance rate." wrapText="true" />
+                                                    <Label styleClass="icon-check" text="✔" />
+                                                    <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                                                        <children>
+                                                            <Label styleClass="condition-title" text="PREGNANCY CARE" />
+                                                            <Label styleClass="condition-desc" text="Attended scheduled health center visit and vaccination." wrapText="true" />
+                                                        </children>
+                                                    </VBox>
                                                 </children>
-                                            </VBox>
-                                        </children>
-                                    </HBox>
-                                    <HBox prefWidth="350.0" styleClass="condition-card, fail-card" HBox.hgrow="ALWAYS">
-                                        <children>
-                                            <Label styleClass="icon-cross" text="✖" />
-                                            <VBox spacing="4.0" HBox.hgrow="ALWAYS">
-                                                <children>
-                                                    <Label styleClass="condition-title-fail" text="FAMILY DEVELOPMENT SESSION" />
-                                                    <Label styleClass="condition-desc" text="Missed the monthly mandatory FDS meeting." wrapText="true" />
-                                                </children>
-                                            </VBox>
-                                        </children>
-                                    </HBox>
-                                </children>
-                            </HBox>
+                                            </HBox>
 
-                            <!-- ROW 3 -->
-                            <HBox spacing="15.0">
-                                <children>
-                                    <HBox prefWidth="350.0" styleClass="condition-card, pass-card" HBox.hgrow="ALWAYS">
-                                        <children>
-                                            <Label styleClass="icon-check" text="✔" />
-                                            <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                                            <!-- CARD 2 -->
+                                            <HBox styleClass="condition-card, pass-card" GridPane.columnIndex="1" GridPane.rowIndex="0">
                                                 <children>
-                                                    <Label styleClass="condition-title" text="NUTRITION MONITORING" />
-                                                    <Label styleClass="condition-desc" text="Completed monthly weight/height measurement." wrapText="true" />
+                                                    <Label styleClass="icon-check" text="✔" />
+                                                    <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                                                        <children>
+                                                            <Label styleClass="condition-title" text="DEWORMING (6-14YRS)" />
+                                                            <Label styleClass="condition-desc" text="Received deworming pills at school." wrapText="true" />
+                                                        </children>
+                                                    </VBox>
                                                 </children>
-                                            </VBox>
-                                        </children>
-                                    </HBox>
-                                    <HBox prefWidth="350.0" styleClass="condition-card, pass-card" HBox.hgrow="ALWAYS">
-                                        <children>
-                                            <Label styleClass="icon-check" text="✔" />
-                                            <VBox spacing="4.0" HBox.hgrow="ALWAYS">
-                                                <children>
-                                                    <Label styleClass="condition-title" text="PRE/POST NATAL CARE" />
-                                                    <Label styleClass="condition-desc" text="N/A (No current pregnancy in household)." wrapText="true" />
-                                                </children>
-                                            </VBox>
-                                        </children>
-                                    </HBox>
-                                </children>
-                            </HBox>
-                        </children>
-                    </VBox>
+                                            </HBox>
 
-                    <!-- SIDEBAR BREAKDOWN & NOTICE (RIGHT SIDE) -->
-                    <VBox prefWidth="320.0" spacing="15.0">
-                        <children>
-                            <!-- GRANT BREAKDOWN CARD -->
-                            <VBox spacing="12.0" styleClass="side-card">
-                                <padding>
-                                    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                                </padding>
-                                <children>
-                                    <Label styleClass="side-card-title" text="Grant Breakdown" />
-                                    <Separator />
-                                    <HBox>
-                                        <children>
-                                            <Label styleClass="grant-label" text="Health Grant" />
-                                            <Region HBox.hgrow="ALWAYS" />
-                                            <Label styleClass="grant-value" text="₱750.00" />
+                                            <!-- CARD 3 -->
+                                            <HBox styleClass="condition-card, pass-card" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                                <children>
+                                                    <Label styleClass="icon-check" text="✔" />
+                                                    <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                                                        <children>
+                                                            <Label styleClass="condition-title" text="SCHOOL ATTENDANCE" />
+                                                            <Label styleClass="condition-desc" text="Maintained &gt;85% monthly attendance rate." wrapText="true" />
+                                                        </children>
+                                                    </VBox>
+                                                </children>
+                                            </HBox>
+
+                                            <!-- CARD 4 -->
+                                            <HBox styleClass="condition-card, fail-card" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                                <children>
+                                                    <Label styleClass="icon-cross" text="✖" />
+                                                    <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                                                        <children>
+                                                            <Label styleClass="condition-title-fail" text="FAMILY DEVELOPMENT SESSION" />
+                                                            <Label styleClass="condition-desc" text="Missed the monthly mandatory FDS meeting." wrapText="true" />
+                                                        </children>
+                                                    </VBox>
+                                                </children>
+                                            </HBox>
+
+                                            <!-- CARD 5 -->
+                                            <HBox styleClass="condition-card, pass-card" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                                                <children>
+                                                    <Label styleClass="icon-check" text="✔" />
+                                                    <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                                                        <children>
+                                                            <Label styleClass="condition-title" text="NUTRITION MONITORING" />
+                                                            <Label styleClass="condition-desc" text="Completed monthly weight/height measurement." wrapText="true" />
+                                                        </children>
+                                                    </VBox>
+                                                </children>
+                                            </HBox>
+
+                                            <!-- CARD 6 -->
+                                            <HBox styleClass="condition-card, pass-card" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                                <children>
+                                                    <Label styleClass="icon-check" text="✔" />
+                                                    <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                                                        <children>
+                                                            <Label styleClass="condition-title" text="PRE/POST NATAL CARE" />
+                                                            <Label styleClass="condition-desc" text="N/A (No current pregnancy in household)." wrapText="true" />
+                                                        </children>
+                                                    </VBox>
+                                                </children>
+                                            </HBox>
                                         </children>
-                                    </HBox>
-                                    <HBox>
-                                        <children>
-                                            <Label styleClass="grant-label" text="Education Grant" />
-                                            <Region HBox.hgrow="ALWAYS" />
-                                            <Label styleClass="grant-value" text="₱1,000.00" />
-                                        </children>
-                                    </HBox>
-                                    <HBox>
-                                        <children>
-                                            <Label styleClass="grant-label" text="Rice Subsidy" />
-                                            <Region HBox.hgrow="ALWAYS" />
-                                            <Label styleClass="grant-value" text="₱600.00" />
-                                        </children>
-                                    </HBox>
-                                    <Separator />
-                                    <HBox alignment="CENTER_LEFT">
-                                        <children>
-                                            <Label styleClass="total-label" text="TOTAL AMOUNT" />
-                                            <Region HBox.hgrow="ALWAYS" />
-                                            <Label styleClass="total-value" text="₱2,350" />
-                                        </children>
-                                    </HBox>
+                                    </GridPane>
                                 </children>
                             </VBox>
 
-                            <!-- WITHHELD GRANTS NOTICE -->
-                            <VBox spacing="10.0" styleClass="side-card">
-                                <padding>
-                                    <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
-                                </padding>
+                            <!-- RIGHT SIDEBAR: GRANT BREAKDOWN & WITHHELD NOTICE -->
+                            <VBox prefWidth="360.0" spacing="15.0">
                                 <children>
-                                    <Label styleClass="notice-title" text="ⓘ WITHHELD GRANTS NOTICE" />
-                                    <VBox styleClass="notice-box">
+                                    <!-- GRANT BREAKDOWN CARD -->
+                                    <VBox spacing="10.0" styleClass="side-card">
                                         <padding>
-                                            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                            <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
                                         </padding>
                                         <children>
-                                            <Label styleClass="notice-text" text="Reason: Non-compliance with Family Development Session (FDS) attendance for the current period. A portion of the grant associated with FDS compliance has been temporarily withheld pending review or make-up session." wrapText="true" />
+                                            <Label styleClass="section-title" text="Grant Breakdown" />
+
+                                            <GridPane vgap="8.0">
+                                                <columnConstraints>
+                                                    <ColumnConstraints hgrow="ALWAYS" />
+                                                    <ColumnConstraints halignment="RIGHT" hgrow="NEVER" />
+                                                </columnConstraints>
+                                                <children>
+                                                    <Label style="-fx-text-fill: #475569;" text="Health Grant" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                                                    <Label fx:id="lblHealthGrant" style="-fx-font-weight: bold; -fx-text-fill: #0f172a;" text="₱750.00" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+                                                    <Label style="-fx-text-fill: #475569;" text="Education Grant" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                                                    <Label fx:id="lblEducationGrant" style="-fx-font-weight: bold; -fx-text-fill: #0f172a;" text="₱1,000.00" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                                                    <Label style="-fx-text-fill: #475569;" text="Rice Subsidy" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                                                    <Label fx:id="lblRiceSubsidy" style="-fx-font-weight: bold; -fx-text-fill: #0f172a;" text="₱600.00" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                </children>
+                                            </GridPane>
+
+                                            <Separator />
+
+                                            <HBox alignment="CENTER_LEFT">
+                                                <children>
+                                                    <Label styleClass="total-label" text="TOTAL AMOUNT" />
+                                                    <Region HBox.hgrow="ALWAYS" />
+                                                    <Label fx:id="lblTotalGrant" styleClass="total-value" text="₱2,350.00" />
+                                                </children>
+                                            </HBox>
+                                        </children>
+                                    </VBox>
+
+                                    <!-- WITHHELD NOTICE CARD -->
+                                    <VBox fx:id="boxNoticeCard" spacing="8.0" styleClass="side-card">
+                                        <padding>
+                                            <Insets bottom="12.0" left="12.0" right="12.0" top="12.0" />
+                                        </padding>
+                                        <children>
+                                            <Label styleClass="notice-title" text="ⓘ WITHHELD GRANTS NOTICE" />
+                                            <VBox styleClass="notice-box">
+                                                <padding>
+                                                    <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+                                                </padding>
+                                                <children>
+                                                    <Label fx:id="lblNoticeText" styleClass="notice-text" text="Reason: Non-compliance with Family Development Session (FDS) attendance for August 2026. A portion of the grant associated with FDS compliance (₱300.00) has been temporarily withheld pending review or make-up session." wrapText="true" />
+                                                </children>
+                                            </VBox>
                                         </children>
                                     </VBox>
                                 </children>
                             </VBox>
-                        </children>
-                    </VBox>
-                </HBox>
-            </children>
-        </VBox>
+
+                        </HBox>
+
+                        <!-- BOTTOM AREA: GRANT BREAKDOWN HISTORY -->
+                        <VBox spacing="10.0">
+                            <children>
+                                <Label styleClass="section-title" text="Grant Breakdown History" />
+
+                                <VBox styleClass="side-card">
+                                    <children>
+                                        <GridPane styleClass="history-header">
+                                            <columnConstraints>
+                                                <ColumnConstraints hgrow="ALWAYS" />
+                                                <ColumnConstraints hgrow="NEVER" prefWidth="150.0" />
+                                            </columnConstraints>
+                                            <rowConstraints>
+                                                <RowConstraints prefHeight="35.0" />
+                                            </rowConstraints>
+                                            <children>
+                                                <Label styleClass="th-label" text="PERIOD (MONTH, YEAR)" GridPane.columnIndex="0" />
+                                                <Label styleClass="th-label, text-right" text="TOTAL AMOUNT" GridPane.columnIndex="1" />
+                                            </children>
+                                            <padding>
+                                                <Insets left="20.0" right="20.0" />
+                                            </padding>
+                                        </GridPane>
+
+                                        <VBox spacing="0.0">
+                                            <children>
+                                                <!-- ROW 1 -->
+                                                <GridPane fx:id="rowAug2026" style="-fx-cursor: hand;" styleClass="history-row">
+                                                    <columnConstraints>
+                                                        <ColumnConstraints hgrow="ALWAYS" />
+                                                        <ColumnConstraints hgrow="NEVER" prefWidth="150.0" />
+                                                    </columnConstraints>
+                                                    <children>
+                                                        <Label styleClass="history-date" text="AUG, 2026" GridPane.columnIndex="0" />
+                                                        <Label styleClass="history-amount" text="₱2,350.00" GridPane.columnIndex="1" />
+                                                    </children>
+                                                    <padding>
+                                                        <Insets bottom="12.0" left="20.0" right="20.0" top="12.0" />
+                                                    </padding>
+                                                </GridPane>
+                                                <Separator />
+
+                                                <!-- ROW 2 -->
+                                                <GridPane fx:id="rowJul2026" style="-fx-cursor: hand;" styleClass="history-row">
+                                                    <columnConstraints>
+                                                        <ColumnConstraints hgrow="ALWAYS" />
+                                                        <ColumnConstraints hgrow="NEVER" prefWidth="150.0" />
+                                                    </columnConstraints>
+                                                    <children>
+                                                        <Label styleClass="history-date" text="JUL, 2026" GridPane.columnIndex="0" />
+                                                        <Label styleClass="history-amount" text="₱2,200.00" GridPane.columnIndex="1" />
+                                                    </children>
+                                                    <padding>
+                                                        <Insets bottom="12.0" left="20.0" right="20.0" top="12.0" />
+                                                    </padding>
+                                                </GridPane>
+                                                <Separator />
+
+                                                <!-- ROW 3 -->
+                                                <GridPane fx:id="rowJun2026" style="-fx-cursor: hand;" styleClass="history-row">
+                                                    <columnConstraints>
+                                                        <ColumnConstraints hgrow="ALWAYS" />
+                                                        <ColumnConstraints hgrow="NEVER" prefWidth="150.0" />
+                                                    </columnConstraints>
+                                                    <children>
+                                                        <Label styleClass="history-date" text="JUN, 2026" GridPane.columnIndex="0" />
+                                                        <Label styleClass="history-amount" text="₱3,000.00" GridPane.columnIndex="1" />
+                                                    </children>
+                                                    <padding>
+                                                        <Insets bottom="12.0" left="20.0" right="20.0" top="12.0" />
+                                                    </padding>
+                                                </GridPane>
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </VBox>
+                            </children>
+                        </VBox>
+
+                    </children>
+                </VBox>
+            </content>
+        </ScrollPane>
     </center>
 </BorderPane>

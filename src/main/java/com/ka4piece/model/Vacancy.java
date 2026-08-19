@@ -3,16 +3,18 @@ package com.ka4piece.model;
 import java.util.List;
 
 public class Vacancy {
-    private String vacancyId, title, educationRequirement, location, compensation, type, enteredByOfficialId;
+    private String vacancyId, title, description, educationRequirement, location, compensation, type, enteredByOfficialId;
     private List<String> skillRequirements;
     private int experienceYearsRequired;
     private String status = "ACTIVE"; // ACTIVE|ARCHIVED
     private String archiveReason;
     private String hiredJobseekerId;
 
-    public Vacancy(String vacancyId, String title, String educationRequirement, String location, String compensation, String type, List<String> skillRequirements, int experienceYearsRequired, String enteredByOfficialId) {
+    // Default/New Vacancy Constructor
+    public Vacancy(String vacancyId, String title, String description, String educationRequirement, String location, String compensation, String type, List<String> skillRequirements, int experienceYearsRequired, String enteredByOfficialId) {
         this.vacancyId = vacancyId;
         this.title = title;
+        this.description = description;
         this.educationRequirement = educationRequirement;
         this.location = location;
         this.compensation = compensation;
@@ -22,9 +24,11 @@ public class Vacancy {
         this.enteredByOfficialId = enteredByOfficialId;
     }
 
-    public Vacancy(String vacancyId, String title, String educationRequirement, String location, String compensation, String type, List<String> skillRequirements, int experienceYearsRequired, String enteredByOfficialId, String status, String archiveReason, String hiredJobseekerId) {
+    // Full Constructor (e.g. loading existing records with status/archive data)
+    public Vacancy(String vacancyId, String title, String description, String educationRequirement, String location, String compensation, String type, List<String> skillRequirements, int experienceYearsRequired, String enteredByOfficialId, String status, String archiveReason, String hiredJobseekerId) {
         this.vacancyId = vacancyId;
         this.title = title;
+        this.description = description;
         this.educationRequirement = educationRequirement;
         this.location = location;
         this.compensation = compensation;
@@ -43,6 +47,9 @@ public class Vacancy {
 
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
     public String getEducationRequirement() { return educationRequirement; }
     public void setEducationRequirement(String educationRequirement) { this.educationRequirement = educationRequirement; }

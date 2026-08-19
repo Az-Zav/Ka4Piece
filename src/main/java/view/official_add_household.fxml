@@ -2,22 +2,20 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<!-- ADD HOUSEHOLD FOR OFFICIAL DASHBOARD-->
-
-<VBox prefWidth="420.0" spacing="16.0" styleClass="modal-container" stylesheets="@official_add_household.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ka4piece.controller.RegisterHouseholdController">
+<VBox prefWidth="440.0" spacing="14.0" styleClass="modal-container" stylesheets="@official_add_household.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ka4piece.controller.RegisterHouseholdController">
     <padding>
-        <Insets bottom="32.0" left="32.0" right="32.0" top="32.0" />
+        <Insets bottom="28.0" left="28.0" right="28.0" top="28.0" />
     </padding>
     <children>
 
         <!-- HOUSEHOLD HEAD NAME -->
-        <VBox spacing="6.0">
+        <VBox spacing="4.0">
             <children>
                 <Label styleClass="field-label" text="HOUSEHOLD HEAD NAME" />
                 <TextField fx:id="txtHeadName" promptText="Full name" styleClass="modal-text-field" />
@@ -25,7 +23,7 @@
         </VBox>
 
         <!-- ADDRESS -->
-        <VBox spacing="6.0">
+        <VBox spacing="4.0">
             <children>
                 <Label styleClass="field-label" text="ADDRESS" />
                 <TextField fx:id="txtAddress" promptText="Street/lot-level" styleClass="modal-text-field" />
@@ -33,7 +31,7 @@
         </VBox>
 
         <!-- BARANGAY -->
-        <VBox spacing="6.0">
+        <VBox spacing="4.0">
             <children>
                 <Label styleClass="field-label" text="BARANGAY" />
                 <TextField fx:id="txtBarangay" promptText="Barangay name" styleClass="modal-text-field" />
@@ -41,10 +39,75 @@
         </VBox>
 
         <!-- EMAIL -->
+        <VBox spacing="4.0">
+            <children>
+                <Label styleClass="field-label" text="EMAIL" />
+                <TextField fx:id="txtEmailField" promptText="Email" styleClass="modal-text-field" />
+            </children>
+        </VBox>
+
+        <!-- SPECIAL COMPLIANCE STATUS (CHECKBOXES) -->
         <VBox spacing="6.0">
             <children>
-                <Label styleClass="field-label" text="Email" />
-                <TextField fx:id="txtEmailField" promptText="Email" styleClass="modal-text-field" />
+                <Label styleClass="field-label" text="APPLICABLE MEMBERS" />
+                <HBox spacing="20.0">
+                    <children>
+                        <CheckBox fx:id="chkPregnant" styleClass="modal-checkbox" text="Pregnant Member" />
+                        <CheckBox fx:id="chkToddler" styleClass="modal-checkbox" text="Toddler (0–5 yrs)" />
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+
+        <!-- SCHOOL-AGED CHILDREN COUNTS (CUSTOM - / + STEPPERS) -->
+        <VBox spacing="6.0">
+            <children>
+                <Label styleClass="field-label" text="STUDENT COUNTS" />
+                <HBox alignment="CENTER_LEFT" spacing="12.0">
+                    <children>
+                        <!-- ELEMENTARY STEPPER -->
+                        <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                            <children>
+                                <Label styleClass="sub-field-label" text="Elem" />
+                                <HBox alignment="CENTER" styleClass="stepper-box">
+                                    <children>
+                                        <Button styleClass="btn-stepper" text="-" onAction="#decrementElem" />
+                                        <TextField fx:id="txtElemCount" alignment="CENTER" editable="false" styleClass="stepper-field" text="0" />
+                                        <Button styleClass="btn-stepper" text="+" onAction="#incrementElem" />
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+
+                        <!-- JUNIOR HIGH STEPPER -->
+                        <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                            <children>
+                                <Label styleClass="sub-field-label" text="JHS" />
+                                <HBox alignment="CENTER" styleClass="stepper-box">
+                                    <children>
+                                        <Button styleClass="btn-stepper" text="-" onAction="#decrementJhs" />
+                                        <TextField fx:id="txtJhsCount" alignment="CENTER" editable="false" styleClass="stepper-field" text="0" />
+                                        <Button styleClass="btn-stepper" text="+" onAction="#incrementJhs" />
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+
+                        <!-- SENIOR HIGH STEPPER -->
+                        <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                            <children>
+                                <Label styleClass="sub-field-label" text="SHS" />
+                                <HBox alignment="CENTER" styleClass="stepper-box">
+                                    <children>
+                                        <Button styleClass="btn-stepper" text="-" onAction="#decrementShs" />
+                                        <TextField fx:id="txtShsCount" alignment="CENTER" editable="false" styleClass="stepper-field" text="0" />
+                                        <Button styleClass="btn-stepper" text="+" onAction="#incrementShs" />
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
             </children>
         </VBox>
 
@@ -54,15 +117,12 @@
         <!-- SUBMIT BUTTON -->
         <Button fx:id="btnRegister" onAction="#handleRegister" prefHeight="45.0" styleClass="btn-register" text="REGISTER HOUSEHOLD">
             <VBox.margin>
-                <Insets top="8.0" />
+                <Insets top="4.0" />
             </VBox.margin>
         </Button>
 
         <!-- SUCCESS MESSAGE -->
         <HBox alignment="CENTER" spacing="6.0">
-            <VBox.margin>
-                <Insets top="4.0" />
-            </VBox.margin>
             <children>
                 <Label fx:id="lblSuccessMessage" styleClass="success-label" text="✔ Household registered successfully." visible="false" />
             </children>

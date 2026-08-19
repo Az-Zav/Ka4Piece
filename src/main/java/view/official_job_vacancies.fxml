@@ -6,6 +6,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -18,7 +19,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="900.0" prefWidth="1280.0" stylesheets="@official_job_vacancies.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ka4piece.controller.OfficialDashboardController">
+<BorderPane prefHeight="900.0" prefWidth="1280.0" stylesheets="@official_job_vacancies.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ka4piece.controller.OfficialDashboardController">
 
     <!-- TOP NAVIGATION BAR -->
     <top>
@@ -29,7 +30,6 @@
                         <Insets left="24.0" right="24.0" />
                     </padding>
                     <children>
-                        <!-- LOGO (LEFT) -->
                         <ImageView fitHeight="28.0" fitWidth="120.0" pickOnBounds="true" preserveRatio="true">
                             <image>
                                 <Image url="@/ka4piece_logo.png" />
@@ -38,7 +38,6 @@
 
                         <Region HBox.hgrow="ALWAYS" />
 
-                        <!-- TAB NAVIGATION (CENTER) -->
                         <HBox alignment="CENTER" spacing="32.0">
                             <children>
                                 <Button onAction="#goToCompliance" styleClass="nav-tab" text="Compliance" />
@@ -48,7 +47,6 @@
 
                         <Region HBox.hgrow="ALWAYS" />
 
-                        <!-- PROFILE ICON & LOGOUT (RIGHT) -->
                         <HBox alignment="CENTER" spacing="16.0">
                             <children>
                                 <Button fx:id="btnProfileIcon" onAction="#handleOpenViewProfile" styleClass="icon-btn">
@@ -96,6 +94,7 @@
 
                         <HBox spacing="20.0">
                             <children>
+                                <!-- CREATE VACANCY FORM -->
                                 <VBox spacing="15.0" styleClass="card" HBox.hgrow="ALWAYS">
                                     <padding>
                                         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
@@ -110,55 +109,70 @@
                                                 <ColumnConstraints percentWidth="50.0" />
                                             </columnConstraints>
                                             <children>
-                                                <VBox spacing="4.0">
+                                                <!-- JOB TITLE -->
+                                                <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
                                                     <children>
                                                         <Label styleClass="card-title" text="JOB TITLE" />
                                                         <TextField fx:id="txtJobTitle" promptText="e.g. Administrative Assistant" styleClass="search-field" />
                                                     </children>
                                                 </VBox>
-                                                <VBox spacing="4.0" GridPane.columnIndex="1">
+
+                                                <!-- EDUCATION REQUIREMENT -->
+                                                <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
                                                     <children>
                                                         <Label styleClass="card-title" text="EDUCATION REQUIREMENT" />
                                                         <ComboBox fx:id="cmbEducationRequirement" maxWidth="1.7976931348623157E308" promptText="Select Education Level" styleClass="search-field" />
                                                     </children>
                                                 </VBox>
-                                                <VBox spacing="4.0" GridPane.columnSpan="2" GridPane.rowIndex="1">
+
+                                                <!-- SKILL REQUIREMENTS -->
+                                                <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="1">
                                                     <children>
                                                         <Label styleClass="card-title" text="SKILL REQUIREMENTS" />
                                                         <TextField fx:id="txtSkills" promptText="e.g. MS Office, Data Entry, Communication" styleClass="search-field" />
                                                     </children>
                                                 </VBox>
-                                                <VBox spacing="4.0" GridPane.rowIndex="2">
+
+                                                <!-- JOB DESCRIPTION (NEW FIELD) -->
+                                                <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="2">
+                                                    <children>
+                                                        <Label styleClass="form-label" text="JOB DESCRIPTION" />
+                                                        <TextArea fx:id="txtJobDescription" prefHeight="100.0" promptText="Enter detailed job description..." wrapText="true" />
+                                                    </children>
+                                                </VBox>
+
+                                                <!-- EXPERIENCE -->
+                                                <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="3">
                                                     <children>
                                                         <Label styleClass="card-title" text="EXPERIENCE (YEARS)" />
                                                         <TextField fx:id="txtExperience" promptText="0" styleClass="search-field" />
                                                     </children>
                                                 </VBox>
-                                                <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+
+                                                <!-- LOCATION -->
+                                                <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
                                                     <children>
                                                         <Label styleClass="card-title" text="LOCATION" />
                                                         <TextField fx:id="txtLocation" promptText="Barangay / District" styleClass="search-field" />
                                                     </children>
                                                 </VBox>
-                                                <VBox spacing="4.0" GridPane.rowIndex="3">
+
+                                                <!-- COMPENSATION -->
+                                                <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="4">
                                                     <children>
                                                         <Label styleClass="card-title" text="COMPENSATION" />
                                                         <TextField fx:id="txtCompensation" promptText="Monthly Salary Range" styleClass="search-field" />
                                                     </children>
                                                 </VBox>
-                                                <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+
+                                                <!-- EMPLOYMENT TYPE -->
+                                                <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
                                                     <children>
                                                         <Label styleClass="card-title" text="EMPLOYMENT TYPE" />
                                                         <ComboBox fx:id="cmbEmploymentType" maxWidth="1.7976931348623157E308" promptText="Select Type" styleClass="search-field" />
                                                     </children>
                                                 </VBox>
                                             </children>
-                                            <rowConstraints>
-                                                <RowConstraints />
-                                                <RowConstraints />
-                                                <RowConstraints />
-                                                <RowConstraints />
-                                            </rowConstraints>
                                         </GridPane>
 
                                         <Button fx:id="btnEnterVacancy" maxWidth="1.7976931348623157E308" styleClass="btn-primary" text="ENTER VACANCY">
@@ -172,6 +186,7 @@
                                     </children>
                                 </VBox>
 
+                                <!-- POSTED VACANCIES LIST -->
                                 <VBox prefWidth="380.0" styleClass="card">
                                     <children>
                                         <HBox styleClass="results-header">
@@ -217,6 +232,7 @@
                             </children>
                         </HBox>
 
+                        <!-- RANKED APPLICANTS TABLE -->
                         <VBox spacing="15.0" styleClass="card">
                             <padding>
                                 <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
@@ -266,9 +282,6 @@
                                                 <Label styleClass="table-header-text" text="Match Score" GridPane.columnIndex="1" />
                                                 <Label styleClass="table-header-text" text="Status" GridPane.columnIndex="2" />
                                             </children>
-                                            <rowConstraints>
-                                                <RowConstraints />
-                                            </rowConstraints>
                                         </GridPane>
 
                                         <GridPane styleClass="table-row">
@@ -286,9 +299,6 @@
                                                 <Label styleClass="badge-active" text="98%" GridPane.columnIndex="1" />
                                                 <ComboBox fx:id="cmbStatusRow1" maxWidth="1.7976931348623157E308" promptText="For Interview" styleClass="search-field" GridPane.columnIndex="2" />
                                             </children>
-                                            <rowConstraints>
-                                                <RowConstraints />
-                                            </rowConstraints>
                                         </GridPane>
 
                                         <GridPane styleClass="table-row">
@@ -306,9 +316,6 @@
                                                 <Label styleClass="badge-active" text="85%" GridPane.columnIndex="1" />
                                                 <ComboBox fx:id="cmbStatusRow2" maxWidth="1.7976931348623157E308" promptText="Applied" styleClass="search-field" GridPane.columnIndex="2" />
                                             </children>
-                                            <rowConstraints>
-                                                <RowConstraints />
-                                            </rowConstraints>
                                         </GridPane>
                                     </children>
                                 </VBox>
