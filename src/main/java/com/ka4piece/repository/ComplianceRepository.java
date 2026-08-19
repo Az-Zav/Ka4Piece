@@ -19,8 +19,8 @@ public class ComplianceRepository extends MySqlStore {
     public void saveCompliance(ComplianceRecord r) {
         String sql = "INSERT INTO compliance (householdId, monthYear, pregnancyCareStatus, child0to5HealthStatus, " +
                      "dewormingStatus, daycareAttendanceStatus, schoolAttendanceStatus, fdsAttendanceStatus, " +
-                     "elementaryCount, juniorHighCount, seniorHighCount, recordedByOfficialId) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
+                     "elementaryCount, juniorHighCount, seniorHighCount, recordedByOfficialId, recordedAt) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW()) " +
                      "ON DUPLICATE KEY UPDATE " +
                      "pregnancyCareStatus = VALUES(pregnancyCareStatus), " +
                      "child0to5HealthStatus = VALUES(child0to5HealthStatus), " +
@@ -31,7 +31,8 @@ public class ComplianceRepository extends MySqlStore {
                      "elementaryCount = VALUES(elementaryCount), " +
                      "juniorHighCount = VALUES(juniorHighCount), " +
                      "seniorHighCount = VALUES(seniorHighCount), " +
-                     "recordedByOfficialId = VALUES(recordedByOfficialId)";
+                     "recordedByOfficialId = VALUES(recordedByOfficialId), " +
+                     "recordedAt = NOW()";
 
         executeUpdate(sql,
             r.getHouseholdId(),
@@ -112,7 +113,7 @@ public class ComplianceRepository extends MySqlStore {
         int jhs = row.get("juniorHighCount") != null ? ((Number) row.get("juniorHighCount")).intValue() : 0;
         int shs = row.get("seniorHighCount") != null ? ((Number) row.get("seniorHighCount")).intValue() : 0;
 
-        return new ComplianceRecord(
+        ComplianceRecord cr = new ComplianceRecord(
             (String) row.get("householdId"),
             (String) row.get("monthYear"),
             toBoolean(row.get("pregnancyCareStatus")),
@@ -126,6 +127,9 @@ public class ComplianceRepository extends MySqlStore {
             shs,
             (String) row.get("recordedByOfficialId")
         );
+        java.sql.Timestamp recordedAt = (java.sql.Timestamp) row.get("recordedAt");
+        cr.setRecordedAt(recordedAt);
+        return cr;
     }
 
     private GrantBreakdown mapRowToGrant(Map<String, Object> row) {

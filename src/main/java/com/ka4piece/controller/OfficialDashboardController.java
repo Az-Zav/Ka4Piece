@@ -101,6 +101,8 @@ public class OfficialDashboardController {
     @FXML private Spinner<Integer> elementaryCountSpinner;
     @FXML private Spinner<Integer> juniorHighCountSpinner;
     @FXML private Spinner<Integer> seniorHighCountSpinner;
+    @FXML private Label lblComplianceFeedback;
+    @FXML private Button btnRecordCompliance;
 
     private final int MIN_CHILDREN = 0;
     private final int MAX_CHILDREN = 3;
@@ -276,6 +278,19 @@ public class OfficialDashboardController {
                 int total = currentRecord.getElementaryCount() + currentRecord.getJuniorHighCount() + currentRecord.getSeniorHighCount();
                 txtChildrenCount.setText(String.valueOf(total));
             }
+
+            // Existing record: update button text and show gray timestamp
+            if (btnRecordCompliance != null) {
+                btnRecordCompliance.setText("Update Monthly Status");
+            }
+            if (lblComplianceFeedback != null) {
+                if (currentRecord.getRecordedAt() != null) {
+                    lblComplianceFeedback.setText("Compliance Record last updated on: " + formatRecordedAtPHT(currentRecord.getRecordedAt()));
+                    lblComplianceFeedback.setTextFill(javafx.scene.paint.Color.web("#64748B"));
+                } else {
+                    lblComplianceFeedback.setText("");
+                }
+            }
         } else {
             // Reset to defaults if currentRecord = null
             if (chkPregnancyCare != null) chkPregnancyCare.setSelected(false);
@@ -300,6 +315,14 @@ public class OfficialDashboardController {
 
             if (txtChildrenCount != null) {
                 txtChildrenCount.setText("0");
+            }
+
+            // No existing record: show "Record" button text and hide feedback
+            if (btnRecordCompliance != null) {
+                btnRecordCompliance.setText("Record Monthly Status");
+            }
+            if (lblComplianceFeedback != null) {
+                lblComplianceFeedback.setText("");
             }
         }
 
@@ -385,15 +408,49 @@ public class OfficialDashboardController {
                 officialId
         );
 
+        boolean isUpdate = existingRecord != null;
+
         try {
             complianceManager.recordConditionStatus(record);
             complianceManager.computeMonthlyGrant(record, recordType, correctionReason);
-            
-            // Refresh view
-            selectHousehold(selectedHousehold);
+
+            // 1. Immediately disable button and show green success feedback
+            if (btnRecordCompliance != null) {
+                btnRecordCompliance.setDisable(true);
+            }
+            if (lblComplianceFeedback != null) {
+                String successMsg = isUpdate
+                        ? "Compliance Record successfully updated."
+                        : "Compliance record successfully recorded.";
+                lblComplianceFeedback.setText(successMsg);
+                lblComplianceFeedback.setTextFill(javafx.scene.paint.Color.web("#16A34A"));
+            }
+
+            // 2. After 5 seconds, re-enable and transition to update state
+            javafx.animation.PauseTransition delay = new javafx.animation.PauseTransition(javafx.util.Duration.seconds(5));
+            delay.setOnFinished(e -> {
+                if (btnRecordCompliance != null) {
+                    btnRecordCompliance.setDisable(false);
+                    btnRecordCompliance.setText("Update Monthly Status");
+                }
+                // Update only the feedback label with fresh timestamp (no full refresh to avoid scroll jump)
+                if (lblComplianceFeedback != null && complianceManager != null && selectedHousehold != null) {
+                    com.ka4piece.model.ComplianceRecord freshRecord = complianceManager.getCurrentStatus(selectedHousehold.getHouseholdId());
+                    if (freshRecord != null && freshRecord.getRecordedAt() != null) {
+                        lblComplianceFeedback.setText("Compliance Record last updated on: " + formatRecordedAtPHT(freshRecord.getRecordedAt()));
+                        lblComplianceFeedback.setTextFill(javafx.scene.paint.Color.web("#64748B"));
+                    }
+                }
+            });
+            delay.play();
+
         } catch (Exception e) {
             System.err.println("[OfficialDashboardController] Error recording compliance: " + e.getMessage());
             e.printStackTrace();
+            // Re-enable button on error so the user can retry
+            if (btnRecordCompliance != null) {
+                btnRecordCompliance.setDisable(false);
+            }
         }
     }
 
@@ -541,5 +598,12 @@ public class OfficialDashboardController {
         } catch (NumberFormatException e) {
             return 0;
         }
+    }
+
+    private String formatRecordedAtPHT(java.sql.Timestamp timestamp) {
+        java.time.LocalDateTime localDateTime = timestamp.toLocalDateTime();
+        java.time.format.DateTimeFormatter formatter =
+                java.time.format.DateTimeFormatter.ofPattern("MMMM dd, yyyy - HH:mm");
+        return localDateTime.format(formatter);
     }
 }

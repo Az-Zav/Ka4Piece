@@ -6,6 +6,7 @@ public class ComplianceRecord {
                     daycareAttendanceStatus, schoolAttendanceStatus, fdsAttendanceStatus;
     private int elementaryCount, juniorHighCount, seniorHighCount;
     private String recordedByOfficialId;
+    private java.sql.Timestamp recordedAt;
 
     public ComplianceRecord(String householdId, String monthYear, boolean pregnancyCareStatus,
                             boolean child0to5HealthStatus, boolean dewormingStatus,
@@ -63,4 +64,7 @@ public class ComplianceRecord {
 
     public String getRecordedByOfficialId() { return recordedByOfficialId; }
     public void setRecordedByOfficialId(String recordedByOfficialId) { this.recordedByOfficialId = recordedByOfficialId; }
+
+    public java.sql.Timestamp getRecordedAt() { return recordedAt; }
+    public void setRecordedAt(java.sql.Timestamp recordedAt) { this.recordedAt = recordedAt; }
 }

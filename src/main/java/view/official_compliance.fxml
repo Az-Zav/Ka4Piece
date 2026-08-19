@@ -186,12 +186,6 @@
                                                         </HBox>
                                                     </children>
                                                 </VBox>
-                                                <Region HBox.hgrow="ALWAYS" />
-                                                <Button styleClass="btn-outline" text="👁 View Profile">
-                                                    <padding>
-                                                        <Insets bottom="8.0" left="16.0" right="16.0" top="8.0" />
-                                                    </padding>
-                                                </Button>
                                             </children>
                                         </HBox>
 
@@ -253,9 +247,10 @@
                                                 </GridPane>
 
                                                 <Separator prefWidth="200.0" />
-                                                <HBox alignment="CENTER_RIGHT">
+                                                <HBox alignment="CENTER_RIGHT" spacing="12.0">
                                                     <children>
-                                                        <Button onAction="#handleRecordMonthlyStatus" styleClass="btn-primary" text="Record Monthly Status">
+                                                        <Label fx:id="lblComplianceFeedback" style="-fx-text-fill: #64748b;" />
+                                                        <Button fx:id="btnRecordCompliance" onAction="#handleRecordMonthlyStatus" styleClass="btn-primary" text="Record Monthly Status">
                                                             <padding>
                                                                 <Insets bottom="10.0" left="24.0" right="24.0" top="10.0" />
                                                             </padding>
