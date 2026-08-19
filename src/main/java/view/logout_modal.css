@@ -1,0 +1,60 @@
+/* MODAL BASE CONTAINER */
+.modal-container {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 16px;
+    -fx-border-radius: 16px;
+    -fx-effect: dropshadow(three-pass-box, rgba(15, 23, 42, 0.15), 24, 0, 0, 8);
+}
+
+/* ICON BADGE */
+.icon-badge {
+    -fx-background-color: #fef2f2;
+    -fx-background-radius: 50%;
+    -fx-min-width: 64px;
+    -fx-min-height: 64px;
+    -fx-max-width: 64px;
+    -fx-max-height: 64px;
+}
+
+/* TYPOGRAPHY */
+.modal-title {
+    -fx-text-fill: #0f172a;
+    -fx-font-weight: bold;
+}
+
+.modal-subtitle {
+    -fx-text-fill: #64748b;
+    -fx-line-spacing: 2px;
+}
+
+/* BUTTONS */
+.btn-cancel {
+    -fx-background-color: #f1f5f9;
+    -fx-text-fill: #475569;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+}
+
+.btn-cancel:hover {
+    -fx-background-color: #e2e8f0;
+    -fx-text-fill: #1e293b;
+}
+
+.btn-danger {
+    -fx-background-color: #dc2626;
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+}
+
+.btn-danger:hover {
+    -fx-background-color: #b91c1c;
+}
+
+.btn-danger:pressed {
+    -fx-background-color: #991b1b;
+}

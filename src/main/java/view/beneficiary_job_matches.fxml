@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -71,231 +72,298 @@
         </VBox>
     </top>
 
-    <!-- MAIN JOB MATCHES CONTENT -->
+    <!-- MAIN SCROLLABLE CONTENT -->
     <center>
-        <VBox spacing="20.0" style="-fx-background-color: #f1f5f9;" BorderPane.alignment="CENTER">
-            <padding>
-                <Insets bottom="30.0" left="40.0" right="40.0" top="25.0" />
-            </padding>
-            <children>
-                <!-- HEADER TITLE -->
-                <VBox spacing="4.0">
+        <ScrollPane fitToWidth="true" style="-fx-background-color: #f1f5f9; -fx-background: #f1f5f9;">
+            <content>
+                <VBox spacing="20.0" style="-fx-background-color: #f1f5f9;" BorderPane.alignment="CENTER">
+                    <padding>
+                        <Insets bottom="30.0" left="40.0" right="40.0" top="25.0" />
+                    </padding>
                     <children>
-                        <Label styleClass="page-title" text="Job Matches" />
-                        <Label styleClass="page-subtitle" text="Review personalized job recommendations based on your profile." />
+                        <!-- HEADER TITLE -->
+                        <VBox spacing="4.0">
+                            <children>
+                                <Label styleClass="page-title" text="Job Matches" />
+                                <Label styleClass="page-subtitle" text="Review personalized job recommendations based on your profile." />
+                            </children>
+                        </VBox>
+
+                        <HBox spacing="20.0">
+                            <!-- LEFT COLUMN: SELECT PROFILE, RANKED VACANCIES & APPLICATION HISTORY -->
+                            <VBox prefWidth="380.0" minWidth="380.0" maxWidth="380.0" spacing="15.0">
+                                <children>
+                                    <!-- SELECT PROFILE CARD -->
+                                    <VBox styleClass="main-card">
+                                        <padding>
+                                            <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                                        </padding>
+                                        <children>
+                                            <HBox alignment="CENTER_LEFT" style="-fx-padding: 0 0 8px 0;">
+                                                <children>
+                                                    <Label styleClass="card-section-header" text="Select Profile" />
+                                                    <Region HBox.hgrow="ALWAYS" />
+                                                    <Button onAction="#handleOpenAddProfileModal" styleClass="btn-link" text="+ Add Profile" />
+                                                </children>
+                                            </HBox>
+                                            <ComboBox maxWidth="1.7976931348623157E308" promptText="Juan Dela Cruz - General Labor" styleClass="profile-combo" />
+                                        </children>
+                                    </VBox>
+
+                                    <!-- RANKED JOB VACANCIES CARD -->
+                                    <VBox styleClass="main-card">
+                                        <padding>
+                                            <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                                        </padding>
+                                        <children>
+                                            <HBox alignment="CENTER_LEFT" style="-fx-padding: 0 0 12px 0;">
+                                                <children>
+                                                    <Label styleClass="card-title" text="Ranked Job Vacancies" />
+                                                    <Region HBox.hgrow="ALWAYS" />
+                                                    <Label styleClass="filter-icon" text="≡" />
+                                                </children>
+                                            </HBox>
+
+                                            <!-- TABLE HEADER -->
+                                            <HBox styleClass="table-header">
+                                                <padding>
+                                                    <Insets bottom="8.0" left="10.0" right="10.0" top="8.0" />
+                                                </padding>
+                                                <children>
+                                                    <Label prefWidth="150.0" styleClass="table-header-text" text="Job Title" />
+                                                    <Label prefWidth="90.0" styleClass="table-header-text" text="Type" />
+                                                    <Region HBox.hgrow="ALWAYS" />
+                                                    <Label styleClass="table-header-text" text="Match Score" />
+                                                </children>
+                                            </HBox>
+
+                                            <!-- ROW 1 (SELECTED) -->
+                                            <HBox alignment="CENTER_LEFT" styleClass="job-row, selected-job-row">
+                                                <padding>
+                                                    <Insets bottom="12.0" left="10.0" right="10.0" top="12.0" />
+                                                </padding>
+                                                <children>
+                                                    <VBox prefWidth="150.0">
+                                                        <children>
+                                                            <Label styleClass="job-row-title, active-job-title" text="Warehouse Assistant" />
+                                                            <Label styleClass="job-row-company" text="Logistics Corp Inc." />
+                                                        </children>
+                                                    </VBox>
+                                                    <Label prefWidth="90.0" styleClass="job-row-type" text="Full-Time" />
+                                                    <Region HBox.hgrow="ALWAYS" />
+                                                    <Label styleClass="match-badge, badge-high" text="95%" />
+                                                </children>
+                                            </HBox>
+                                            <Separator />
+
+                                            <!-- ROW 2 -->
+                                            <HBox alignment="CENTER_LEFT" styleClass="job-row">
+                                                <padding>
+                                                    <Insets bottom="12.0" left="10.0" right="10.0" top="12.0" />
+                                                </padding>
+                                                <children>
+                                                    <VBox prefWidth="150.0">
+                                                        <children>
+                                                            <Label styleClass="job-row-title" text="Delivery Driver" />
+                                                            <Label styleClass="job-row-company" text="Speedy Cargo" />
+                                                        </children>
+                                                    </VBox>
+                                                    <Label prefWidth="90.0" styleClass="job-row-type" text="Full-Time" />
+                                                    <Region HBox.hgrow="ALWAYS" />
+                                                    <Label styleClass="match-badge, badge-mid-high" text="88%" />
+                                                </children>
+                                            </HBox>
+                                            <Separator />
+
+                                            <!-- ROW 3 -->
+                                            <HBox alignment="CENTER_LEFT" styleClass="job-row">
+                                                <padding>
+                                                    <Insets bottom="12.0" left="10.0" right="10.0" top="12.0" />
+                                                </padding>
+                                                <children>
+                                                    <VBox prefWidth="150.0">
+                                                        <children>
+                                                            <Label styleClass="job-row-title" text="Inventory Clerk" />
+                                                            <Label styleClass="job-row-company" text="Retail Solutions" />
+                                                        </children>
+                                                    </VBox>
+                                                    <Label prefWidth="90.0" styleClass="job-row-type" text="Full-Time" />
+                                                    <Region HBox.hgrow="ALWAYS" />
+                                                    <Label styleClass="match-badge, badge-mid" text="72%" />
+                                                </children>
+                                            </HBox>
+                                            <Separator />
+
+                                            <!-- ROW 4 -->
+                                            <HBox alignment="CENTER_LEFT" styleClass="job-row">
+                                                <padding>
+                                                    <Insets bottom="12.0" left="10.0" right="10.0" top="12.0" />
+                                                </padding>
+                                                <children>
+                                                    <VBox prefWidth="150.0">
+                                                        <children>
+                                                            <Label styleClass="job-row-title" text="Office Staff" />
+                                                            <Label styleClass="job-row-company" text="Gov Dept" />
+                                                        </children>
+                                                    </VBox>
+                                                    <Label prefWidth="90.0" styleClass="job-row-type" text="Full-Time" />
+                                                    <Region HBox.hgrow="ALWAYS" />
+                                                    <Label styleClass="match-badge, badge-low" text="45%" />
+                                                </children>
+                                            </HBox>
+                                        </children>
+                                    </VBox>
+
+                                    <!-- HISTORY OF APPLICATION CARD (ADJUSTED HEIGHT) -->
+                                    <VBox prefHeight="300.0" minHeight="260.0" styleClass="main-card" VBox.vgrow="ALWAYS">
+                                        <padding>
+                                            <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                                        </padding>
+                                        <children>
+                                            <HBox alignment="CENTER_LEFT" style="-fx-padding: 0 0 12px 0;">
+                                                <children>
+                                                    <Label styleClass="card-title" text="History of Application" />
+                                                    <Region HBox.hgrow="ALWAYS" />
+                                                    <Label styleClass="filter-icon" text="≡" />
+                                                </children>
+                                            </HBox>
+
+                                            <!-- TABLE HEADER -->
+                                            <HBox styleClass="table-header">
+                                                <padding>
+                                                    <Insets bottom="8.0" left="10.0" right="10.0" top="8.0" />
+                                                </padding>
+                                                <children>
+                                                    <Label prefWidth="150.0" styleClass="table-header-text" text="Job Title" />
+                                                    <Label prefWidth="90.0" styleClass="table-header-text" text="Type" />
+                                                    <Region HBox.hgrow="ALWAYS" />
+                                                    <Label styleClass="table-header-text" text="Status" />
+                                                </children>
+                                            </HBox>
+
+                                            <!-- DYNAMIC HISTORY APPLICATION SCROLLABLE CONTAINER -->
+                                            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" style="-fx-background-color: transparent; -fx-background: transparent; -fx-padding: 0;" VBox.vgrow="ALWAYS">
+                                                <content>
+                                                    <VBox fx:id="boxApplicationHistory" spacing="0.0" />
+                                                </content>
+                                            </ScrollPane>
+                                        </children>
+                                    </VBox>
+                                </children>
+                            </VBox>
+
+                            <!-- RIGHT COLUMN: EXPANDED DETAILED JOB VIEW -->
+                            <VBox styleClass="main-card" HBox.hgrow="ALWAYS">
+                                <padding>
+                                    <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+                                </padding>
+                                <children>
+                                    <!-- HEADER / METADATA -->
+                                    <VBox spacing="10.0">
+                                        <children>
+                                            <HBox alignment="BASELINE_LEFT" spacing="10.0">
+                                                <children>
+                                                    <Label fx:id="lblJobDetailTitle" styleClass="job-detail-title" text="Warehouse Assistant" />
+                                                </children>
+                                            </HBox>
+                                            <HBox alignment="CENTER_LEFT" spacing="6.0">
+                                                <children>
+                                                    <Label fx:id="lblJobDetailCompany" styleClass="job-detail-company" text="Logistics Corp Inc." />
+                                                    <Label styleClass="job-detail-company" text="•" />
+                                                    <Label styleClass="match-percentage-text" text="95% Match" />
+                                                </children>
+                                            </HBox>
+
+                                            <!-- CHIPS -->
+                                            <HBox spacing="10.0" style="-fx-padding: 5px 0 10px 0;">
+                                                <children>
+                                                    <Label styleClass="info-chip" text="📍 Manila, NCR" />
+                                                    <Label styleClass="info-chip" text="💵 ₱15,000 - ₱18,000/mo" />
+                                                    <Label styleClass="info-chip" text="🕒 Full-Time" />
+                                                    <Label styleClass="info-chip" text="🏢 On-Site" />
+                                                </children>
+                                            </HBox>
+                                        </children>
+                                    </VBox>
+
+                                    <Separator />
+
+                                    <!-- EXPANDED JOB SPECIFICS -->
+                                    <VBox spacing="18.0" style="-fx-padding: 15px 0 0 0;" VBox.vgrow="ALWAYS">
+                                        <children>
+                                            <!-- JOB DESCRIPTION -->
+                                            <VBox spacing="6.0">
+                                                <children>
+                                                    <Label styleClass="detail-section-header" text="JOB DESCRIPTION" />
+                                                    <Label styleClass="detail-body-text" text="Logistics Corp Inc. is currently seeking a dependable, physically active Warehouse Assistant to join our primary operations team in Manila. You will play an essential role in daily inventory distribution, stock accuracy, and cargo sorting to support localized delivery streams." wrapText="true" />
+                                                </children>
+                                            </VBox>
+
+                                            <!-- KEY RESPONSIBILITIES -->
+                                            <VBox spacing="6.0">
+                                                <children>
+                                                    <Label styleClass="detail-section-header" text="KEY RESPONSIBILITIES" />
+                                                    <Label styleClass="detail-body-text" text="• Receive, unpack, sort, and inspect incoming merchandise and raw supply shipments." />
+                                                    <Label styleClass="detail-body-text" text="• Organize warehouse inventory, shelf tagging, and maintain clean safety walkways." />
+                                                    <Label styleClass="detail-body-text" text="• Prepare, pack, weigh, and mark orders carefully for outgoing dispatch." />
+                                                    <Label styleClass="detail-body-text" text="• Perform routine stock counts and record discrepancies using basic digital scanner tools." />
+                                                    <Label styleClass="detail-body-text" text="• Collaborate with the shift supervisor and delivery crew to hit daily handling quotas." />
+                                                </children>
+                                            </VBox>
+
+                                            <!-- EDUCATION REQUIRED -->
+                                            <VBox spacing="6.0">
+                                                <children>
+                                                    <Label styleClass="detail-section-header" text="EDUCATION REQUIRED" />
+                                                    <Label styleClass="detail-body-text" text="• High School Diploma or Senior High Graduate (ALS graduates are welcome)." />
+                                                </children>
+                                            </VBox>
+
+                                            <!-- REQUIRED SKILLS -->
+                                            <VBox spacing="6.0">
+                                                <children>
+                                                    <Label styleClass="detail-section-header" text="REQUIRED SKILLS &amp; QUALIFICATIONS" />
+                                                    <Label styleClass="detail-body-text" text="• Physical stamina and dexterity (capable of lifting up to 25kg safely)." />
+                                                    <Label styleClass="detail-body-text" text="• Basic familiarity with inventory logging or handheld barcode devices." />
+                                                    <Label styleClass="detail-body-text" text="• Excellent attention to detail and punctuality." />
+                                                    <Label styleClass="detail-body-text" text="• Strong communication skills and willingness to work in a collaborative team." />
+                                                </children>
+                                            </VBox>
+
+                                            <!-- WORK SCHEDULE & BENEFITS -->
+                                            <VBox spacing="6.0">
+                                                <children>
+                                                    <Label styleClass="detail-section-header" text="WORK SCHEDULE &amp; BENEFITS" />
+                                                    <Label styleClass="detail-body-text" text="• Monday through Saturday (8-hour rotating day shifts)." />
+                                                    <Label styleClass="detail-body-text" text="• Mandated Benefits (SSS, PhilHealth, Pag-IBIG included)." />
+                                                    <Label styleClass="detail-body-text" text="• Overtime pay allowance and monthly performance incentive bonus." />
+                                                </children>
+                                            </VBox>
+
+                                            <!-- EXPERIENCE -->
+                                            <VBox spacing="6.0">
+                                                <children>
+                                                    <Label styleClass="detail-section-header" text="WORK EXPERIENCE" />
+                                                    <Label styleClass="detail-body-text" text="• 6 Months to 1 Year in warehouse/factory setting (Entry-level candidates willing to undergo training are encouraged to apply)." />
+                                                </children>
+                                            </VBox>
+                                        </children>
+                                    </VBox>
+
+                                    <Separator />
+
+                                    <!-- APPLY ACTION BUTTON -->
+                                    <HBox alignment="CENTER_RIGHT" style="-fx-padding: 15px 0 0 0;">
+                                        <children>
+                                            <Button fx:id="btnApplyNow" onAction="#handleApplyNow" prefHeight="38.0" prefWidth="140.0" styleClass="btn-primary" text="APPLY NOW" />
+                                        </children>
+                                    </HBox>
+                                </children>
+                            </VBox>
+                        </HBox>
                     </children>
                 </VBox>
-
-                <HBox spacing="20.0">
-                    <!-- LEFT COLUMN: SELECT PROFILE & RANKED VACANCIES -->
-                    <VBox prefWidth="480.0" spacing="15.0">
-                        <children>
-                            <!-- SELECT PROFILE CARD -->
-                            <VBox styleClass="main-card">
-                                <padding>
-                                    <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
-                                </padding>
-                                <children>
-                                    <HBox alignment="CENTER_LEFT" style="-fx-padding: 0 0 8px 0;">
-                                        <children>
-                                            <Label styleClass="card-section-header" text="Select Profile" />
-                                            <Region HBox.hgrow="ALWAYS" />
-                                            <Button onAction="#handleOpenAddProfileModal" styleClass="btn-link" text="+ Add Profile" />
-                                        </children>
-                                    </HBox>
-                                    <ComboBox prefWidth="450.0" promptText="Juan Dela Cruz - General Labor" styleClass="profile-combo" />
-                                </children>
-                            </VBox>
-
-                            <!-- RANKED JOB VACANCIES CARD -->
-                            <VBox styleClass="main-card" VBox.vgrow="ALWAYS">
-                                <padding>
-                                    <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
-                                </padding>
-                                <children>
-                                    <HBox alignment="CENTER_LEFT" style="-fx-padding: 0 0 12px 0;">
-                                        <children>
-                                            <Label styleClass="card-title" text="Ranked Job Vacancies" />
-                                            <Region HBox.hgrow="ALWAYS" />
-                                            <Label styleClass="filter-icon" text="≡" />
-                                        </children>
-                                    </HBox>
-
-                                    <!-- TABLE HEADER -->
-                                    <HBox styleClass="table-header">
-                                        <padding>
-                                            <Insets bottom="8.0" left="10.0" right="10.0" top="8.0" />
-                                        </padding>
-                                        <children>
-                                            <Label prefWidth="200.0" styleClass="table-header-text" text="Job Title" />
-                                            <Label prefWidth="120.0" styleClass="table-header-text" text="Type" />
-                                            <Region HBox.hgrow="ALWAYS" />
-                                            <Label styleClass="table-header-text" text="Match Score" />
-                                        </children>
-                                    </HBox>
-
-                                    <!-- ROW 1 (SELECTED) -->
-                                    <HBox alignment="CENTER_LEFT" styleClass="job-row, selected-job-row">
-                                        <padding>
-                                            <Insets bottom="12.0" left="10.0" right="10.0" top="12.0" />
-                                        </padding>
-                                        <children>
-                                            <VBox prefWidth="200.0">
-                                                <children>
-                                                    <Label styleClass="job-row-title, active-job-title" text="Warehouse Assistant" />
-                                                    <Label styleClass="job-row-company" text="Logistics Corp Inc." />
-                                                </children>
-                                            </VBox>
-                                            <Label prefWidth="120.0" styleClass="job-row-type" text="Full-Time" />
-                                            <Region HBox.hgrow="ALWAYS" />
-                                            <Label styleClass="match-badge, badge-high" text="95%" />
-                                        </children>
-                                    </HBox>
-                                    <Separator />
-
-                                    <!-- ROW 2 -->
-                                    <HBox alignment="CENTER_LEFT" styleClass="job-row">
-                                        <padding>
-                                            <Insets bottom="12.0" left="10.0" right="10.0" top="12.0" />
-                                        </padding>
-                                        <children>
-                                            <VBox prefWidth="200.0">
-                                                <children>
-                                                    <Label styleClass="job-row-title" text="Delivery Driver" />
-                                                    <Label styleClass="job-row-company" text="Speedy Cargo" />
-                                                </children>
-                                            </VBox>
-                                            <Label prefWidth="120.0" styleClass="job-row-type" text="Full-Time" />
-                                            <Region HBox.hgrow="ALWAYS" />
-                                            <Label styleClass="match-badge, badge-mid-high" text="88%" />
-                                        </children>
-                                    </HBox>
-                                    <Separator />
-
-                                    <!-- ROW 3 -->
-                                    <HBox alignment="CENTER_LEFT" styleClass="job-row">
-                                        <padding>
-                                            <Insets bottom="12.0" left="10.0" right="10.0" top="12.0" />
-                                        </padding>
-                                        <children>
-                                            <VBox prefWidth="200.0">
-                                                <children>
-                                                    <Label styleClass="job-row-title" text="Inventory Clerk" />
-                                                    <Label styleClass="job-row-company" text="Retail Solutions" />
-                                                </children>
-                                            </VBox>
-                                            <Label prefWidth="120.0" styleClass="job-row-type" text="Full-Time" />
-                                            <Region HBox.hgrow="ALWAYS" />
-                                            <Label styleClass="match-badge, badge-mid" text="72%" />
-                                        </children>
-                                    </HBox>
-                                    <Separator />
-
-                                    <!-- ROW 4 -->
-                                    <HBox alignment="CENTER_LEFT" styleClass="job-row">
-                                        <padding>
-                                            <Insets bottom="12.0" left="10.0" right="10.0" top="12.0" />
-                                        </padding>
-                                        <children>
-                                            <VBox prefWidth="200.0">
-                                                <children>
-                                                    <Label styleClass="job-row-title" text="Office Staff" />
-                                                    <Label styleClass="job-row-company" text="Gov Dept" />
-                                                </children>
-                                            </VBox>
-                                            <Label prefWidth="120.0" styleClass="job-row-type" text="Full-Time" />
-                                            <Region HBox.hgrow="ALWAYS" />
-                                            <Label styleClass="match-badge, badge-low" text="45%" />
-                                        </children>
-                                    </HBox>
-                                </children>
-                            </VBox>
-                        </children>
-                    </VBox>
-
-                    <!-- RIGHT COLUMN: JOB DETAILS VIEW -->
-                    <VBox styleClass="main-card" HBox.hgrow="ALWAYS">
-                        <padding>
-                            <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
-                        </padding>
-                        <children>
-                            <!-- HEADER / METADATA -->
-                            <VBox spacing="10.0">
-                                <children>
-                                    <HBox alignment="BASELINE_LEFT" spacing="10.0">
-                                        <children>
-                                            <Label styleClass="job-detail-title" text="Warehouse Assistant" />
-                                        </children>
-                                    </HBox>
-                                    <HBox alignment="CENTER_LEFT" spacing="6.0">
-                                        <children>
-                                            <Label styleClass="job-detail-company" text="Logistics Corp Inc." />
-                                            <Label styleClass="job-detail-company" text="•" />
-                                            <Label styleClass="match-percentage-text" text="95% Match" />
-                                        </children>
-                                    </HBox>
-
-                                    <!-- CHIPS -->
-                                    <HBox spacing="10.0" style="-fx-padding: 5px 0 10px 0;">
-                                        <children>
-                                            <Label styleClass="info-chip" text="📍 Manila, NCR" />
-                                            <Label styleClass="info-chip" text="💵 ₱15,000 - ₱18,000/mo" />
-                                            <Label styleClass="info-chip" text="🕒 Full-Time" />
-                                        </children>
-                                    </HBox>
-                                </children>
-                            </VBox>
-
-                            <Separator />
-
-                            <!-- JOB SPECIFICS -->
-                            <VBox spacing="15.0" style="-fx-padding: 15px 0 0 0;" VBox.vgrow="ALWAYS">
-                                <children>
-                                    <VBox spacing="4.0">
-                                        <children>
-                                            <Label styleClass="detail-section-header" text="JOB DESCRIPTION" />
-                                            <Label styleClass="detail-body-text" text="Responsible for receiving, processing, and storing incoming stock and materials, picking and filling orders from stock, packing and shipping orders, or managing, organizing and retrieving stock." wrapText="true" />
-                                        </children>
-                                    </VBox>
-
-                                    <VBox spacing="4.0">
-                                        <children>
-                                            <Label styleClass="detail-section-header" text="EDUCATION REQUIRED" />
-                                            <Label styleClass="detail-body-text" text="• High School Diploma" />
-                                        </children>
-                                    </VBox>
-
-                                    <VBox spacing="4.0">
-                                        <children>
-                                            <Label styleClass="detail-section-header" text="REQUIRED SKILLS" />
-                                            <Label styleClass="detail-body-text" text="• Physical stamina and dexterity" />
-                                            <Label styleClass="detail-body-text" text="• Basic inventory software knowledge" />
-                                            <Label styleClass="detail-body-text" text="• Attention to detail" />
-                                            <Label styleClass="detail-body-text" text="• Team player" />
-                                        </children>
-                                    </VBox>
-
-                                    <VBox spacing="4.0">
-                                        <children>
-                                            <Label styleClass="detail-section-header" text="EXPERIENCE" />
-                                            <Label styleClass="detail-body-text" text="• 6 Months - 1 Year" />
-                                        </children>
-                                    </VBox>
-                                </children>
-                            </VBox>
-
-                            <Separator />
-
-                            <!-- APPLY ACTION BUTTON -->
-                            <HBox alignment="CENTER_RIGHT" style="-fx-padding: 15px 0 0 0;">
-                                <children>
-                                    <Button prefHeight="38.0" prefWidth="130.0" styleClass="btn-primary" text="APPLY NOW" />
-                                </children>
-                            </HBox>
-                        </children>
-                    </VBox>
-                </HBox>
-            </children>
-        </VBox>
+            </content>
+        </ScrollPane>
     </center>
 </BorderPane>

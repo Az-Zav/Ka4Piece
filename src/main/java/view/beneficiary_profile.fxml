@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="800.0" prefWidth="1280.0" stylesheets="@beneficiary_profile.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ka4piece.controller.BeneficiaryProfileController">
+<BorderPane prefHeight="800.0" prefWidth="1280.0" stylesheets="@beneficiary_profile.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ka4piece.controller.BeneficiaryProfileController">
 
     <!-- TOP NAVIGATION BAR -->
     <top>
@@ -67,7 +67,7 @@
                 <Insets bottom="40.0" top="40.0" />
             </padding>
             <children>
-                <!-- WIDENED PROFILE CARD TO PREVENT BUTTON/TEXT TRUNCATION -->
+                <!-- MAIN PROFILE CARD -->
                 <VBox maxWidth="640.0" prefWidth="640.0" spacing="20.0" styleClass="profile-card">
                     <padding>
                         <Insets bottom="35.0" left="35.0" right="35.0" top="30.0" />
@@ -87,8 +87,17 @@
                                 <!-- ACTION BUTTONS CONTAINER -->
                                 <VBox alignment="TOP_RIGHT" minWidth="155.0" spacing="8.0">
                                     <children>
+                                        <!-- DEFAULT VIEW BUTTONS -->
                                         <Button fx:id="btnToggleEdit" minWidth="150.0" onAction="#handleToggleEditMode" styleClass="btn-outline" text="✎ Edit Profile" />
                                         <Button fx:id="btnChangePassword" minWidth="150.0" onAction="#handleChangePassword" styleClass="btn-outline" text="🔒 Change Password" />
+
+                                        <!-- EDIT MODE ACTIONS PANEL (Hidden by default) -->
+                                        <HBox fx:id="boxEditActions" alignment="CENTER_RIGHT" managed="false" spacing="8.0" visible="false">
+                                            <children>
+                                                <Button onAction="#handleCancelEdit" styleClass="btn-outline" text="Cancel" />
+                                                <Button onAction="#handleSaveProfile" styleClass="btn-primary" text="💾 Save Changes" />
+                                            </children>
+                                        </HBox>
                                     </children>
                                 </VBox>
                             </children>
@@ -143,14 +152,6 @@
                                 </VBox>
                             </children>
                         </VBox>
-
-                        <!-- SAVE / CANCEL BUTTONS (TOGGLED IN EDIT MODE) -->
-                        <HBox fx:id="boxEditActions" alignment="CENTER_RIGHT" managed="false" spacing="12.0" style="-fx-padding: 10px 0 0 0;" visible="false">
-                            <children>
-                                <Button onAction="#handleCancelEdit" styleClass="btn-cancel" text="Cancel" />
-                                <Button onAction="#handleSaveProfile" styleClass="btn-primary" text="Save Changes" />
-                            </children>
-                        </HBox>
 
                     </children>
                 </VBox>

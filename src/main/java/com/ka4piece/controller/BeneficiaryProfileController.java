@@ -1,9 +1,12 @@
 package com.ka4piece.controller;
 
+import com.ka4piece.app.App;
 import com.ka4piece.model.Household;
 import com.ka4piece.model.Session;
 import com.ka4piece.repository.AuthRepository;
+import com.ka4piece.repository.DbConfig;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -18,7 +21,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.net.URL;
 
 public class BeneficiaryProfileController {
@@ -43,15 +45,29 @@ public class BeneficiaryProfileController {
     private Session activeSession;
     private AuthRepository authRepository;
 
+    public BeneficiaryProfileController(AuthRepository authRepository) {
+        this.authRepository = authRepository;
+    }
+
+    public BeneficiaryProfileController() {
+    }
+
     @FXML
     public void initialize() {
         if (txtUserId != null) {
             txtUserId.setEditable(false);
         }
 
-        authRepository = new AuthRepository("jdbc:mysql://localhost:3306/ka4piece", "root", "");
+        // Load DB config as fallback to prevent null repository crashes
+        if (authRepository == null) {
+            try {
+                DbConfig config = new DbConfig("db.properties");
+                authRepository = new AuthRepository(config.getJdbcurl(), config.getUsername(), config.getPassword());
+            } catch (Exception e) {
+                System.err.println("Could not load db.properties: " + e.getMessage());
+            }
+        }
 
-        // Fetch active global session instance
         activeSession = Session.getInstance();
 
         autoPopulateProfileData();
@@ -115,32 +131,7 @@ public class BeneficiaryProfileController {
     @FXML
     private void handleToggleEditMode(ActionEvent event) {
         setEditMode(true);
-    }
-
-    @FXML
-    private void handleChangePassword(ActionEvent event) {
-        try {
-            URL resource = resolveResource("/beneficiary_change_password_dialog.fxml");
-            if (resource == null) {
-                showMessage("Password dialog FXML file not found.", true);
-                return;
-            }
-
-            FXMLLoader loader = new FXMLLoader(resource);
-            Parent modalRoot = loader.load();
-
-            Stage modalStage = new Stage();
-            modalStage.initModality(Modality.APPLICATION_MODAL);
-            modalStage.initOwner(((Node) event.getSource()).getScene().getWindow());
-            modalStage.setTitle("Change Password");
-            modalStage.setScene(new Scene(modalRoot));
-            modalStage.setResizable(false);
-            modalStage.showAndWait();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            showMessage("Error opening change password window.", true);
-        }
+        showMessage("", false);
     }
 
     @FXML
@@ -160,96 +151,113 @@ public class BeneficiaryProfileController {
             return;
         }
 
-        if (activeSession != null && authRepository != null) {
-            activeSession.setDisplayName(newName);
-            String userId = activeSession.getUserId();
+        String userId = (activeSession != null) ? activeSession.getUserId() : null;
 
-            // Update Household/Beneficiary Profile
-            String address = txtAddress != null ? txtAddress.getText().trim() : "";
-            String barangay = txtBarangay != null ? txtBarangay.getText().trim() : "";
-            authRepository.updateHouseholdProfile(userId, newName, address, barangay, newEmail);
+        if (userId != null && authRepository != null) {
+            try {
+                activeSession.setDisplayName(newName);
+
+                String address = txtAddress != null ? txtAddress.getText().trim() : "";
+                String barangay = txtBarangay != null ? txtBarangay.getText().trim() : "";
+                authRepository.updateHouseholdProfile(userId, newName, address, barangay, newEmail);
+                showMessage("Profile updated successfully!", false);
+            } catch (Exception e) {
+                e.printStackTrace();
+                showMessage("Failed to save profile: " + e.getMessage(), true);
+                return;
+            }
+        } else {
+            if (activeSession != null) {
+                activeSession.setDisplayName(newName);
+            }
+            showMessage("Guest profile updated locally.", false);
         }
 
         setEditMode(false);
-        showMessage("Profile updated successfully!", false);
+    }
+
+    @FXML
+    private void handleChangePassword(ActionEvent event) {
+        openModal(event, "/view/change_password_dialog.fxml", "Change Password");
     }
 
     // --- NAVIGATION HANDLERS ---
 
     @FXML
-    private void handleOpenViewProfile(ActionEvent event) {
-        switchSceneFromButton(event, "/beneficiary_profile.fxml");
+    private void handleOpenViewProfile(Event event) {
+        App.switchScene(event, "/view/beneficiary_profile.fxml");
     }
 
     @FXML
-    private void goToCompliance(ActionEvent event) {
-        switchSceneFromButton(event, "/beneficiary_compliance.fxml");
+    private void goToCompliance(Event event) {
+        App.switchScene(event, "/view/beneficiary_compliance.fxml");
     }
 
     @FXML
-    private void goToJobMatches(ActionEvent event) {
-        switchSceneFromButton(event, "/beneficiary_job_matches.fxml");
+    private void goToJobMatches(Event event) {
+        App.switchScene(event, "/view/beneficiary_job_matches.fxml");
     }
 
     @FXML
     private void goToComplianceMouse(MouseEvent event) {
-        switchSceneFromMouse(event, "/beneficiary_compliance.fxml");
+        App.switchScene(event, "/view/beneficiary_compliance.fxml");
     }
 
     @FXML
     private void goToJobMatchesMouse(MouseEvent event) {
-        switchSceneFromMouse(event, "/beneficiary_job_matches.fxml");
+        App.switchScene(event, "/view/beneficiary_job_matches.fxml");
     }
 
     @FXML
-    private void handleLogout(ActionEvent event) {
-        if (Session.getInstance() != null) {
-            Session.getInstance().clearSession();
-        }
-        switchSceneFromButton(event, "/login.fxml");
+    private void handleLogout(Event event) {
+        NavigationUtils.showLogoutModal(event);
     }
 
-    // --- ROUTING HELPERS ---
+    // --- HELPER METHODS ---
 
-    private void switchSceneFromButton(ActionEvent event, String fxmlPath) {
+    private void openModal(Event event, String path, String title) {
         try {
-            URL resource = resolveResource(fxmlPath);
-            if (resource == null) return;
+            String resourcePath = path.startsWith("/") ? path : "/" + path;
+            URL location = App.class.getResource(resourcePath);
 
-            Parent root = FXMLLoader.load(resource);
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.getScene().setRoot(root);
-        } catch (IOException e) {
+            if (location == null) {
+                location = getClass().getResource(resourcePath);
+            }
+            if (location == null && resourcePath.startsWith("/view/")) {
+                location = App.class.getResource(resourcePath.replace("/view/", "/"));
+            }
+
+            if (location == null) {
+                showMessage("FXML file not found: " + path, true);
+                return;
+            }
+
+            FXMLLoader loader = new FXMLLoader(location);
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initOwner(((Node) event.getSource()).getScene().getWindow());
+            stage.setTitle(title);
+            stage.setScene(new Scene(root));
+            stage.setResizable(false);
+            stage.showAndWait();
+        } catch (Exception e) {
             e.printStackTrace();
+            showMessage("Error opening modal window.", true);
         }
-    }
-
-    private void switchSceneFromMouse(MouseEvent event, String fxmlPath) {
-        try {
-            URL resource = resolveResource(fxmlPath);
-            if (resource == null) return;
-
-            Parent root = FXMLLoader.load(resource);
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.getScene().setRoot(root);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private URL resolveResource(String fxmlPath) {
-        URL resource = getClass().getResource(fxmlPath);
-        if (resource == null) {
-            resource = getClass().getResource("/view" + fxmlPath);
-        }
-        return resource;
     }
 
     private void showMessage(String msg, boolean isError) {
         if (lblMessage != null) {
-            lblMessage.setText(msg);
-            lblMessage.setTextFill(isError ? Color.RED : Color.GREEN);
-            lblMessage.setVisible(true);
+            if (msg == null || msg.isEmpty()) {
+                lblMessage.setVisible(false);
+                lblMessage.setManaged(false);
+            } else {
+                lblMessage.setText(msg);
+                lblMessage.setTextFill(isError ? Color.RED : Color.GREEN);
+                lblMessage.setVisible(true);
+                lblMessage.setManaged(true);
+            }
         }
     }
 }

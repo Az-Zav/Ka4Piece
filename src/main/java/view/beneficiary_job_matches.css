@@ -209,6 +209,7 @@
     -fx-text-fill: #334155;
 }
 
+/* ACTION BUTTONS */
 .btn-primary {
     -fx-background-color: #0F388A;
     -fx-text-fill: #FFFFFF;
@@ -221,4 +222,12 @@
 
 .btn-primary:hover {
     -fx-background-color: #0A2763;
+}
+
+/* APPLIED / DISABLED BUTTON STATE */
+.btn-primary:disabled, .btn-applied {
+    -fx-background-color: #94A3B8;
+    -fx-text-fill: #FFFFFF;
+    -fx-opacity: 0.9;
+    -fx-cursor: default;
 }

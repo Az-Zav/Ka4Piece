@@ -1,5 +1,6 @@
 package com.ka4piece.controller;
 
+import com.ka4piece.app.App;
 import com.ka4piece.model.BarangayOfficial;
 import com.ka4piece.model.Household;
 import com.ka4piece.model.Session;
@@ -7,24 +8,25 @@ import com.ka4piece.repository.AuthRepository;
 import com.ka4piece.repository.DbConfig;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 
@@ -32,11 +34,11 @@ public class OfficialProfileController {
 
     // --- GENERAL CONTROLS ---
     @FXML private Button btnToggleEdit;
+    @FXML private Button btnChangePassword;
     @FXML private TextField txtUserId;
     @FXML private Label lblFullName;
     @FXML private TextField txtName;
     @FXML private TextField txtEmail;
-    @FXML private PasswordField txtPassword;
     @FXML private Label lblMessage;
 
     // --- HOUSEHOLD FIELDS ---
@@ -53,7 +55,6 @@ public class OfficialProfileController {
     @FXML private CheckBox chkIsAdmin;
 
     // --- CONTAINER PANELS ---
-    @FXML private VBox boxPassword;
     @FXML private HBox boxEditActions;
 
     private boolean isEditMode = false;
@@ -78,7 +79,16 @@ public class OfficialProfileController {
             cmbStatus.valueProperty().addListener((obs, oldVal, newVal) -> toggleExitDetails("Exited".equalsIgnoreCase(newVal)));
         }
 
-        // Fetch active global session instance
+        // Load DB config as fallback to prevent null repository crashes
+        if (authRepository == null) {
+            try {
+                DbConfig config = new DbConfig("db.properties");
+                authRepository = new AuthRepository(config.getJdbcurl(), config.getUsername(), config.getPassword());
+            } catch (Exception e) {
+                System.err.println("Could not load db.properties: " + e.getMessage());
+            }
+        }
+
         activeSession = Session.getInstance();
 
         autoPopulateProfileData();
@@ -87,8 +97,8 @@ public class OfficialProfileController {
 
     private void autoPopulateProfileData() {
         if (activeSession == null || activeSession.getUserId() == null) {
-            txtUserId.setText("N/A");
-            txtName.setText("Guest User");
+            if (txtUserId != null) txtUserId.setText("N/A");
+            if (txtName != null) txtName.setText("Guest User");
             if (txtEmail != null) txtEmail.setText("guest@ka4piece.com");
             return;
         }
@@ -96,7 +106,7 @@ public class OfficialProfileController {
         boolean isOfficial = "OFFICIAL".equalsIgnoreCase(activeSession.getRole());
 
         if (isOfficial) {
-            lblFullName.setText("OFFICIAL NAME");
+            if (lblFullName != null) lblFullName.setText("OFFICIAL NAME");
 
             if (boxHouseholdFields != null) {
                 boxHouseholdFields.setVisible(false);
@@ -112,17 +122,17 @@ public class OfficialProfileController {
                     : null;
 
             if (official != null) {
-                txtUserId.setText(official.getOfficialId());
-                txtName.setText(official.getName());
+                if (txtUserId != null) txtUserId.setText(official.getOfficialId());
+                if (txtName != null) txtName.setText(official.getName());
                 if (txtEmail != null) txtEmail.setText(official.getEmail());
                 if (chkIsAdmin != null) chkIsAdmin.setSelected(official.isAdmin());
             } else {
-                txtUserId.setText(activeSession.getUserId());
-                txtName.setText(activeSession.getDisplayName());
+                if (txtUserId != null) txtUserId.setText(activeSession.getUserId());
+                if (txtName != null) txtName.setText(activeSession.getDisplayName());
             }
 
         } else {
-            lblFullName.setText("HEAD OF HOUSEHOLD NAME");
+            if (lblFullName != null) lblFullName.setText("HEAD OF HOUSEHOLD NAME");
 
             if (boxOfficialFields != null) {
                 boxOfficialFields.setVisible(false);
@@ -138,8 +148,8 @@ public class OfficialProfileController {
                     : null;
 
             if (household != null) {
-                txtUserId.setText(household.getHouseholdId());
-                txtName.setText(household.getHeadName());
+                if (txtUserId != null) txtUserId.setText(household.getHouseholdId());
+                if (txtName != null) txtName.setText(household.getHeadName());
                 if (txtEmail != null) txtEmail.setText(household.getEmail());
                 if (txtAddress != null) txtAddress.setText(household.getAddress());
                 if (txtBarangay != null) txtBarangay.setText(household.getBarangay());
@@ -147,8 +157,8 @@ public class OfficialProfileController {
                 if (txtExitReason != null) txtExitReason.setText(household.getExitReason());
                 if (dpExitDate != null) dpExitDate.setValue(household.getExitDate());
             } else {
-                txtUserId.setText(activeSession.getUserId());
-                txtName.setText(activeSession.getDisplayName());
+                if (txtUserId != null) txtUserId.setText(activeSession.getUserId());
+                if (txtName != null) txtName.setText(activeSession.getDisplayName());
             }
         }
     }
@@ -158,7 +168,7 @@ public class OfficialProfileController {
 
         if (txtUserId != null) txtUserId.setEditable(false);
 
-        txtName.setEditable(enable);
+        if (txtName != null) txtName.setEditable(enable);
         if (txtEmail != null) txtEmail.setEditable(enable);
 
         if (txtAddress != null) txtAddress.setEditable(enable);
@@ -169,10 +179,6 @@ public class OfficialProfileController {
         if (dpExitDate != null) dpExitDate.setDisable(!enable);
         if (chkIsAdmin != null) chkIsAdmin.setDisable(!enable);
 
-        if (boxPassword != null) {
-            boxPassword.setVisible(enable);
-            boxPassword.setManaged(enable);
-        }
         if (boxEditActions != null) {
             boxEditActions.setVisible(enable);
             boxEditActions.setManaged(enable);
@@ -183,8 +189,9 @@ public class OfficialProfileController {
             btnToggleEdit.setManaged(!enable);
         }
 
-        if (!enable && txtPassword != null) {
-            txtPassword.clear();
+        if (btnChangePassword != null) {
+            btnChangePassword.setVisible(!enable);
+            btnChangePassword.setManaged(!enable);
         }
     }
 
@@ -198,6 +205,7 @@ public class OfficialProfileController {
     @FXML
     private void handleToggleEditMode(ActionEvent event) {
         setEditMode(true);
+        showMessage("", false);
     }
 
     @FXML
@@ -209,9 +217,8 @@ public class OfficialProfileController {
 
     @FXML
     private void handleSaveProfile(ActionEvent event) {
-        String newName = txtName.getText().trim();
+        String newName = txtName != null ? txtName.getText().trim() : "";
         String newEmail = txtEmail != null ? txtEmail.getText().trim() : "";
-        String newPassword = txtPassword != null ? txtPassword.getText() : "";
 
         if (newName.isEmpty()) {
             showMessage("Name cannot be empty.", true);
@@ -225,29 +232,16 @@ public class OfficialProfileController {
             boolean isOfficial = "OFFICIAL".equalsIgnoreCase(activeSession.getRole());
 
             if (isOfficial) {
-                // Update Official Profile
                 authRepository.updateOfficialProfile(userId, newName, newEmail);
-
-                // Update Password if provided
-                if (!newPassword.isEmpty()) {
-                    authRepository.updateOfficialPassword(userId, newPassword);
-                }
             } else {
-                // Update Household Profile
                 String address = txtAddress != null ? txtAddress.getText().trim() : "";
                 String barangay = txtBarangay != null ? txtBarangay.getText().trim() : "";
                 authRepository.updateHouseholdProfile(userId, newName, address, barangay, newEmail);
 
-                // Update Exit/Status Details
                 String status = cmbStatus != null && cmbStatus.getValue() != null ? cmbStatus.getValue() : "Active";
                 String exitReason = txtExitReason != null ? txtExitReason.getText().trim() : "";
                 LocalDate exitDate = dpExitDate != null ? dpExitDate.getValue() : null;
                 authRepository.updateHouseholdExitStatus(userId, status, exitReason, exitDate);
-
-                // Update Password if provided
-                if (!newPassword.isEmpty()) {
-                    authRepository.updateHouseholdPassword(userId, newPassword);
-                }
             }
         }
 
@@ -255,54 +249,88 @@ public class OfficialProfileController {
         showMessage("Profile updated successfully!", false);
     }
 
+    @FXML
+    private void handleChangePassword(ActionEvent event) {
+        openModal(event, "/view/change_password_dialog.fxml", "Change Password");
+    }
+
     // --- NAVIGATION HANDLERS ---
 
     @FXML
-    private void handleOpenViewProfile(ActionEvent event) {
-        switchSceneFromButton(event, "/view/official_profile.fxml");
+    private void handleOpenViewProfile(Event event) {
+        App.switchScene(event, "/view/official_profile.fxml");
     }
 
     @FXML
-    private void goToCompliance(MouseEvent event) {
-        switchSceneFromMouse(event, "/view/official_compliance.fxml");
+    private void goToCompliance(Event event) {
+        App.switchScene(event, "/view/official_compliance.fxml");
     }
 
     @FXML
-    private void goToJobVacancies(MouseEvent event) {
-        switchSceneFromMouse(event, "/view/official_job_vacancies.fxml");
+    private void goToJobVacancies(Event event) {
+        App.switchScene(event, "/view/official_job_vacancies.fxml");
     }
 
     @FXML
-    private void handleLogout(ActionEvent event) {
-        if (Session.getInstance() != null) {
-            Session.getInstance().clearSession();
+    private void goToComplianceMouse(MouseEvent event) {
+        App.switchScene(event, "/view/official_compliance.fxml");
+    }
+
+    @FXML
+    private void goToJobVacanciesMouse(MouseEvent event) {
+        App.switchScene(event, "/view/official_job_vacancies.fxml");
+    }
+
+    @FXML
+    private void handleLogout(Event event) {
+        NavigationUtils.showLogoutModal(event);
+    }
+
+    // --- HELPER METHODS ---
+
+    private void openModal(Event event, String path, String title) {
+        try {
+            String resourcePath = path.startsWith("/") ? path : "/" + path;
+            URL location = App.class.getResource(resourcePath);
+
+            if (location == null) {
+                location = getClass().getResource(resourcePath);
+            }
+            if (location == null && resourcePath.startsWith("/view/")) {
+                location = App.class.getResource(resourcePath.replace("/view/", "/"));
+            }
+
+            if (location == null) {
+                showMessage("FXML file not found: " + path, true);
+                return;
+            }
+
+            FXMLLoader loader = new FXMLLoader(location);
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initOwner(((Node) event.getSource()).getScene().getWindow());
+            stage.setTitle(title);
+            stage.setScene(new Scene(root));
+            stage.setResizable(false);
+            stage.showAndWait();
+        } catch (Exception e) {
+            e.printStackTrace();
+            showMessage("Error opening modal window.", true);
         }
-        switchSceneFromButton(event, "/view/login.fxml");
-    }
-
-    // --- ROUTING HELPERS ---
-
-    private void switchSceneFromButton(ActionEvent event, String fxmlPath) {
-        com.ka4piece.app.App.switchScene(event, fxmlPath);
-    }
-
-    private void switchSceneFromMouse(MouseEvent event, String fxmlPath) {
-        com.ka4piece.app.App.switchScene(event, fxmlPath);
-    }
-
-    private URL resolveResource(String fxmlPath) {
-        URL resource = getClass().getResource(fxmlPath);
-        if (resource == null) {
-            resource = getClass().getResource("/view" + fxmlPath);
-        }
-        return resource;
     }
 
     private void showMessage(String msg, boolean isError) {
         if (lblMessage != null) {
-            lblMessage.setText(msg);
-            lblMessage.setTextFill(isError ? Color.RED : Color.GREEN);
-            lblMessage.setVisible(true);
+            if (msg == null || msg.isEmpty()) {
+                lblMessage.setVisible(false);
+                lblMessage.setManaged(false);
+            } else {
+                lblMessage.setText(msg);
+                lblMessage.setTextFill(isError ? Color.RED : Color.GREEN);
+                lblMessage.setVisible(true);
+                lblMessage.setManaged(true);
+            }
         }
     }
 }

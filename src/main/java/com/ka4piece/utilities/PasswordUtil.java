@@ -13,6 +13,7 @@ public class PasswordUtil {
     private static final String TEMP_PREFIX = "Tmp#1";
     private static final SecureRandom RANDOM = new SecureRandom();
 
+    // ----- Temporary Password Method -----
     public static String generateTemporaryPassword() {
         StringBuilder temp = new StringBuilder(TEMP_PREFIX);
         while (temp.length() < LENGTH) {
@@ -36,6 +37,7 @@ public class PasswordUtil {
         return password != null && password.startsWith(TEMP_PREFIX);
     }
 
+    // ----- Hashing Algorithm -----
     public static String hashPassword(String plainText) {
         return BCrypt.hashpw(plainText, BCrypt.gensalt(10));
     }
@@ -51,6 +53,7 @@ public class PasswordUtil {
         }
     }
 
+    // ----- Input Validation -----
     public static String validate(String password) {
         if (password == null || password.length() < 8) {
             return "Password must be at least 8 characters.";
