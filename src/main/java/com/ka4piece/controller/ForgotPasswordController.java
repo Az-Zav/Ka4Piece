@@ -80,9 +80,7 @@ public class ForgotPasswordController {
         return ResetResult.success(tempPassword);
     }
 
-    // -------------------------------------------------------------------------
     // Result wrapper — avoids using raw Strings as a two-state return value
-    // -------------------------------------------------------------------------
 
     /**
      * Encapsulates the outcome of a password-reset attempt.
