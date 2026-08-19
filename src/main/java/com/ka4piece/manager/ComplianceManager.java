@@ -23,8 +23,23 @@ public class ComplianceManager {
      */
     public void recordConditionStatus(ComplianceRecord r) {
         Household h = authRepository.findHouseholdById(r.getHouseholdId());
+        if (h == null) {
+            throw new IllegalArgumentException("Household not found.");
+        }
         if (h.getStatus().equals("EXITED"))
             throw new IllegalStateException("Cannot record compliance for an exited household.");
+
+        // Auto-fill non-applicable conditions
+        if (!h.isHasPregnantMember()) {
+            r.setPregnancyCareStatus(true);
+        }
+        if (!h.isHas0to5Member()) {
+            r.setChild0to5HealthStatus(true);
+        }
+        if (h.getElemCount() == 0 && h.getJhsCount() == 0 && h.getShsCount() == 0) {
+            r.setDewormingStatus(true);
+        }
+
         complianceRepository.saveCompliance(r);
     }
 
@@ -45,6 +60,11 @@ public class ComplianceManager {
      * </ul>
      */
     public GrantBreakdown computeMonthlyGrant(ComplianceRecord r, String recordType, String correctionReason) {
+        Household household = authRepository.findHouseholdById(r.getHouseholdId());
+        if (household == null) {
+            throw new IllegalArgumentException("Household not found: " + r.getHouseholdId());
+        }
+
         boolean healthCompliant = r.isPregnancyCareStatus() && r.isChild0to5HealthStatus()
                                    && r.isDewormingStatus();
         boolean educationCompliant = r.isDaycareAttendanceStatus() && r.isSchoolAttendanceStatus();
@@ -52,20 +72,20 @@ public class ComplianceManager {
 
         double healthGrantAmount = healthCompliant ? 750.0 : 0.0;
 
-        // Tiered rate, capped at 3 children total across all levels.
-        // Cap-of-3 enforced by counting elem first, then jhs, then shs.
-        int elem = r.getElementaryCount(), jhs = r.getJuniorHighCount(), shs = r.getSeniorHighCount();
-        int totalChildren = elem + jhs + shs;
-        double educationGrantAmount;
-        if (totalChildren <= 3) {
-            educationGrantAmount = elem * 300.0 + jhs * 500.0 + shs * 700.0;
-        } else {
-            int remaining = 3;
-            int e = Math.min(elem, remaining); remaining -= e;
-            int j = Math.min(jhs, remaining);  remaining -= j;
-            int s = Math.min(shs, remaining);
-            educationGrantAmount = e * 300.0 + j * 500.0 + s * 700.0;
-        }
+        // Clamp monthly met-attendance to household composition
+        int elemMet = Math.min(r.getElementaryCount(), household.getElemCount());
+        int jhsMet  = Math.min(r.getJuniorHighCount(), household.getJhsCount());
+        int shsMet  = Math.min(r.getSeniorHighCount(), household.getShsCount());
+
+        // Highest-tier-first precedence, capped at 3 children total
+        int remaining = 3;
+        int countedShs = Math.min(shsMet, remaining);
+        remaining -= countedShs;
+        int countedJhs = Math.min(jhsMet, remaining);
+        remaining -= countedJhs;
+        int countedElem = Math.min(elemMet, remaining);
+
+        double educationGrantAmount = (countedShs * 700.0) + (countedJhs * 500.0) + (countedElem * 300.0);
 
         double riceSubsidyAmount = riceEligible ? 600.0 : 0.0;
         double totalAmount = healthGrantAmount + educationGrantAmount + riceSubsidyAmount;
@@ -75,6 +95,10 @@ public class ComplianceManager {
         if (!educationCompliant)  withheldReasons.add("Education attendance condition not met");
         if (!r.isFdsAttendanceStatus()) withheldReasons.add("FDS attendance not met");
         if (!riceEligible)        withheldReasons.add("Rice subsidy withheld — neither health nor education condition met");
+
+        if (elemMet + jhsMet + shsMet > 3) {
+            withheldReasons.add("Household has more than 3 eligible children meeting attendance this month — grant computed for the 3 highest-tier children (Senior High prioritized, then Junior High, then Elementary), per system policy since DSWD guidance does not specify precedence.");
+        }
 
         GrantBreakdown g = new GrantBreakdown(r.getHouseholdId(), r.getMonthYear(),
             healthGrantAmount, educationGrantAmount, riceSubsidyAmount, totalAmount, withheldReasons);

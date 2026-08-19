@@ -6,6 +6,7 @@ import com.ka4piece.manager.ComplianceManager;
 import com.ka4piece.manager.JobMatchManager;
 import com.ka4piece.model.Household;
 import com.ka4piece.model.Session;
+import com.ka4piece.model.ComplianceRecord;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -20,6 +21,8 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -87,6 +90,9 @@ public class OfficialDashboardController {
     @FXML private CheckBox chkSchoolAttendance;
     @FXML private CheckBox chkFDS;
     @FXML private Label lblEligibleChildrenCount; // e.g., "out of 3 eligible"
+    @FXML private Spinner<Integer> elementaryCountSpinner;
+    @FXML private Spinner<Integer> juniorHighCountSpinner;
+    @FXML private Spinner<Integer> seniorHighCountSpinner;
 
     private final int MIN_CHILDREN = 0;
     private final int MAX_CHILDREN = 3;
@@ -174,6 +180,164 @@ public class OfficialDashboardController {
             }
 
             lblHeaderSubDetails.setText(addressInfo + "  •  ID: " + id);
+        }
+
+        // Populate compliance form
+        populateComplianceForm(h);
+    }
+
+    private void populateComplianceForm(com.ka4piece.model.Household household) {
+        if (household == null || complianceManager == null) return;
+
+        // 8. State-tracking fix — pre-fetch current month's record before rendering
+        com.ka4piece.model.ComplianceRecord currentRecord = complianceManager.getCurrentStatus(household.getHouseholdId());
+
+        if (currentRecord != null) {
+            if (chkPregnancyCare != null) chkPregnancyCare.setSelected(currentRecord.isPregnancyCareStatus());
+            if (chkHealthCheckup != null) chkHealthCheckup.setSelected(currentRecord.isChild0to5HealthStatus());
+            if (chkDeworming != null) chkDeworming.setSelected(currentRecord.isDewormingStatus());
+            if (chkDaycare != null) chkDaycare.setSelected(currentRecord.isDaycareAttendanceStatus());
+            if (chkSchoolAttendance != null) chkSchoolAttendance.setSelected(currentRecord.isSchoolAttendanceStatus());
+            if (chkFDS != null) chkFDS.setSelected(currentRecord.isFdsAttendanceStatus());
+
+            if (elementaryCountSpinner != null) {
+                int val = Math.min(currentRecord.getElementaryCount(), household.getElemCount());
+                elementaryCountSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(
+                        0, household.getElemCount(), val));
+            }
+            if (juniorHighCountSpinner != null) {
+                int val = Math.min(currentRecord.getJuniorHighCount(), household.getJhsCount());
+                juniorHighCountSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(
+                        0, household.getJhsCount(), val));
+            }
+            if (seniorHighCountSpinner != null) {
+                int val = Math.min(currentRecord.getSeniorHighCount(), household.getShsCount());
+                seniorHighCountSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(
+                        0, household.getShsCount(), val));
+            }
+
+            if (txtChildrenCount != null) {
+                int total = currentRecord.getElementaryCount() + currentRecord.getJuniorHighCount() + currentRecord.getSeniorHighCount();
+                txtChildrenCount.setText(String.valueOf(total));
+            }
+        } else {
+            // Reset to defaults
+            if (chkPregnancyCare != null) chkPregnancyCare.setSelected(false);
+            if (chkHealthCheckup != null) chkHealthCheckup.setSelected(false);
+            if (chkDeworming != null) chkDeworming.setSelected(false);
+            if (chkDaycare != null) chkDaycare.setSelected(false);
+            if (chkSchoolAttendance != null) chkSchoolAttendance.setSelected(false);
+            if (chkFDS != null) chkFDS.setSelected(false);
+
+            if (elementaryCountSpinner != null) {
+                elementaryCountSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(
+                        0, household.getElemCount(), 0));
+            }
+            if (juniorHighCountSpinner != null) {
+                juniorHighCountSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(
+                        0, household.getJhsCount(), 0));
+            }
+            if (seniorHighCountSpinner != null) {
+                seniorHighCountSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(
+                        0, household.getShsCount(), 0));
+            }
+
+            if (txtChildrenCount != null) {
+                txtChildrenCount.setText("0");
+            }
+        }
+
+        if (lblEligibleChildrenCount != null) {
+            int eligibleTotal = household.getElemCount() + household.getJhsCount() + household.getShsCount();
+            lblEligibleChildrenCount.setText("out of " + eligibleTotal + " eligible");
+        }
+
+        // 9. Compliance form — conditionally suppress non-applicable fields
+        boolean hasChildren = (household.getElemCount() > 0 || household.getJhsCount() > 0 || household.getShsCount() > 0);
+
+        if (chkPregnancyCare != null) {
+            chkPregnancyCare.setVisible(household.isHasPregnantMember());
+            chkPregnancyCare.setManaged(household.isHasPregnantMember());
+        }
+        if (chkHealthCheckup != null) {
+            chkHealthCheckup.setVisible(household.isHas0to5Member());
+            chkHealthCheckup.setManaged(household.isHas0to5Member());
+        }
+        if (chkDeworming != null) {
+            chkDeworming.setVisible(hasChildren);
+            chkDeworming.setManaged(hasChildren);
+        }
+    }
+
+    @FXML
+    private void handleRecordMonthlyStatus(ActionEvent event) {
+        if (selectedHousehold == null || complianceManager == null) {
+            return;
+        }
+
+        String householdId = selectedHousehold.getHouseholdId();
+        String currentMonth = java.time.YearMonth.now().toString();
+
+        // Check if row already exists
+        com.ka4piece.model.ComplianceRecord existingRecord = complianceManager.getCurrentStatus(householdId);
+        String recordType = "INITIAL";
+        String correctionReason = null;
+        if (existingRecord != null) {
+            recordType = "CORRECTION";
+            correctionReason = "Official updating compliance record";
+        }
+
+        boolean pregnancyCare = chkPregnancyCare != null && chkPregnancyCare.isSelected();
+        boolean child0to5 = chkHealthCheckup != null && chkHealthCheckup.isSelected();
+        boolean deworming = chkDeworming != null && chkDeworming.isSelected();
+        boolean daycare = chkDaycare != null && chkDaycare.isSelected();
+        boolean school = chkSchoolAttendance != null && chkSchoolAttendance.isSelected();
+        boolean fds = chkFDS != null && chkFDS.isSelected();
+
+        int elem = 0;
+        if (elementaryCountSpinner != null) {
+            elem = elementaryCountSpinner.getValue();
+        } else if (txtChildrenCount != null) {
+            // fallback if spinners are not present
+            elem = getCurrentCount();
+        }
+
+        int jhs = 0;
+        if (juniorHighCountSpinner != null) {
+            jhs = juniorHighCountSpinner.getValue();
+        }
+
+        int shs = 0;
+        if (seniorHighCountSpinner != null) {
+            shs = seniorHighCountSpinner.getValue();
+        }
+
+        String officialId = Session.getInstance() != null ? Session.getInstance().getUserId() : null;
+
+        com.ka4piece.model.ComplianceRecord record = new com.ka4piece.model.ComplianceRecord(
+                householdId,
+                currentMonth,
+                pregnancyCare,
+                child0to5,
+                deworming,
+                daycare,
+                school,
+                fds,
+                elem,
+                jhs,
+                shs,
+                officialId
+        );
+
+        try {
+            complianceManager.recordConditionStatus(record);
+            complianceManager.computeMonthlyGrant(record, recordType, correctionReason);
+            
+            // Refresh view
+            selectHousehold(selectedHousehold);
+        } catch (Exception e) {
+            System.err.println("[OfficialDashboardController] Error recording compliance: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -283,8 +447,15 @@ public class OfficialDashboardController {
     private void handleIncrement() {
         if (txtChildrenCount == null) return;
         int currentCount = getCurrentCount();
-        if (currentCount < MAX_CHILDREN) {
-            txtChildrenCount.setText(String.valueOf(currentCount + 1));
+        if (selectedHousehold != null) {
+            int maxTotal = selectedHousehold.getElemCount() + selectedHousehold.getJhsCount() + selectedHousehold.getShsCount();
+            if (currentCount < maxTotal) {
+                txtChildrenCount.setText(String.valueOf(currentCount + 1));
+            }
+        } else {
+            if (currentCount < MAX_CHILDREN) {
+                txtChildrenCount.setText(String.valueOf(currentCount + 1));
+            }
         }
     }
 

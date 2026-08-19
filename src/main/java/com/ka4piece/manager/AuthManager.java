@@ -52,6 +52,11 @@ public class AuthManager {
         authRepository.saveHousehold(h);
     }
 
+    public void editHouseholdProfile(Household h) {
+        authRepository.saveHousehold(h);
+    }
+
+
     /**
      * Registers a new barangay official. Only an admin official may call this.
      * The first-ever admin is a one-time manual DB seed row, not created through this method.

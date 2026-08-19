@@ -17,8 +17,9 @@ public class AuthRepository extends MySqlStore {
 
     // ----- Household methods -----
     public void saveHousehold(Household h) {
-        String sql = "INSERT INTO households (householdId, headName, address, barangay, email, password, status, exitReason, exitDate) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) " +
+        String sql = "INSERT INTO households (householdId, headName, address, barangay, email, password, status, exitReason, exitDate, " +
+                "hasPregnantMember, has0to5Member, elemCount, jhsCount, shsCount) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
                 "ON DUPLICATE KEY UPDATE " +
                 "headName = VALUES(headName), " +
                 "address = VALUES(address), " +
@@ -27,7 +28,12 @@ public class AuthRepository extends MySqlStore {
                 "password = VALUES(password), " +
                 "status = VALUES(status), " +
                 "exitReason = VALUES(exitReason), " +
-                "exitDate = VALUES(exitDate)";
+                "exitDate = VALUES(exitDate), " +
+                "hasPregnantMember = VALUES(hasPregnantMember), " +
+                "has0to5Member = VALUES(has0to5Member), " +
+                "elemCount = VALUES(elemCount), " +
+                "jhsCount = VALUES(jhsCount), " +
+                "shsCount = VALUES(shsCount)";
 
         executeUpdate(sql,
                 h.getHouseholdId(),
@@ -38,7 +44,12 @@ public class AuthRepository extends MySqlStore {
                 h.getPassword(),
                 h.getStatus(),
                 h.getExitReason(),
-                h.getExitDate() != null ? Date.valueOf(h.getExitDate()) : null
+                h.getExitDate() != null ? Date.valueOf(h.getExitDate()) : null,
+                h.isHasPregnantMember(),
+                h.isHas0to5Member(),
+                h.getElemCount(),
+                h.getJhsCount(),
+                h.getShsCount()
         );
     }
 
@@ -54,9 +65,7 @@ public class AuthRepository extends MySqlStore {
 
     public boolean updateHouseholdPassword(String householdId, String newPassword) {
         Household h = findHouseholdById(householdId);
-        if (h == null) {
-            return false;
-        }
+        if (h == null) return false;
         h.setPassword(newPassword);
         saveHousehold(h);
         return true;
@@ -64,9 +73,7 @@ public class AuthRepository extends MySqlStore {
 
     public boolean verifyCurrentPassword(String householdId, String currentPassword) {
         Household h = findHouseholdById(householdId);
-        if (h == null || h.getPassword() == null) {
-            return false;
-        }
+        if (h == null || h.getPassword() == null) return false;
         return h.getPassword().equals(currentPassword);
     }
 
@@ -173,6 +180,12 @@ public class AuthRepository extends MySqlStore {
         java.sql.Date sqlDate = (java.sql.Date) row.get("exitDate");
         LocalDate exitDate = sqlDate != null ? sqlDate.toLocalDate() : null;
 
+        Boolean hasPregnant = (Boolean) row.get("hasPregnantMember");
+        Boolean has0to5 = (Boolean) row.get("has0to5Member");
+        Number elemVal = (Number) row.get("elemCount");
+        Number jhsVal = (Number) row.get("jhsCount");
+        Number shsVal = (Number) row.get("shsCount");
+
         return new Household(
                 (String) row.get("householdId"),
                 (String) row.get("headName"),
@@ -182,7 +195,12 @@ public class AuthRepository extends MySqlStore {
                 (String) row.get("password"),
                 (String) row.get("status"),
                 (String) row.get("exitReason"),
-                exitDate
+                exitDate,
+                hasPregnant != null ? hasPregnant : false,
+                has0to5 != null ? has0to5 : false,
+                elemVal != null ? elemVal.intValue() : 0,
+                jhsVal != null ? jhsVal.intValue() : 0,
+                shsVal != null ? shsVal.intValue() : 0
         );
     }
 
