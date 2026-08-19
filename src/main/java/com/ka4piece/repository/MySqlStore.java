@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.UUID;
 
 public abstract class MySqlStore {
     private final String jdbcUrl, dbUser, dbPassword;
@@ -52,12 +51,6 @@ public abstract class MySqlStore {
             throw new RuntimeException("Database update error: " + e.getMessage(), e);
         }
     }
-
-    //Generate unique IDs with corresponding prefixes
-    public String generateId(String prefix) {
-        return prefix + "-" + UUID.randomUUID().toString().substring(0, 8);
-    }
-
 
     //----- Helper Methods-----
     private PreparedStatement prepareStatement(Connection conn, String sql, Object... params) throws SQLException { //Binds the parameters to the prepared statement

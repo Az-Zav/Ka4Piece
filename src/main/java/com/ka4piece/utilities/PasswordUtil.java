@@ -13,8 +13,6 @@ public class PasswordUtil {
     private static final String TEMP_PREFIX = "Tmp#1";
     private static final SecureRandom RANDOM = new SecureRandom();
 
-    private PasswordUtil() {}
-
     public static String generateTemporaryPassword() {
         StringBuilder temp = new StringBuilder(TEMP_PREFIX);
         while (temp.length() < LENGTH) {

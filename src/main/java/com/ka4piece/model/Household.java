@@ -8,6 +8,7 @@ public class Household {
     private String exitReason;
     private LocalDate exitDate;
 
+    //Used upon registration
     public Household(String householdId, String headName, String address, String barangay, String email, String password) {
         this.householdId = householdId;
         this.headName = headName;
@@ -17,6 +18,7 @@ public class Household {
         this.password = password;
     }
 
+    //Used when fetching from db and mapping to object in memory
     public Household(String householdId, String headName, String address, String barangay, String email, String password, String status, String exitReason, LocalDate exitDate) {
         this.householdId = householdId;
         this.headName = headName;

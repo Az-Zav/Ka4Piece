@@ -6,6 +6,7 @@ import com.ka4piece.model.RankedVacancy;
 import com.ka4piece.model.Vacancy;
 import com.ka4piece.repository.JobMatchRepository;
 import com.ka4piece.strategy.MatchStrategy;
+import com.ka4piece.utilities.IdUtil;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,14 +23,14 @@ public class JobMatchManager {
 
     /** Creates a new vacancy with a generated ID and sets its status to ACTIVE. */
     public void createVacancy(Vacancy v) {
-        v.setVacancyId(jobMatchRepository.generateId("VAC"));
+        v.setVacancyId(IdUtil.generateId("VAC"));
         v.setStatus("ACTIVE");
         jobMatchRepository.saveVacancy(v);
     }
 
     /** Creates a new jobseeker profile with a generated ID and an empty application map. */
     public void createProfile(JobseekerProfile p) {
-        p.setJobseekerId(jobMatchRepository.generateId("JS"));
+        p.setJobseekerId(IdUtil.generateId("JS"));
         p.setAppliedVacancies(new HashMap<>());
         jobMatchRepository.saveJobseeker(p);
     }

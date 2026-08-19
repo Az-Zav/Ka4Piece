@@ -201,9 +201,9 @@ public class LoginController {
      */
     private void navigateToMainApp(ActionEvent event, String userType) {
         if ("OFFICIAL".contains(userType)) {
-            switchSceneFromButton(event, "/view/compliance.fxml");
+            switchSceneFromButton(event, "/view/official_compliance.fxml");
         } else {
-            switchSceneFromButton(event, "/beneficiary_dashboard.fxml");
+            switchSceneFromButton(event, "/view/beneficiary_compliance.fxml");
         }
     }
 

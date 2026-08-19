@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 
-public class ViewProfileController {
+public class OfficialProfileController {
 
     // --- GENERAL CONTROLS ---
     @FXML private Button btnToggleEdit;
@@ -60,11 +60,11 @@ public class ViewProfileController {
     private Session activeSession;
     private AuthRepository authRepository;
 
-    public ViewProfileController(AuthRepository authRepository) {
+    public OfficialProfileController(AuthRepository authRepository) {
         this.authRepository = authRepository;
     }
 
-    public ViewProfileController() {
+    public OfficialProfileController() {
     }
 
     @FXML
@@ -259,17 +259,17 @@ public class ViewProfileController {
 
     @FXML
     private void handleOpenViewProfile(ActionEvent event) {
-        switchSceneFromButton(event, "/view_profile.fxml");
+        switchSceneFromButton(event, "/view/official_profile.fxml");
     }
 
     @FXML
     private void goToCompliance(MouseEvent event) {
-        switchSceneFromMouse(event, "/compliance.fxml");
+        switchSceneFromMouse(event, "/view/official_compliance.fxml");
     }
 
     @FXML
     private void goToJobVacancies(MouseEvent event) {
-        switchSceneFromMouse(event, "/job_vacancies.fxml");
+        switchSceneFromMouse(event, "/view/official_job_vacancies.fxml");
     }
 
     @FXML
@@ -277,7 +277,7 @@ public class ViewProfileController {
         if (Session.getInstance() != null) {
             Session.getInstance().clearSession();
         }
-        switchSceneFromButton(event, "/login.fxml");
+        switchSceneFromButton(event, "/view/login.fxml");
     }
 
     // --- ROUTING HELPERS ---
