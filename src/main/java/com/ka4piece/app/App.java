@@ -78,7 +78,11 @@ public class App extends Application {
             } else if (clazz == RegisterHouseholdController.class) {
                 return new RegisterHouseholdController(authManager);
             } else if (clazz == BeneficiaryDashboardController.class) {
-                return new BeneficiaryDashboardController(authRepository, complianceManager);
+                return new BeneficiaryDashboardController(authRepository, complianceManager, jobMatchManager);
+            } else if (clazz == BeneficiaryProfileController.class) {
+                return new BeneficiaryProfileController(authRepository);
+            } else if (clazz == AddProfileController.class) {
+                return new AddProfileController(jobMatchManager);
             } else if (clazz == ForgotPasswordController.class) {
                 return new ForgotPasswordController(authRepository);
             } else if (clazz == ChangePasswordController.class) {

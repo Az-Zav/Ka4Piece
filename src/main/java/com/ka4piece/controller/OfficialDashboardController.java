@@ -828,12 +828,20 @@ public class OfficialDashboardController {
         boxPostedVacancies.getChildren().clear();
 
         List<Vacancy> vacancies = jobMatchManager.getAllVacancies().stream()
-                .filter(v -> v.getStatus() == null || !v.getStatus().equals("ARCHIVED"))
+                .sorted((a, b) -> {
+                    boolean aArch = "ARCHIVED".equalsIgnoreCase(a.getStatus());
+                    boolean bArch = "ARCHIVED".equalsIgnoreCase(b.getStatus());
+                    return Boolean.compare(aArch, bArch);
+                })
                 .collect(Collectors.toList());
         for (Vacancy v : vacancies) {
             VBox itemBox = new VBox();
             itemBox.setSpacing(2.0);
             
+            if ("ARCHIVED".equalsIgnoreCase(v.getStatus())) {
+                itemBox.setOpacity(0.55);
+            }
+
             // Highlight selected vacancy
             if (selectedVacancy != null && selectedVacancy.getVacancyId().equals(v.getVacancyId())) {
                 itemBox.getStyleClass().add("list-item-active");
@@ -849,7 +857,7 @@ public class OfficialDashboardController {
             }
 
             String subText = (v.getLocation() != null ? v.getLocation() : "No Location") + " • " + (v.getType() != null ? v.getType() : "Full-time");
-            if (v.getStatus() != null && v.getStatus().equals("ARCHIVED")) {
+            if ("ARCHIVED".equalsIgnoreCase(v.getStatus())) {
                 subText += " (ARCHIVED)";
             }
             Label subLabel = new Label(subText);

@@ -100,8 +100,15 @@ public class ComplianceRepository extends MySqlStore {
     }
 
     public List<GrantBreakdown> findGrantHistory(String householdId) {
-        String sql = "SELECT * FROM grants WHERE householdId = ? ORDER BY monthYear";
-        List<Map<String, Object>> rows = executeQuery(sql, householdId);
+        // Join against a per-month MAX(id) subquery so only the most recent record
+        // per monthYear is returned (CORRECTION rows supersede INITIAL rows).
+        String sql = "SELECT g.* FROM grants g " +
+                     "INNER JOIN (SELECT monthYear, MAX(id) AS maxId FROM grants " +
+                     "            WHERE householdId = ? GROUP BY monthYear) latest " +
+                     "ON g.monthYear = latest.monthYear AND g.id = latest.maxId " +
+                     "WHERE g.householdId = ? " +
+                     "ORDER BY g.monthYear";
+        List<Map<String, Object>> rows = executeQuery(sql, householdId, householdId);
         return rows.stream()
                    .map(this::mapRowToGrant)
                    .collect(Collectors.toList());

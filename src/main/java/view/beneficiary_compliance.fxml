@@ -116,9 +116,9 @@
                                         </rowConstraints>
                                         <children>
                                             <!-- CARD 1 -->
-                                            <HBox styleClass="condition-card, pass-card" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                            <HBox fx:id="cardPregnancy" styleClass="condition-card, pass-card" GridPane.columnIndex="0" GridPane.rowIndex="0">
                                                 <children>
-                                                    <Label styleClass="icon-check" text="✔" />
+                                                    <Label fx:id="lblPregnancyCheck" styleClass="icon-check" text="✔" />
                                                     <VBox spacing="4.0" HBox.hgrow="ALWAYS">
                                                         <children>
                                                             <Label styleClass="condition-title" text="PREGNANCY CARE" />
@@ -129,9 +129,9 @@
                                             </HBox>
 
                                             <!-- CARD 2 -->
-                                            <HBox styleClass="condition-card, pass-card" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                            <HBox fx:id="cardDeworming" styleClass="condition-card, pass-card" GridPane.columnIndex="1" GridPane.rowIndex="0">
                                                 <children>
-                                                    <Label styleClass="icon-check" text="✔" />
+                                                    <Label fx:id="lblDewormingCheck" styleClass="icon-check" text="✔" />
                                                     <VBox spacing="4.0" HBox.hgrow="ALWAYS">
                                                         <children>
                                                             <Label styleClass="condition-title" text="DEWORMING (6-14YRS)" />
@@ -142,9 +142,9 @@
                                             </HBox>
 
                                             <!-- CARD 3 -->
-                                            <HBox styleClass="condition-card, pass-card" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                            <HBox fx:id="cardSchool" styleClass="condition-card, pass-card" GridPane.columnIndex="0" GridPane.rowIndex="1">
                                                 <children>
-                                                    <Label styleClass="icon-check" text="✔" />
+                                                    <Label fx:id="lblSchoolCheck" styleClass="icon-check" text="✔" />
                                                     <VBox spacing="4.0" HBox.hgrow="ALWAYS">
                                                         <children>
                                                             <Label styleClass="condition-title" text="SCHOOL ATTENDANCE" />
@@ -155,12 +155,12 @@
                                             </HBox>
 
                                             <!-- CARD 4 -->
-                                            <HBox styleClass="condition-card, fail-card" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                            <HBox fx:id="cardFds" styleClass="condition-card, fail-card" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                                 <children>
-                                                    <Label styleClass="icon-cross" text="✖" />
+                                                    <Label fx:id="lblFdsCheck" styleClass="icon-cross" text="✖" />
                                                     <VBox spacing="4.0" HBox.hgrow="ALWAYS">
                                                         <children>
-                                                            <Label styleClass="condition-title-fail" text="FAMILY DEVELOPMENT SESSION" />
+                                                            <Label fx:id="lblFdsTitle" styleClass="condition-title-fail" text="FAMILY DEVELOPMENT SESSION" />
                                                             <Label styleClass="condition-desc" text="Missed the monthly mandatory FDS meeting." wrapText="true" />
                                                         </children>
                                                     </VBox>
@@ -168,9 +168,9 @@
                                             </HBox>
 
                                             <!-- CARD 5 -->
-                                            <HBox styleClass="condition-card, pass-card" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                                            <HBox fx:id="cardNutrition" styleClass="condition-card, pass-card" GridPane.columnIndex="0" GridPane.rowIndex="2">
                                                 <children>
-                                                    <Label styleClass="icon-check" text="✔" />
+                                                    <Label fx:id="lblNutritionCheck" styleClass="icon-check" text="✔" />
                                                     <VBox spacing="4.0" HBox.hgrow="ALWAYS">
                                                         <children>
                                                             <Label styleClass="condition-title" text="NUTRITION MONITORING" />
@@ -181,13 +181,13 @@
                                             </HBox>
 
                                             <!-- CARD 6 -->
-                                            <HBox styleClass="condition-card, pass-card" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                            <HBox fx:id="cardDaycare" styleClass="condition-card, pass-card" GridPane.columnIndex="1" GridPane.rowIndex="2">
                                                 <children>
-                                                    <Label styleClass="icon-check" text="✔" />
+                                                    <Label fx:id="lblDaycareCheck" styleClass="icon-check" text="✔" />
                                                     <VBox spacing="4.0" HBox.hgrow="ALWAYS">
                                                         <children>
-                                                            <Label styleClass="condition-title" text="PRE/POST NATAL CARE" />
-                                                            <Label styleClass="condition-desc" text="N/A (No current pregnancy in household)." wrapText="true" />
+                                                            <Label styleClass="condition-title" text="DAYCARE ATTENDANCE" />
+                                                            <Label styleClass="condition-desc" text="Maintained daycare attendance requirement." wrapText="true" />
                                                         </children>
                                                     </VBox>
                                                 </children>
@@ -283,55 +283,8 @@
                                             </padding>
                                         </GridPane>
 
-                                        <VBox spacing="0.0">
-                                            <children>
-                                                <!-- ROW 1 -->
-                                                <GridPane fx:id="rowAug2026" style="-fx-cursor: hand;" styleClass="history-row">
-                                                    <columnConstraints>
-                                                        <ColumnConstraints hgrow="ALWAYS" />
-                                                        <ColumnConstraints hgrow="NEVER" prefWidth="150.0" />
-                                                    </columnConstraints>
-                                                    <children>
-                                                        <Label styleClass="history-date" text="AUG, 2026" GridPane.columnIndex="0" />
-                                                        <Label styleClass="history-amount" text="₱2,350.00" GridPane.columnIndex="1" />
-                                                    </children>
-                                                    <padding>
-                                                        <Insets bottom="12.0" left="20.0" right="20.0" top="12.0" />
-                                                    </padding>
-                                                </GridPane>
-                                                <Separator />
-
-                                                <!-- ROW 2 -->
-                                                <GridPane fx:id="rowJul2026" style="-fx-cursor: hand;" styleClass="history-row">
-                                                    <columnConstraints>
-                                                        <ColumnConstraints hgrow="ALWAYS" />
-                                                        <ColumnConstraints hgrow="NEVER" prefWidth="150.0" />
-                                                    </columnConstraints>
-                                                    <children>
-                                                        <Label styleClass="history-date" text="JUL, 2026" GridPane.columnIndex="0" />
-                                                        <Label styleClass="history-amount" text="₱2,200.00" GridPane.columnIndex="1" />
-                                                    </children>
-                                                    <padding>
-                                                        <Insets bottom="12.0" left="20.0" right="20.0" top="12.0" />
-                                                    </padding>
-                                                </GridPane>
-                                                <Separator />
-
-                                                <!-- ROW 3 -->
-                                                <GridPane fx:id="rowJun2026" style="-fx-cursor: hand;" styleClass="history-row">
-                                                    <columnConstraints>
-                                                        <ColumnConstraints hgrow="ALWAYS" />
-                                                        <ColumnConstraints hgrow="NEVER" prefWidth="150.0" />
-                                                    </columnConstraints>
-                                                    <children>
-                                                        <Label styleClass="history-date" text="JUN, 2026" GridPane.columnIndex="0" />
-                                                        <Label styleClass="history-amount" text="₱3,000.00" GridPane.columnIndex="1" />
-                                                    </children>
-                                                    <padding>
-                                                        <Insets bottom="12.0" left="20.0" right="20.0" top="12.0" />
-                                                    </padding>
-                                                </GridPane>
-                                            </children>
+                                        <VBox fx:id="boxGrantHistory" spacing="0.0">
+                                            <!-- Rows are dynamically generated by BeneficiaryDashboardController -->
                                         </VBox>
                                     </children>
                                 </VBox>

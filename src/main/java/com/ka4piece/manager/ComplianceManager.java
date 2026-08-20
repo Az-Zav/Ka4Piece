@@ -146,4 +146,12 @@ public class ComplianceManager {
     public GrantBreakdown getGrantBreakdown(String householdId, String monthYear) {
         return complianceRepository.findGrantByHouseholdAndMonth(householdId, monthYear);
     }
+
+    /**
+     * Returns all grant breakdown records for the given household, ordered by month ascending.
+     * Used to dynamically populate the Grant Breakdown History table on the beneficiary view.
+     */
+    public List<GrantBreakdown> getGrantHistory(String householdId) {
+        return complianceRepository.findGrantHistory(householdId);
+    }
 }
