@@ -22,7 +22,7 @@ The system bridges the gap between manual CVF verification and local visibility 
 - **Automated Grant Computation** — applies the official 4Ps compliance formulas on grant calculation to determine eligibility and amounts.  
 - **Job Matching Engine** — ranks vacancies and applicants using a weighted scoring strategy.  
 - **Dual User Roles** — supports both barangay officials and beneficiaries with tailored interfaces.  
-- **MySQL Persistence** — full relational database storage via JDBC; connection details are externalized to `db.properties` for easy configuration.  
+- **MySQL Persistence** — full relational database storage via JDBC; connection details are externalized to `credentials.properties` for easy configuration.  
 - **Transparent Session Handling** — secure login and dashboard routing via session objects.
 
 ---
@@ -51,7 +51,7 @@ Ka4Piece follows a **layered MVC architecture**:
 | **Manager (Business Logic)** | AuthManager, ComplianceManager, JobMatchManager | Implements system rules and delegates persistence to repositories. |
 | **Repository (Persistence)** | MySqlStore, AuthRepository, ComplianceRepository, JobMatchRepository | Handles MySQL‑based data storage and retrieval via JDBC. |
 | **Strategy (Algorithm Layer)** | MatchStrategy, WeightedMatchStrategy | Defines and implements job‑matching scoring logic. |
-| **Runner** | App | Entry point; reads `db.properties`, wires repositories → managers → strategy → controllers; launches `Login.fxml`. |
+| **Runner** | App | Entry point; reads `credentials.properties`, wires repositories → managers → strategy → controllers; launches `Login.fxml`. |
 
 ---
 
@@ -63,7 +63,7 @@ Ka4Piece uses **MySQL** as its relational database backend. All data access is h
 
 | Class | Role |
 |-------|------|
-| `DbConfig` | Reads `jdbcUrl`, `dbUser`, and `dbPassword` from `db.properties` at startup. |
+| `DbConfig` | Reads `jdbcUrl`, `dbUser`, and `dbPassword` from `credentials.properties` at startup. |
 | `MySqlStore` | Abstract base class — provides `executeQuery()` (SELECT) and `executeUpdate()` (INSERT / UPDATE / DELETE) helpers. |
 | `AuthRepository` | CRUD for `households` and `officials` tables. |
 | `ComplianceRepository` | CRUD for `compliance` and `grants` tables. |
@@ -239,9 +239,9 @@ VALUES ('OFF-001', 'Admin Official', 'admin@barangay.gov', 'admin123', TRUE);
 
 ---
 
-### 4. Create `db.properties`
+### 4. Create `credentials.properties`
 
-In the **project root** (same level as `src/`), create a file named `db.properties`:
+In the **project root** (same level as `src/`), create a file named `credentials.properties`:
 
 ```
 db.properties          ← place it here (next to src/, bin/, lib/)
@@ -266,7 +266,7 @@ dbPassword=YOUR_MYSQL_PASSWORD
 | `dbUser` | MySQL username (default: `root`). |
 | `dbPassword` | The password for the MySQL user above. |
 
-> ⚠️ **`db.properties` is listed in `.gitignore` and will never be committed.** Do not share or expose this file.
+> ⚠️ **`credentials.properties` is listed in `.gitignore` and will never be committed.** Do not share or expose this file.
 
 ---
 
@@ -282,7 +282,26 @@ java  -cp "bin:lib/*" --module-path /path/to/javafx-sdk/lib \
       com.ka4piece.app.App
 ```
 
-On startup, `App.init()` reads `db.properties`, instantiates `DbConfig`, and wires all repositories before the login screen appears. If the database is unreachable, a `RuntimeException` will be thrown with the JDBC error message.
+On startup, `App.init()` reads `credentials.properties`, instantiates `DbConfig`, and wires all repositories before the login screen appears. If the database is unreachable, a `RuntimeException` will be thrown with the JDBC error message.
+
+
+// credentials.properties
+
+#db credentials
+jdbcUrl=jdbc:mysql://localhost:3306/ka4piece_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+dbUser=root
+dbPassword=password
+
+# Email Credentials
+senderEmail= email
+appPassword= apppassword
+senderName=Ka4Piece Admin
+
+# SMTP Configuration (Optional: These match your defaults)
+smtpHost=smtp.gmail.com
+smtpPort=587
+smtpAuth=true
+smtpStartTls=true
 
 ---
 
