@@ -12,6 +12,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -64,7 +65,7 @@ public class AddProfileController {
                 barangay != null ? barangay.trim() : "",
                 skillsList,
                 expYears,
-                new java.util.HashMap<>()
+                new HashMap<>()
         );
 
         if (jobMatchManager != null) {
@@ -74,6 +75,9 @@ public class AddProfileController {
         closeStage(event);
     }
 
+    /**
+     * Closes the modal window without saving.
+     */
     @FXML
     private void handleClose(ActionEvent event) {
         closeStage(event);
