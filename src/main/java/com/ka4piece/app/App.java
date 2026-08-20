@@ -4,6 +4,8 @@ import com.ka4piece.controller.*;
 import com.ka4piece.manager.*;
 import com.ka4piece.repository.*;
 import com.ka4piece.strategy.*;
+import com.ka4piece.utilities.email.EmailConfig;
+import com.ka4piece.utilities.email.EmailService;
 
 import javafx.application.Application;
 import javafx.event.Event;
@@ -19,6 +21,7 @@ import java.net.URL;
 public class App extends Application {
 
     private static DbConfig dbConfig;
+    private static EmailConfig emailConfig;
     private static AuthRepository authRepository;
     private static ComplianceRepository complianceRepository;
     private static JobMatchRepository jobMatchRepository;
@@ -31,7 +34,9 @@ public class App extends Application {
 
     @Override
     public void init() throws Exception {
-        dbConfig = new DbConfig("db.properties");
+        dbConfig = new DbConfig("credentials.properties");
+        emailConfig = new EmailConfig("credentials.properties");
+
         authRepository = new AuthRepository(dbConfig.getJdbcurl(), dbConfig.getUsername(), dbConfig.getPassword());
         complianceRepository = new ComplianceRepository(dbConfig.getJdbcurl(), dbConfig.getUsername(), dbConfig.getPassword());
         jobMatchRepository = new JobMatchRepository(dbConfig.getJdbcurl(), dbConfig.getUsername(), dbConfig.getPassword());
@@ -40,6 +45,9 @@ public class App extends Application {
         complianceManager = new ComplianceManager(complianceRepository, authRepository);
         matchStrategy = new WeightedMatchStrategy();
         jobMatchManager = new JobMatchManager(jobMatchRepository, matchStrategy);
+
+        // Initialize email service for notifications (credentials and password resets)
+        EmailService.setEmailConfig(emailConfig);
     }
 
     @Override
