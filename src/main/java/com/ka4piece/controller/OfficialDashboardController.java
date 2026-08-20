@@ -6,7 +6,7 @@ import com.ka4piece.manager.ComplianceManager;
 import com.ka4piece.manager.JobMatchManager;
 import com.ka4piece.model.Household;
 import com.ka4piece.model.Session;
-import com.ka4piece.model.ComplianceRecord;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -21,7 +21,6 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;

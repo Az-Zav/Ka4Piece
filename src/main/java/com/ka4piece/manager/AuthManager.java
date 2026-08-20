@@ -4,7 +4,6 @@ import com.ka4piece.model.BarangayOfficial;
 import com.ka4piece.model.Household;
 import com.ka4piece.model.Session;
 import com.ka4piece.repository.AuthRepository;
-import com.ka4piece.utilities.IdUtil;
 
 import java.time.LocalDate;
 import java.util.List;

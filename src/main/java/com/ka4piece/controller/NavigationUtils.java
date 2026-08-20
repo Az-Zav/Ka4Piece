@@ -1,7 +1,6 @@
 package com.ka4piece.controller;
 
 import com.ka4piece.app.App;
-import com.ka4piece.controller.LogoutModalController;
 import com.ka4piece.model.Session;
 
 import javafx.event.ActionEvent;
