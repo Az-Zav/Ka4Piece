@@ -4,6 +4,7 @@ import com.ka4piece.model.BarangayOfficial;
 import com.ka4piece.model.Household;
 import com.ka4piece.model.Session;
 import com.ka4piece.repository.AuthRepository;
+import com.ka4piece.utilities.PasswordUtil;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -127,7 +128,7 @@ public class LoginController {
 
     @FXML
     private void handleForgotPassword(ActionEvent event) {
-        NavigationUtils.switchSceneFromButton(event, "/forgot_password.fxml");
+        NavigationUtils.showForgotPasswordModal(event);
     }
 
     private void showError(String message) {
