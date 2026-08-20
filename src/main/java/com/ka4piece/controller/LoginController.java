@@ -146,20 +146,18 @@ public class LoginController {
     }
 
     /**
-     * Database authentication check & Session setup.
+     * Performs database authentication check and configures the active Session singleton.
      */
     private boolean performAuthentication(String identifier, String password, String userType) {
         if (authRepository == null) return false;
 
-        if ("OFFICIAL".contains(userType)) {
-            // Check by ID or Email
+        if (userType.equals("OFFICIAL")) {
             BarangayOfficial official = authRepository.findOfficialById(identifier);
             if (official == null) {
                 official = authRepository.findOfficialByEmail(identifier);
             }
 
-            if (official != null && password.equals(official.getPassword())) {
-                // Set global session
+            if (official != null && PasswordUtil.verifyPassword(password, official.getPassword())) {
                 Session session = Session.getInstance();
                 session.setUserId(official.getOfficialId());
                 session.setRole("OFFICIAL");
@@ -174,8 +172,7 @@ public class LoginController {
                 household = authRepository.findHouseholdByEmail(identifier);
             }
 
-            if (household != null && password.equals(household.getPassword())) {
-                // Set global session
+            if (household != null && PasswordUtil.verifyPassword(password, household.getPassword())) {
                 Session session = Session.getInstance();
                 session.setUserId(household.getHouseholdId());
                 session.setRole("HOUSEHOLD");
@@ -189,10 +186,10 @@ public class LoginController {
     }
 
     /**
-     * Scene routing to appropriate dashboard after login.
+     * Routes to the appropriate dashboard scene based on user type.
      */
     private void navigateToMainApp(ActionEvent event, String userType) {
-        if ("OFFICIAL".contains(userType)) {
+        if (userType.equals("OFFICIAL")) {
             NavigationUtils.switchSceneFromButton(event, "/view/official_compliance.fxml");
         } else {
             NavigationUtils.switchSceneFromButton(event, "/view/beneficiary_compliance.fxml");
