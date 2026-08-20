@@ -4,6 +4,18 @@ import com.ka4piece.model.BarangayOfficial;
 import com.ka4piece.model.Household;
 import com.ka4piece.repository.AuthRepository;
 import com.ka4piece.utilities.PasswordUtil;
+import com.ka4piece.utilities.email.EmailService;
+
+import javafx.animation.PauseTransition;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
+import javafx.util.Duration;
 
 /**
  * Flow:
@@ -15,17 +27,142 @@ import com.ka4piece.utilities.PasswordUtil;
  */
 public class ForgotPasswordController {
 
+    // ── FXML Controls ──────────────────────────────────────────────────────────
+    @FXML private TextField txtEmail;
+    @FXML private Label lblMessage;
+    @FXML private Button btnSend;
+
+    // ── Dependencies ───────────────────────────────────────────────────────────
     private final AuthRepository authRepository;
 
     public ForgotPasswordController(AuthRepository authRepository) {
         this.authRepository = authRepository;
     }
 
+
+    public ForgotPasswordController() {
+        this.authRepository = null;
+    }
+
+    // ── FXML Lifecycle ─────────────────────────────────────────────────────────
+
+    @FXML
+    public void initialize() {
+        hideMessage();
+    }
+
+    // ── Action Handlers ────────────────────────────────────────────────────────
+
     /**
-     * Attempts to reset the password for the given email and user type.
-     *  email the email to reset
-     *  userType "OFFICIAL" or "BENEFICIARY"
+     * Triggered when the user clicks "Send Temporary Password".
+     * Validates the email, finds the matching account, resets the password,
+     * and dispatches a credentials email asynchronously.
      */
+    @FXML
+    private void handleSendReset(ActionEvent event) {
+        String email = txtEmail.getText() == null ? "" : txtEmail.getText().trim();
+
+        if (email.isEmpty()) {
+            showMessage("Please enter your email address.", true);
+            return;
+        }
+
+        if (authRepository == null) {
+            showMessage("Service unavailable. Please restart the application.", true);
+            return;
+        }
+
+        // Try OFFICIAL first, then HOUSEHOLD
+        ResetResult result = handleReset(email);
+
+        if (!result.isSuccess()) {
+            showMessage(result.getErrorMessage(), true);
+            return;
+        }
+
+        // Retrieve display info for the email body
+        String recipientName;
+        String username;
+
+        BarangayOfficial official = authRepository.findOfficialByEmail(email);
+        if (official != null) {
+            recipientName = official.getName();
+            username      = official.getEmail(); // Use email as login credential
+        } else {
+            Household household = authRepository.findHouseholdByEmail(email);
+            if (household != null) {
+                recipientName = household.getHeadName();
+                username      = household.getEmail(); // Use email as login credential
+            } else {
+                showMessage("Account not found. Please check the email address.", true);
+                return;
+            }
+        }
+
+        final String tempPassword = result.getTempPassword();
+        final String finalName    = recipientName;
+        final String finalUser    = username;
+
+        // Disable button to prevent duplicate requests while email is in flight
+        if (btnSend != null) btnSend.setDisable(true);
+
+        EmailService.sendCredentialsEmail(
+                email,
+                finalName,
+                finalUser,
+                tempPassword,
+                recipientEmail -> {
+                    showMessage("Email sent successfully.", false);
+
+                    PauseTransition delay = new PauseTransition(Duration.seconds(0.5));
+                    delay.setOnFinished(e -> closeModal());
+                    delay.play();
+                },
+                (recipientEmail, errorMsg) -> {
+                    if (btnSend != null) btnSend.setDisable(false);
+                    showMessage("Password was reset but the email could not be sent: " + errorMsg, true);
+                }
+        );
+    }
+
+    /**
+     * Closes the modal when the user clicks "Cancel".
+     */
+    @FXML
+    private void handleCancel(ActionEvent event) {
+        closeModal(event);
+    }
+
+    // ── Business Logic (Password Reset) ────────────────────────────────────────
+
+    /**
+     * Attempts to reset the password for the given email address.
+     * Searches OFFICIAL accounts first, then HOUSEHOLD accounts.
+     *
+     * @param email user email address
+     * @return ResetResult instance encapsulating success status and temporary password or error message
+     */
+    public ResetResult handleReset(String email) {
+        if (email == null || email.isBlank()) {
+            return ResetResult.failure("Please enter your email.");
+        }
+
+        String trimmed = email.trim();
+
+        try {
+            ResetResult officialResult = resetOfficialPassword(trimmed);
+            if (officialResult.isSuccess()) {
+                return officialResult;
+            }
+
+            return resetHouseholdPassword(trimmed);
+
+        } catch (RuntimeException e) {
+            return ResetResult.failure("Database error: " + e.getMessage());
+        }
+    }
+
+
     public ResetResult handleReset(String email, String userType) {
         // --- Input validation ---
         if (email == null || email.isBlank()) {
@@ -80,7 +217,37 @@ public class ForgotPasswordController {
         return ResetResult.success(tempPassword);
     }
 
-    // Result wrapper — avoids using raw Strings as a two-state return value
+    // ── UI Helpers ─────────────────────────────────────────────────────────────
+
+    private void showMessage(String msg, boolean isError) {
+        if (lblMessage != null) {
+            lblMessage.setText(msg);
+            lblMessage.setTextFill(isError ? Color.web("#DC2626") : Color.web("#16A34A"));
+            lblMessage.setVisible(true);
+            lblMessage.setManaged(true);
+        }
+    }
+
+    private void hideMessage() {
+        if (lblMessage != null) {
+            lblMessage.setVisible(false);
+            lblMessage.setManaged(false);
+        }
+    }
+
+    private void closeModal(ActionEvent event) {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.close();
+    }
+
+    private void closeModal() {
+        if (txtEmail != null && txtEmail.getScene() != null && txtEmail.getScene().getWindow() != null) {
+            Stage stage = (Stage) txtEmail.getScene().getWindow();
+            stage.close();
+        }
+    }
+
+    // ── Result Wrapper ─────────────────────────────────────────────────────────
 
     /**
      * Encapsulates the outcome of a password-reset attempt.
