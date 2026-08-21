@@ -47,7 +47,7 @@ public class App extends Application {
         try {
             Parent root = loadFXML("/view/login.fxml");
             Scene scene = new Scene(root, 1280, 720);
-            primaryStage.setTitle("KaAyuda - Barangay 4Ps Compliance System");
+            primaryStage.setTitle("Ka4Piece - Barangay-Level 4Ps Compliance & Job-Matching System");
             primaryStage.setScene(scene);
             primaryStage.setMinWidth(900);
             primaryStage.setMinHeight(600);
