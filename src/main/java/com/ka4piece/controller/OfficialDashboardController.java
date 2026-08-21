@@ -784,7 +784,8 @@ public class OfficialDashboardController {
             lblTotalGrant.setText(String.format("TOTAL ELIGIBLE:  ₱%,.2f", breakdown.getTotalAmount()));
         }
         if (lblGrantStatus != null) {
-            if (breakdown.getWithheldReasons() != null && !breakdown.getWithheldReasons().isEmpty()) {
+            // checks if there are withheld reasons added except household has 3 or more eligible children (exceeding 3 children still eligible)
+            if (breakdown.getWithheldReasons() != null && !breakdown.getWithheldReasons().isEmpty() && !breakdown.getWithheldReasons().contains("Household has more than 3 eligible children meeting attendance this month — grant computed for the 3 highest-tier children (Senior High prioritized, then Junior High, then Elementary), per system policy since DSWD guidance does not specify precedence.")) {
                 lblGrantStatus.setText("• WITHHELD");
                 lblGrantStatus.getStyleClass().setAll("badge-gray");
             } else {
