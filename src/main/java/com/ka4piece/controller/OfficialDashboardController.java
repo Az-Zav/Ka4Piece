@@ -806,10 +806,13 @@ public class OfficialDashboardController {
             boolean health0to5 = !h.isHas0to5Member() || r.isChild0to5HealthStatus();
             boolean hasChildren = (h.getElemCount() > 0 || h.getJhsCount() > 0 || h.getShsCount() > 0);
             boolean healthDeworming = !hasChildren || r.isDewormingStatus();
+            boolean dayCare = !h.isHas0to5Member() || r.isDaycareAttendanceStatus();
+            boolean schoolAttendance = !hasChildren || r.isSchoolAttendanceStatus();
+            
             boolean healthCompliant = healthPregnancy && health0to5 && healthDeworming;
-
-            boolean educationCompliant = r.isDaycareAttendanceStatus() && r.isSchoolAttendanceStatus();
+            boolean educationCompliant = dayCare && schoolAttendance;
             boolean fdsCompliant = r.isFdsAttendanceStatus();
+            
             boolean fullyCompliant = healthCompliant && educationCompliant && fdsCompliant;
 
             String healthStr = healthCompliant ? "Compliant" : "Non-Compliant";
