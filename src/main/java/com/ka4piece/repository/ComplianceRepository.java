@@ -3,11 +3,13 @@ package com.ka4piece.repository;
 import com.ka4piece.model.ComplianceRecord;
 import com.ka4piece.model.GrantBreakdown;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.sql.Timestamp;
 
 public class ComplianceRepository extends MySqlStore {
 
@@ -134,7 +136,8 @@ public class ComplianceRepository extends MySqlStore {
             shs,
             (String) row.get("recordedByOfficialId")
         );
-        java.sql.Timestamp recordedAt = (java.sql.Timestamp) row.get("recordedAt");
+        java.sql.Timestamp recordedAt = Timestamp.valueOf((LocalDateTime) row.get("recordedAt"));
+
         cr.setRecordedAt(recordedAt);
         return cr;
     }
