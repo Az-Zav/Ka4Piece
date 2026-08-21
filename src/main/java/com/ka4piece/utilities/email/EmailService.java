@@ -59,6 +59,58 @@ public class EmailService {
             SuccessCallback onSuccess,
             FailureCallback onFailure) {
 
+        sendEmailAsync(
+                recipientEmail,
+                recipientName,
+                "[Ka4Piece] Password Reset Request",
+                buildPasswordResetPlainText(recipientName, username, temporaryPassword),
+                buildPasswordResetHtmlBody(recipientName, username, temporaryPassword),
+                onSuccess,
+                onFailure
+        );
+    }
+
+    /**
+     * Sends an account creation credentials email asynchronously upon new household registration.
+     *
+     * @param recipientEmail   destination email address
+     * @param recipientName    name of the household head
+     * @param username         account username/email
+     * @param temporaryPassword newly generated temporary password
+     * @param onSuccess        callback invoked on JavaFX thread upon success
+     * @param onFailure        callback invoked on JavaFX thread upon failure
+     */
+    public static void sendAccountCreationEmail(
+            String recipientEmail,
+            String recipientName,
+            String username,
+            String temporaryPassword,
+            SuccessCallback onSuccess,
+            FailureCallback onFailure) {
+
+        sendEmailAsync(
+                recipientEmail,
+                recipientName,
+                "[Ka4Piece] Welcome to Ka4Piece - Your Account Credentials",
+                buildAccountCreationPlainText(recipientName, username, temporaryPassword),
+                buildAccountCreationHtmlBody(recipientName, username, temporaryPassword),
+                onSuccess,
+                onFailure
+        );
+    }
+
+    /**
+     * Internal helper to submit an email sending task to the background executor.
+     */
+    private static void sendEmailAsync(
+            String recipientEmail,
+            String recipientName,
+            String subject,
+            String plainText,
+            String htmlContent,
+            SuccessCallback onSuccess,
+            FailureCallback onFailure) {
+
         EXECUTOR.submit(() -> {
             try {
                 EmailConfig cfg = emailConfig;
@@ -71,8 +123,9 @@ public class EmailService {
                         cfg,
                         recipientEmail,
                         recipientName,
-                        username,
-                        temporaryPassword
+                        subject,
+                        plainText,
+                        htmlContent
                 );
                 Transport.send(message);
 
@@ -119,55 +172,54 @@ public class EmailService {
         return mailSession;
     }
 
+    /**
+     * Constructs a multipart MIME message with both plain-text and HTML alternatives.
+     */
     private static Message buildMessage(
             Session session,
             EmailConfig cfg,
             String recipientEmail,
             String recipientName,
-            String username,
-            String temporaryPassword) throws MessagingException, UnsupportedEncodingException {
+            String subject,
+            String plainText,
+            String htmlContent) throws MessagingException, UnsupportedEncodingException {
 
         MimeMessage msg = new MimeMessage(session);
 
-        // From
+        // Sender address and name
         msg.setFrom(new InternetAddress(
                 cfg.getSenderEmail(),
                 cfg.getSenderName(),
                 "UTF-8"
         ));
 
-        // To
+        // Recipient address and name
         msg.setRecipient(
                 Message.RecipientType.TO,
                 new InternetAddress(recipientEmail, recipientName, "UTF-8")
         );
 
-        // Subject + date
-        msg.setSubject("[Ka4Piece] Password Reset Request", "UTF-8");
+        msg.setSubject(subject, "UTF-8");
         msg.setSentDate(new Date());
 
-        // Body
+        // Multi-part alternative body (plain text + html)
         MimeMultipart multipart = new MimeMultipart("alternative");
 
         MimeBodyPart textPart = new MimeBodyPart();
-        textPart.setText(
-                buildPlainText(recipientName, username, temporaryPassword),
-                "UTF-8"
-        );
+        textPart.setText(plainText, "UTF-8");
         multipart.addBodyPart(textPart);
 
         MimeBodyPart htmlPart = new MimeBodyPart();
-        htmlPart.setContent(
-                buildHtmlBody(recipientName, username, temporaryPassword),
-                "text/html; charset=UTF-8"
-        );
+        htmlPart.setContent(htmlContent, "text/html; charset=UTF-8");
         multipart.addBodyPart(htmlPart);
 
         msg.setContent(multipart);
         return msg;
     }
 
-    private static String buildPlainText(
+    // ── Email Content Builders: Password Reset ─────────────────────────────────
+
+    private static String buildPasswordResetPlainText(
             String name, String username, String tempPassword) {
 
         return "Hello, " + name + "!\n\n"
@@ -180,7 +232,7 @@ public class EmailService {
                 + "-- Ka4Piece System";
     }
 
-    private static String buildHtmlBody(
+    private static String buildPasswordResetHtmlBody(
             String name,
             String username,
             String tempPassword) {
@@ -188,12 +240,51 @@ public class EmailService {
         String statusLine = "A password reset has been initiated for your account on the <strong>Ka4Piece System</strong>.";
         String changeNotice = "You will be required to <strong>change your password</strong> on your next login.";
 
+        return renderTemplate(name, statusLine, changeNotice, username, tempPassword);
+    }
+
+    // ── Email Content Builders: Account Creation ───────────────────────────────
+
+    private static String buildAccountCreationPlainText(
+            String name, String username, String tempPassword) {
+
+        return "Hello, " + name + "!\n\n"
+                + "Your household account has been successfully registered on the Ka4Piece System by your Barangay Official.\n\n"
+                + "Your Login Credentials:\n"
+                + "Username:           " + username + "\n"
+                + "Temporary Password: " + tempPassword + "\n\n"
+                + "You are required to change this password on your next login.\n\n"
+                + "Do not share your credentials with anyone.\n"
+                + "-- Ka4Piece System";
+    }
+
+    private static String buildAccountCreationHtmlBody(
+            String name,
+            String username,
+            String tempPassword) {
+
+        String statusLine = "Your household account has been successfully registered on the <strong>Ka4Piece System</strong> by your Barangay Official.";
+        String changeNotice = "You will be required to <strong>change your password</strong> on your next login.";
+
+        return renderTemplate(name, statusLine, changeNotice, username, tempPassword);
+    }
+
+    /**
+     * Shared HTML template generator.
+     */
+    private static String renderTemplate(
+            String name,
+            String statusLine,
+            String changeNotice,
+            String username,
+            String tempPassword) {
+
         return "<!DOCTYPE html>"
                 + "<html lang='en'>"
                 + "<head>"
                 + "<meta charset='UTF-8'>"
                 + "<meta name='viewport' content='width=device-width,initial-scale=1'>"
-                + "<title>Ka4Piece Password Reset</title>"
+                + "<title>Ka4Piece Notification</title>"
                 + "</head>"
                 + "<body style='"
                 +   "margin:0;"
@@ -276,6 +367,9 @@ public class EmailService {
                 + "</html>";
     }
 
+    /**
+     * Escapes special HTML characters to prevent rendering artifacts or injection.
+     */
     private static String escapeHtml(String input) {
         if (input == null) return "";
         return input
@@ -286,10 +380,16 @@ public class EmailService {
                 .replace("'",  "&#39;");
     }
 
+    /**
+     * Callback interface for successful email transmission.
+     */
     public interface SuccessCallback {
         void onSuccess(String recipientEmail);
     }
 
+    /**
+     * Callback interface for failed email transmission.
+     */
     public interface FailureCallback {
         void onFailure(String recipientEmail, String errorMessage);
     }

@@ -4,13 +4,14 @@ import com.ka4piece.model.BarangayOfficial;
 import com.ka4piece.model.Household;
 import com.ka4piece.model.Session;
 import com.ka4piece.repository.AuthRepository;
+import com.ka4piece.utilities.PasswordUtil;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class AuthManager {
-    AuthRepository authRepository;
+    private final AuthRepository authRepository;
 
     public AuthManager(AuthRepository authRepository) {
         this.authRepository = authRepository;
@@ -25,13 +26,13 @@ public class AuthManager {
     public Session login(String role, String email, String password) {
         if (role.equals("HOUSEHOLD")) {
             Household h = authRepository.findHouseholdByEmail(email);
-            if (h == null || !h.getPassword().equals(password)) return null;
-            if (h.getStatus().equals("EXITED")) return null;   // exited households can't log in
+            if (h == null || !PasswordUtil.verifyPassword(password, h.getPassword())) return null;
+            if (h.getStatus().equals("EXITED")) return null; // Exited households cannot log in
             Session s = new Session(h.getHouseholdId(), "HOUSEHOLD", h.getHeadName());
             return s;
         } else { // "OFFICIAL"
             BarangayOfficial o = authRepository.findOfficialByEmail(email);
-            if (o == null || !o.getPassword().equals(password)) return null;
+            if (o == null || !PasswordUtil.verifyPassword(password, o.getPassword())) return null;
             Session s = new Session(o.getOfficialId(), "OFFICIAL", o.getName());
             s.setAdmin(o.isAdmin());
             return s;
@@ -113,19 +114,20 @@ public class AuthManager {
         if ("OFFICIAL".equalsIgnoreCase(session.getRole())) {
             BarangayOfficial o = authRepository.findOfficialById(id);
             if (o == null || o.getPassword() == null) return false;
-            return o.getPassword().equals(currentPassword);
+            return PasswordUtil.verifyPassword(currentPassword, o.getPassword());
         } else {
             Household h = authRepository.findHouseholdById(id);
             if (h == null || h.getPassword() == null) return false;
-            return h.getPassword().equals(currentPassword);
+            return PasswordUtil.verifyPassword(currentPassword, h.getPassword());
         }
     }
 
     public boolean changePassword(String userId, String role, String newPassword) {
+        String hashed = PasswordUtil.hashPassword(newPassword);
         if ("OFFICIAL".equalsIgnoreCase(role)) {
-            return authRepository.updateOfficialPassword(userId, newPassword);
+            return authRepository.updateOfficialPassword(userId, hashed);
         } else {
-            return authRepository.updateHouseholdPassword(userId, newPassword);
+            return authRepository.updateHouseholdPassword(userId, hashed);
         }
     }
 }

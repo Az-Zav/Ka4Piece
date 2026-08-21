@@ -2,29 +2,45 @@ package com.ka4piece.controller;
 
 import com.ka4piece.manager.AuthManager;
 import com.ka4piece.model.Household;
-import com.ka4piece.utilities.PasswordUtil;
 import com.ka4piece.utilities.IdUtil;
+import com.ka4piece.utilities.PasswordUtil;
+import com.ka4piece.utilities.email.EmailService;
 
+import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
+import javafx.util.Duration;
 
+/**
+ * Controller for the Household Registration modal dialog.
+ * Handles household registration, compliance eligibility inputs, secure credential generation,
+ * persistence, automated credentials email dispatch, and auto-closing upon success.
+ */
 public class RegisterHouseholdController {
 
     private AuthManager authManager;
 
-    // Constructor injection
+    /**
+     * Dependency-injected constructor.
+     *
+     * @param authManager authentication and account manager
+     */
     public RegisterHouseholdController(AuthManager authManager) {
         this.authManager = authManager;
     }
 
+    /**
+     * Default no-arg constructor for FXML loader fallback.
+     */
     public RegisterHouseholdController() {
     }
 
-    // --- FXML CONTROL INJECTIONS ---
+    // ── FXML Controls ──────────────────────────────────────────────────────────
     @FXML private TextField txtHeadName;
     @FXML private TextField txtAddress;
     @FXML private TextField txtBarangay;
@@ -33,16 +49,16 @@ public class RegisterHouseholdController {
     @FXML private Button btnRegister;
     @FXML private Label lblSuccessMessage;
 
-    // --- NEW FXML CONTROLS FOR COMPLIANCE CONDITIONS ---
+    // Compliance eligibility checkboxes
     @FXML private CheckBox chkPregnant;
     @FXML private CheckBox chkToddler;
 
-    // Custom Stepper TextFields (- / +)
+    // Student count steppers
     @FXML private TextField txtElemCount;
     @FXML private TextField txtJhsCount;
     @FXML private TextField txtShsCount;
 
-    // --- STEPPER EVENT HANDLERS (- / +) ---
+    // ── Stepper Event Handlers ─────────────────────────────────────────────────
 
     @FXML
     private void incrementElem() {
@@ -88,16 +104,20 @@ public class RegisterHouseholdController {
         }
     }
 
-    // --- REGISTRATION LOGIC ---
+    // ── Registration Logic ─────────────────────────────────────────────────────
 
+    /**
+     * Validates input fields, persists the new household account, sends login credentials via email,
+     * and automatically closes the modal dialog upon completion.
+     */
     @FXML
     private void handleRegister(ActionEvent event) {
         try {
             // 1. Extract and clean input values from registration form
-            String headName = txtHeadName.getText().trim();
-            String address = txtAddress.getText().trim();
-            String barangay = txtBarangay.getText().trim();
-            String email = txtEmailField.getText().trim();
+            String headName = txtHeadName.getText() == null ? "" : txtHeadName.getText().trim();
+            String address = txtAddress.getText() == null ? "" : txtAddress.getText().trim();
+            String barangay = txtBarangay.getText() == null ? "" : txtBarangay.getText().trim();
+            String email = txtEmailField.getText() == null ? "" : txtEmailField.getText().trim();
 
             // 2. Extract boolean flags and student counts
             boolean hasPregnant = (chkPregnant != null) && chkPregnant.isSelected();
@@ -113,17 +133,19 @@ public class RegisterHouseholdController {
                 return;
             }
 
-            // 4. Generate ID
+            // 4. Generate unique ID and secure temporary password
             String generatedId = IdUtil.generateId("HH");
+            String temporaryPassword = PasswordUtil.generateTemporaryPassword();
+            String hashedPassword = PasswordUtil.hashPassword(temporaryPassword);
 
-            // 5. Create new Household object including the new compliance fields
+            // 5. Create new Household object including compliance fields
             Household newHousehold = new Household(
                     generatedId,
                     headName,
                     address,
                     barangay,
                     email,
-                    PasswordUtil.generateTemporaryPassword()
+                    hashedPassword
             );
             newHousehold.setHasPregnantMember(hasPregnant);
             newHousehold.setHas0to5Member(hasToddler);
@@ -131,22 +153,43 @@ public class RegisterHouseholdController {
             newHousehold.setJhsCount(jhsCount);
             newHousehold.setShsCount(shsCount);
 
-
             // 6. Register the household via AuthManager
             authManager.registerHousehold(newHousehold);
 
-            // 7. Display Success Message with generated ID
-            if (lblSuccessMessage != null) {
-                lblSuccessMessage.setText("Household registered successfully: " + generatedId);
-                lblSuccessMessage.setVisible(true);
-            }
-
-            // 8. Disable register button after registration while modal stays open for review
+            // 7. Disable register button after successful creation
             if (btnRegister != null) {
                 btnRegister.setDisable(true);
             }
 
-            // 9. Complete catching of errors with dedicated messages
+            // 8. Display initial success message with generated ID
+            if (lblSuccessMessage != null) {
+                lblSuccessMessage.setText("Household registered successfully: " + generatedId + ". Sending credentials email...");
+                lblSuccessMessage.setVisible(true);
+            }
+
+            // 9. Automatically dispatch login credentials email asynchronously and auto-close modal on completion
+            EmailService.sendAccountCreationEmail(
+                    email,
+                    headName,
+                    email,
+                    temporaryPassword,
+                    recipientEmail -> {
+                        if (lblSuccessMessage != null) {
+                            lblSuccessMessage.setText("Household registered successfully (" + generatedId + "). Credentials sent to " + recipientEmail + ".");
+                        }
+
+                        // Automatically close modal after brief delay matching ForgotPasswordController
+                        PauseTransition delay = new PauseTransition(Duration.seconds(0.5));
+                        delay.setOnFinished(e -> closeModal());
+                        delay.play();
+                    },
+                    (recipientEmail, errorMsg) -> {
+                        if (lblSuccessMessage != null) {
+                            lblSuccessMessage.setText("Household registered (" + generatedId + "), but email delivery failed: " + errorMsg);
+                        }
+                    }
+            );
+
         } catch (IllegalArgumentException e) {
             System.err.println("[RegisterHousehold] Validation error: " + e.getMessage());
             showError(e.getMessage());
@@ -160,6 +203,16 @@ public class RegisterHouseholdController {
             System.err.println("[RegisterHousehold] Unexpected error: " + e.getMessage());
             e.printStackTrace();
             showError("An unexpected error occurred. Please try again.");
+        }
+    }
+
+    /**
+     * Programmatic closure of the registration modal window.
+     */
+    private void closeModal() {
+        if (txtEmailField != null && txtEmailField.getScene() != null && txtEmailField.getScene().getWindow() != null) {
+            Stage stage = (Stage) txtEmailField.getScene().getWindow();
+            stage.close();
         }
     }
 

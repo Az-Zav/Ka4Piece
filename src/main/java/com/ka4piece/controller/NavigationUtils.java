@@ -57,7 +57,24 @@ public class NavigationUtils {
         }
     }
 
-    // Public Service Util Method
+
+    public static void showForgotPasswordModal(Event event) {
+        try {
+            Parent modalRoot = App.loadFXML("/view/forgot_password_modal.fxml");
+            Stage modalStage = new Stage();
+            modalStage.initModality(Modality.APPLICATION_MODAL);
+            modalStage.initOwner(((Node) event.getSource()).getScene().getWindow());
+            modalStage.setTitle("Forgot Password");
+            modalStage.setScene(new Scene(modalRoot));
+            modalStage.setResizable(false);
+            modalStage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Failed to display forgot password modal window.");
+        }
+    }
+
+
     public static void switchSceneFromButton(ActionEvent event, String fxmlPath) {
         com.ka4piece.app.App.switchScene(event, fxmlPath);
     }
