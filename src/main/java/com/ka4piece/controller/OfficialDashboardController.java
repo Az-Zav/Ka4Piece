@@ -6,6 +6,7 @@ import com.ka4piece.manager.ComplianceManager;
 import com.ka4piece.manager.JobMatchManager;
 import com.ka4piece.model.Household;
 import com.ka4piece.model.Session;
+import com.ka4piece.model.GrantBreakdown;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -443,16 +444,23 @@ public class OfficialDashboardController {
 
         if (chkPregnancyCare != null) {
             chkPregnancyCare.setDisable(!household.isHasPregnantMember());
-            chkPregnancyCare.setManaged(household.isHasPregnantMember());
         }
         if (chkHealthCheckup != null) {
             chkHealthCheckup.setDisable(!household.isHas0to5Member());
-            chkHealthCheckup.setManaged(household.isHas0to5Member());
         }
         if (chkDeworming != null) {
-            chkDeworming.setDisable(!hasChildren);
-            chkDeworming.setManaged(hasChildren);
+            chkDeworming.setDisable(!hasChildren && !household.isHas0to5Member());
         }
+
+        if (chkDaycare != null) {
+            chkDaycare.setDisable(!household.isHas0to5Member());
+        }
+
+        if (chkSchoolAttendance != null) {
+            chkSchoolAttendance.setDisable(!hasChildren);
+        }
+
+
     }
 
     @FXML
@@ -755,14 +763,14 @@ public class OfficialDashboardController {
         );
 
         try {
-            com.ka4piece.model.GrantBreakdown breakdown = complianceManager.calculateGrantBreakdown(tempRecord, selectedHousehold);
+            GrantBreakdown breakdown = complianceManager.calculateGrantBreakdown(tempRecord, selectedHousehold);
             updateGrantBreakdownUI(breakdown);
         } catch (Exception e) {
             System.err.println("Error calculating dynamic grant breakdown: " + e.getMessage());
         }
     }
 
-    private void updateGrantBreakdownUI(com.ka4piece.model.GrantBreakdown breakdown) {
+    private void updateGrantBreakdownUI(GrantBreakdown breakdown) {
         if (lblHealthGrant != null) {
             lblHealthGrant.setText(String.format("₱%,.2f", breakdown.getHealthGrantAmount()));
         }
