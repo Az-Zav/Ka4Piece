@@ -64,10 +64,12 @@ public class ComplianceManager {
         boolean pregnancyCare = household.isHasPregnantMember() ? r.isPregnancyCareStatus() : true;
         boolean child0to5 = household.isHas0to5Member() ? r.isChild0to5HealthStatus() : true;
         boolean hasChildren = (household.getElemCount() > 0 || household.getJhsCount() > 0 || household.getShsCount() > 0);
-        boolean deworming = hasChildren ? r.isDewormingStatus() : true;
+        boolean deworming = (hasChildren || household.isHas0to5Member()) ? r.isDewormingStatus() : true;
+        boolean dayCare = household.isHas0to5Member() ? r.isDaycareAttendanceStatus() : true;
+        boolean schoolAttendance = hasChildren ? r.isSchoolAttendanceStatus() : true;
 
         boolean healthCompliant = pregnancyCare && child0to5 && deworming;
-        boolean educationCompliant = r.isDaycareAttendanceStatus() && r.isSchoolAttendanceStatus();
+        boolean educationCompliant = dayCare && schoolAttendance;
         boolean riceEligible = healthCompliant || educationCompliant; // OR-based
 
         double healthGrantAmount = healthCompliant ? 750.0 : 0.0;
