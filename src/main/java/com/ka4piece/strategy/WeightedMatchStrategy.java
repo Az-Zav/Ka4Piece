@@ -15,7 +15,7 @@ public class WeightedMatchStrategy implements MatchStrategy {
 
     @Override
     public double score(JobseekerProfile profile, Vacancy vacancy) {
-        Map<String, Integer> educationRank = Map.of("HighSchool", 1, "Vocational", 2, "College", 3);
+        Map<String, Integer> educationRank = Map.of("Elementary Graduate", 1, "Highschool Graduate", 2, "Senior Highschool Graduate", 3, "College Undergraduate", 4, "Bachelor's Degree", 5 );
         double educationScore =
             educationRank.getOrDefault(profile.getEducation(), 0)
                 >= educationRank.getOrDefault(vacancy.getEducationRequirement(), 0)

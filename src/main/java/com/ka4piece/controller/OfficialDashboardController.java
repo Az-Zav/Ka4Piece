@@ -234,7 +234,7 @@ public class OfficialDashboardController {
         // Initialize Job Vacancies screen if loaded
         if (txtJobTitle != null) {
             if (cmbEducationRequirement != null) {
-                cmbEducationRequirement.getItems().setAll("HighSchool", "Vocational", "College");
+                cmbEducationRequirement.getItems().setAll("Elementary Graduate", "Highschool Graduate", "Senior Highschool Graduate", "College Undergraduate", "Bachelor's Degree");
             }
             if (cmbEmploymentType != null) {
                 cmbEmploymentType.getItems().setAll("Full-time", "Part-time", "Contractual", "Temporary");
